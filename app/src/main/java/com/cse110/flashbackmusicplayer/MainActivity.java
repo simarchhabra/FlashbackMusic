@@ -1,18 +1,41 @@
 package com.cse110.flashbackmusicplayer;
 
+
+import android.media.MediaPlayer;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
+
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+
+    // we should eliminate this, use vv
+    // String selectedFromList = (lv.getItemAtPosition(position));
+    List<String> songsList;
+
+    ListView songsView;
+
+    ListAdapter adapter;
+
+    MediaPlayer mediaPlayer;
 
     // All of the information associated with the user.
     UserState userState = null;
@@ -20,10 +43,44 @@ public class MainActivity extends AppCompatActivity {
     // A database of all the songs that are stored in the res folder.
     SongDatabase songDB = null;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        songsView = (ListView) findViewById(R.id.songsView);
+
+        songsList = new ArrayList<>();
+
+        Field[] fields = R.raw.class.getFields();
+        for (int i = 0; i < fields.length; i++) {
+            songsList.add(fields[i].getName());
+        }
+
+
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, songsList);
+        songsView.setAdapter(adapter);
+
+        songsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mediaPlayer != null) {
+                    mediaPlayer.release();
+                }
+
+                // remove first parameter call, use line below instead
+                // String selectedFromList = (lv.getItemAtPosition(position));
+                int resID = getResources().getIdentifier(songsList.get(i), "raw", getPackageName());
+
+                mediaPlayer = MediaPlayer.create(MainActivity.this, resID);
+
+                mediaPlayer.start();
+            }
+        });
+    }
+
 
         // Create the user.
         userState = new UserState();
@@ -50,11 +107,6 @@ public class MainActivity extends AppCompatActivity {
                 // Signify to the database that the location has changed and song priorities need
                 // to be recalculated.
                 songDB.userStateChanged();
-
-
-                // Completely temporary code that tests that location is updated correctly.
-                TextView locationText = (TextView) findViewById(R.id.location);
-                locationText.setText("Latitude: " + lat + " Longitude: " + lon);
             }
 
             @Override
@@ -85,4 +137,5 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void populateSongs() {}
+
 }

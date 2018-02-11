@@ -5,6 +5,10 @@
     android:layout_height="match_parent"
     tools:context="com.cse110.flashbackmusicplayer.MainActivity">
 
-    <include layout="@layout/content_main" />
+    <ListView
+        android:id="@+id/songsView"
+        android:layout_width="match_parent"
+        android:dividerHeight="1dp"
 
+        android:layout_height="wrap_content" />
 </android.support.design.widget.CoordinatorLayout>
