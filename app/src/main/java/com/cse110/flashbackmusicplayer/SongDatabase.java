@@ -1,27 +1,7 @@
 package com.cse110.flashbackmusicplayer;
 
-import java.util.ArrayList;
 import java.util.PriorityQueue;
-
 import java.util.Comparator;
-
-public class SongComparator implements Comparator<Song>
-{
-    @Override
-    public int compare(Song s1, Song s2)
-    {
-
-        if (s1.calculatePriority() < s2.calculatePriority())
-        {
-            return -1;
-        }
-        if (s1.calculatePriority() > s2.calculatePriority()
-        {
-            return 1;
-        }
-        return 0;
-    }
-}
 
 /**
  * This is a priority queue of songs that orders song by how likely they are to be played
@@ -35,21 +15,35 @@ public class SongDatabase {
     // When set to true, signifies that the user state has changed and heap needs to be updated.
     private boolean hasStateChanged = false;
 
-    // The internal array representation of the heap.
-    ArrayList<Song> songs;
+    // The max heap that stores ALL the loaded songs. All the songs are ordered by priority.
     private PriorityQueue<Song> queue;
-
-    Comparator<Song> comparator;
 
     public SongDatabase(UserState userState) {
         // Store a reference to user state to use it in the future.
         this.userState = userState;
-        // Create an empty list of songs.
-        //TODO - not an empty list but a list of all songs?
-        songs = new ArrayList<>();
-        queue = new PriorityQueue<Song>(10, comparator);
+        // Creates max heap that will store all the songs.
+        this.queue = new PriorityQueue<>(10, new SongComparator());
+    }
 
-        comparator = new SongComparator();
+    private class SongComparator implements Comparator<Song>
+    {
+        @Override
+        public int compare(Song s1, Song s2)
+        {
+
+            if (s1.calculatePriority(userState) < s2.calculatePriority(userState))
+            {
+                return -1;
+            }
+            if (s1.calculatePriority(userState) > s2.calculatePriority(userState))
+            {
+                return 1;
+            }
+
+            // TODO: break ties using favorited songs and if both are favorited or neither, then by
+            // which one was most recently played.
+            return 0;
+        }
     }
 
     public void userStateChanged() {
@@ -60,15 +54,18 @@ public class SongDatabase {
         return hasStateChanged;
     }
 
-    // Perform heap sort on songs using new priorities.
-    public void calculateFlashBackOrder() {
-        Song song_arr[] = queue.toArray();
-        queue.clear();
+    // Redo heap using the new priorities.
+    public void recalculate() {
+        // Get the internal array representation of the heap.
+        Song songs[] = (Song[]) queue.toArray();
 
-        for(int i; i<song_arr.length; i++) {
-            this.insert(song_arr[i]));
+        // Get rid of all the elements in the heap and re-add them with new priorities.
+        queue.clear();
+        for (Song song : songs) {
+            this.insert(song);
         }
-        //assuming this needs to be here
+
+        // The heap is now up to date with the user state.
         hasStateChanged = false;
     }
 
@@ -84,21 +81,19 @@ public class SongDatabase {
 
     // Simply remove the head node of the heap.
     public void pop() {
-        //return the value deleted or null if nothing is deleted
-        return queue.poll()
+        queue.poll();
     }
 
     // Gets a song from songs using name as key. Probably just do a linear search.
     // Used during regular mode, when user chooses a song to play.
-    public void get(String name) {
-        Iterator<Song> itr = queue.iterator();
-        boolean found = false;
-        while (itr.hasNext()) {
-            Song temp = itr.next();
-            if (temp.getName().equals(name))
-                return temp;
-
+    public Song get(String name) {
+        // Go through all the songs in the queue and check if any matc
+        for (Song song : queue) {
+            if (song.getName().equals(name))
+                return song;
         }
+
+        return null;
     }
 
 }
