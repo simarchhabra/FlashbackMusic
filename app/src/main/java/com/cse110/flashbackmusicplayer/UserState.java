@@ -1,97 +1,65 @@
 package com.cse110.flashbackmusicplayer;
 
+import android.location.Location;
+
+import java.util.Calendar;
+
 public class UserState {
-    
-    enum Time
-    {
-        MORNING, AFTERNOON, NIGHT
-    }
-    
-    enum DAY
-    {
-        SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, 
-        SATURDAY
-    }
 
-    // Current Time of hour and Day of the week for user
-    Time time; 
-    Day day;
-
-    // The current up-to-date position of the user.
-    double latitude = 0.0;
-    double longitude = 0.0;
-   
+    // The current up-to-date position of the user and the name of the closest location.
+    Location location = new Location("gps");
+    String place = "";
 
     public UserState() {}
 
-    
-    public void timeUpdated(int hour)
-    {
-        if (hour >= 5 && hour <= 10)
-        {
-            time = Time.MORNING;
+    public void locationUpdated(double latitude, double longitude, String place) {
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        this.place = place;
+    }
+
+    public Location getLocation() {
+        return new Location(location);
+    }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public TimeSegment getTimeSegment() {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.HOUR_OF_DAY);
+
+        // Get the current time segment.
+        if (day >= 5 && day < 11) {
+            return TimeSegment.MORNING;
         }
-        else if (hour >= 11 && hour <= 16)
-        {
-            time = Time.AFTERNOON;
+        else if (day >= 11 && day < 17) {
+            return TimeSegment.NOON;
         }
-        else
-        {
-            time = Time.NIGHT;
+        else {
+            return TimeSegment.EVENING;
         }
     }
-    
-    public void dayUpdated(String day)
-    {
-        day = day.toLowerCase();
-        switch (day)
-        {
-            case "sunday".:
-                this.day = SUNDAY;
-                break;
-            case "monday":
-                this.day = MONDAY;
-                break;
-            case "tueday":
-                this.day = TUESDAY;
-                break;
-            case "wednesday":
-                this.day = WEDNESDAY;
-                break;
-            case "thursday":
-                this.day = THURSDAY;
-                break;
-            case "friday":
-                this.day = FRIDAY;
-                break;
-            case "saturday":
-                this.day = SATURDAY;
-                break;
-            default:
-                this.day = null;
-                break;
+
+    public int getDayOfWeek() {
+        Calendar calendar = Calendar.getInstance();
+        return calendar.get(Calendar.DAY_OF_WEEK);
     }
 
-    public void locationUpdated(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
+    public String getDate() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        return "" + month + "/" + day + "/" + year;
     }
 
-    public double getTime() {
-        return this.time;
+    public String getTime() {
+        Calendar calendar = Calendar.getInstance();
+        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+        int minutes = calendar.get(Calendar.MINUTE);
+        int seconds = calendar.get(Calendar.SECOND);
+        return "" + hours + ":" + minutes + ":" + seconds;
     }
-
-    public double getDay() {
-        return this.day;
-    }
-
-    public double getLatitute() {
-        return this.latitute;
-    }
-
-    public double getLongitude() {
-        return this.longitude;
-    }
-
-
 }

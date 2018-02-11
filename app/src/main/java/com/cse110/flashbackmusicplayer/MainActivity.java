@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 double lon = location.getLongitude();
 
                 // Update the user state with the new location.
-                userState.locationUpdated(lat, lon);
+                userState.locationUpdated(lat, lon, "templocation");
                 // Signify to the database that the location has changed and song priorities need
                 // to be recalculated.
                 songDB.userStateChanged();
