@@ -1,18 +1,7 @@
 package com.cse110.flashbackmusicplayer;
 
-import android.Manifest;
-import android.content.ContentResolver;
-import android.content.pm.PackageManager;
-import android.content.res.AssetFileDescriptor;
-import android.database.Cursor;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.security.keystore.KeyPermanentlyInvalidatedException;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,6 +17,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    // we should eliminate this, use vv
+    // String selectedFromList = (lv.getItemAtPosition(position));
     List<String> songsList;
 
     ListView songsView;
@@ -61,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
                     mediaPlayer.release();
                 }
 
+                // remove first parameter call, use line below instead
+                // String selectedFromList = (lv.getItemAtPosition(position));
                 int resID = getResources().getIdentifier(songsList.get(i), "raw", getPackageName());
 
                 mediaPlayer = MediaPlayer.create(MainActivity.this, resID);
