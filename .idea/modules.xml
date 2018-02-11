@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FlashbackMusicPlayer.iml" filepath="$PROJECT_DIR$/FlashbackMusicPlayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/cse-110-team-project-team-7.iml" filepath="$PROJECT_DIR$/.idea/cse-110-team-project-team-7.iml" />
     </modules>
   </component>
 </project>
