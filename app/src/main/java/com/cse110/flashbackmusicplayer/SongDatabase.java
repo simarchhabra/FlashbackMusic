@@ -84,9 +84,10 @@ public class SongDatabase {
         queue.poll();
     }
 
+    // TODO: causing error, commented out to work on UI
     // Gets a song from songs using name as key. Probably just do a linear search.
     // Used during regular mode, when user chooses a song to play.
-    public Song get(String name) {
+    /*public Song get(String name) {
         // Go through all the songs in the queue and check if any matc
         for (Song song : queue) {
             if (song.getName().equals(name))
@@ -94,6 +95,6 @@ public class SongDatabase {
         }
 
         return null;
-    }
+    }*/
 
 }
