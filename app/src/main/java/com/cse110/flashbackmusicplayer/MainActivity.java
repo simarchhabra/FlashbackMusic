@@ -1,6 +1,7 @@
 package com.cse110.flashbackmusicplayer;
 
-
+import android.content.Intent;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.Manifest;
 import android.content.Context;
@@ -27,7 +28,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    // we should eliminate this, use vv
+    // TODO: we should eliminate this, use:
     // String selectedFromList = (lv.getItemAtPosition(position));
     List<String> songsList;
 
@@ -37,9 +38,11 @@ public class MainActivity extends AppCompatActivity {
 
     MediaPlayer mediaPlayer;
 
+    // TODO: causing error, commented out to work on UI
     // All of the information associated with the user.
-    UserState userState = null;
+    //UserState userState = null;
 
+    // TODO: causing error, commented out to work on UI
     // A database of all the songs that are stored in the res folder.
     SongDatabase songDB = null;
 
@@ -47,17 +50,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.content_main);
 
 
         songsView = (ListView) findViewById(R.id.songsView);
 
         songsList = new ArrayList<>();
 
+        String songTitle;
+        String albumName;
+
+        // TODO: extract metadata
+       //MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+       //mmr.setDataSource("/Users/vale_g/AndroidStudioProjects/cse-110-team-project-team-7/app/src/main/res/raw");
+
         Field[] fields = R.raw.class.getFields();
         for (int i = 0; i < fields.length; i++) {
             songsList.add(fields[i].getName());
+
+            // TODO: metadata
+            //songTitle = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            //albumName = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+            //songsList.add(songTitle);
         }
+
 
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, songsList);
@@ -77,21 +93,46 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer = MediaPlayer.create(MainActivity.this, resID);
 
                 mediaPlayer.start();
+
+                // switching display to current track display
+                launchTrackDisplay();
             }
         });
+
+        /* Trash. Attempting to enable play and pause while on current track display.
+        if(mediaPlayer.isPlaying()){
+            mediaPlayer.pause();
+            finish();
+        }
+        else{
+            mediaPlayer.start();
+            finish();
+        }*/
     }
+
+    /**
+     * Method to switch display from tracks/albums display to current track display
+     */
+    public void launchTrackDisplay(){
+        Intent intent = new Intent(this, CurrentTrackDisplay.class);
+        startActivity(intent);
+    }
+
 
 
         // Create the user.
-        userState = new UserState();
+        UserState userState = new UserState();
 
+        // TODO: causing error, commented out to work on UI
         // Create a database of songs and populate it.
-        songDB = new SongDatabase(userState);
-        populateSongs(); // TODO: actually make this method work. It's just skeleton code atm.
+        // Song songDB = new SongDatabase(userState);
+        // TODO: actually make this method work. It's just skeleton code atm.
+        //populateSongs();
 
+        // TODO: method call causing error. Is not implemented?
         // Create a location listener and make it update user state on change.
-        setUpLocation();
-    }
+       // setUpLocation();
+    //}
 
     private void setUpLocation() {
         // Record the user's location whenever it changes.
