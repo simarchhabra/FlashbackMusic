@@ -89,7 +89,7 @@ public class SongDatabase {
     public Song get(String name) {
         // Go through all the songs in the queue and check if any matc
         for (Song song : queue) {
-            if (song.getName().equals(name))
+            if (song.getTitle().equals(name))
                 return song;
         }
 

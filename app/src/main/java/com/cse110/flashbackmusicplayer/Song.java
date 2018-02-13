@@ -111,4 +111,7 @@ public class Song {
     public String getDate() { return date; }
     public String getPlace() { return place; }
 
+    public String getTitle() { return title; }
+    public String getAlbum() { return album; }
+    public String getArtist() { return artist; }
 }

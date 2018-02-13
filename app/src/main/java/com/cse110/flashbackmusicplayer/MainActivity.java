@@ -3,6 +3,8 @@ package com.cse110.flashbackmusicplayer;
 
 import android.media.MediaPlayer;
 import android.Manifest;
+import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -16,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -49,6 +52,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Button launchFlashbackActivity = (Button) findViewById(R.id.switchMode);
+        launchFlashbackActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchActivity();
+            }
+        });
 
         songsView = (ListView) findViewById(R.id.songsView);
 
@@ -58,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < fields.length; i++) {
             songsList.add(fields[i].getName());
         }
-
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, songsList);
         songsView.setAdapter(adapter);
@@ -79,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.start();
             }
         });
-    }
-
 
         // Create the user.
         userState = new UserState();
@@ -92,6 +99,14 @@ public class MainActivity extends AppCompatActivity {
         // Create a location listener and make it update user state on change.
         setUpLocation();
     }
+
+    public void launchActivity() {
+        Intent intent = new Intent(this, FlashbackActivity.class);
+        startActivity(intent);
+    }
+
+
+
 
     private void setUpLocation() {
         // Record the user's location whenever it changes.
