@@ -62,4 +62,8 @@ public class UserState {
         int seconds = calendar.get(Calendar.SECOND);
         return "" + hours + ":" + minutes + ":" + seconds;
     }
+
+    public long getSystemTime() {
+        return System.currentTimeMillis();
+    }
 }
