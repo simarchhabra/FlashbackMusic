@@ -12,9 +12,10 @@
         android:id="@+id/songTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="164dp"
-        android:layout_marginTop="16dp"
-        android:text="songtitle"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="350dp"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,9 +23,9 @@
         android:id="@+id/songAlbum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="156dp"
-        android:layout_marginTop="8dp"
-        android:text="songAlbum"
+        android:layout_marginStart="100dp"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/songTitle" />
 
@@ -34,7 +35,6 @@
         android:layout_height="45dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
-
         android:text="Back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -44,20 +44,19 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginStart="164dp"
-        android:layout_marginTop="384dp"
+        android:layout_marginTop="470dp"
         android:background="@drawable/pause"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
     <ImageView
-        android:id="@+id/noCover"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="72dp"
-        android:src="@drawable/nocover"
-
+        android:id="@+id/album_cover"
+        android:contentDescription="@string/desc"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="90dp"
+        android:layout_marginTop="100dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
