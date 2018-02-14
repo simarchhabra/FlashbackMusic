@@ -59,7 +59,7 @@ public class Song {
         place = state.getPlace();
         systemTime = state.getSystemTime();
     }
-
+    public String getName() {return title;}
     public String getTime() { return time; }
     public String getDate() { return date; }
     public String getPlace() { return place; }

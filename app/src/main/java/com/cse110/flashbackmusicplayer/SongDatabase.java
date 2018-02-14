@@ -89,6 +89,7 @@ public class SongDatabase {
         return flashbackList.isEmpty() || calculatePriority(flashbackList.peek()) == 0;
     }
 
+
     // Gets a song from songs using name as key. Probably just do a linear search.
     // Used during regular mode, when user chooses a song to play.
     public Song get(String name) {
