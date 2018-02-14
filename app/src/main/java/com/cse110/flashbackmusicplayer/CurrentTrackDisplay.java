@@ -15,36 +15,36 @@ import android.media.MediaPlayer;
 
 import org.w3c.dom.Text;
 
+import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
+import static com.cse110.flashbackmusicplayer.MainActivity.userState;
+
 public class CurrentTrackDisplay extends AppCompatActivity {
 
     MediaPlayer mediaPlayer;
-    Button switchScreen;
-    Button pauseButton;
     boolean pauseDisplayed = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_current_track_display);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        // access metadata
-        String[] metadata = getIntent().getStringArrayExtra("METADATA");
+        // Get the name of the song we are playing.
+        String name = getIntent().getExtras().getString("NAME");
+        Song song = songDB.get(name);
 
         // access and display title, artist metadata
         TextView songTitle = (TextView) findViewById(R.id.songTitle);
-        String songTitleStr= metadata[0] + "\n" + metadata[2];
+        String songTitleStr= song.getTitle() + "\n" + song.getArtist();
         songTitle.setText(songTitleStr);
 
         // access and display album, track number metadata
         TextView songAlbum = (TextView) findViewById(R.id.songAlbum);
-        String songAlbumStr = metadata[1] + "\nTrack #: " + metadata[3];
+        String songAlbumStr = song.getAlbum() + "\nTrack #: " + song.getTrackNumber();
         songAlbum.setText(songAlbumStr);
 
         // create image for album cover
         ImageView albumcover = (ImageView) findViewById(R.id.album_cover);
-        byte[] albumArtData = getIntent().getByteArrayExtra("ALBUM_ART");
+        byte[] albumArtData = song.getAlbumCover();
         if (albumArtData != null) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(albumArtData, 0, albumArtData.length);
             albumcover.setImageBitmap(bitmap);
@@ -55,12 +55,10 @@ public class CurrentTrackDisplay extends AppCompatActivity {
             albumcover.setAdjustViewBounds(true);
         }
 
-        switchScreen = (Button) findViewById(R.id.backButton);
-        pauseButton = (Button) findViewById(R.id.pauseButton);
-
         // call media player
-        launchInit();
+        launchInit(song);
 
+        final Button pauseButton = (Button) findViewById(R.id.pauseButton);
         pauseButton.setOnClickListener(
                 new View.OnClickListener(){
                     @Override
@@ -78,7 +76,7 @@ public class CurrentTrackDisplay extends AppCompatActivity {
                 }
         );
 
-
+        final Button switchScreen = (Button) findViewById(R.id.backButton);
         switchScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,8 +92,9 @@ public class CurrentTrackDisplay extends AppCompatActivity {
     /**
      * Method for launching playback
      */
-    public void launchInit() {
-        int resID = getIntent().getIntExtra("RES_ID", 0);
+    public void launchInit(Song song) {
+        int resID = getResources().getIdentifier(song.getFilename(), "raw", getPackageName());
+        song.startedPlaying(userState);
         mediaPlayer = MediaPlayer.create(CurrentTrackDisplay.this, resID);
         mediaPlayer.start();
     }
