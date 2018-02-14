@@ -4,4 +4,5 @@
     <string name="title_activity_current_track_display">CurrentTrackDisplay</string>
     <string name="title_activity_flashback">FlashbackActivity</string>
     <string name="desc">CoverImage</string>
+    <string name="title_activity_album">AlbumActivity</string>
 </resources>

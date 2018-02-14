@@ -111,6 +111,10 @@ public class SongDatabase {
         return null;
     }
 
+    public ArrayList<Song> getAllSongs()
+    {
+        return songs;
+    }
     /**
      * Calculates the priority of this song using the current state of the user
      * @return How likely this song is to be played.

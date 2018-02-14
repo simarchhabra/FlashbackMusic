@@ -30,10 +30,14 @@
         <activity
             android:name=".CurrentTrackDisplay"
             android:label="@string/title_activity_current_track_display"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FlashbackActivity"
             android:label="@string/title_activity_flashback"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AlbumActivity"
+            android:label="@string/title_activity_album"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
