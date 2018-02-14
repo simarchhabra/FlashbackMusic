@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -29,13 +30,21 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
+
+    // A database of all the songs that are stored in the res folder.
+    static SongDatabase songDB = null;
+
+    // All of the information associated with the user.
+    static UserState userState = null;
+
+    // The object that plays the music.
+    MediaPlayer mediaPlayer;
 
     List<String> songsList;
     List<String> songTitles;
@@ -46,17 +55,13 @@ public class MainActivity extends AppCompatActivity {
 
     ListAdapter adapter;
 
-    // TODO: causing error, commented out to work on UI
-    // All of the information associated with the user.
-    //UserState userState = null;
-
-    SongDatabase songDB = null;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_main);
+        setContentView(R.layout.activity_main);
+
+        // Create the user.
+        userState = new UserState();
 
         //metadata
         String songTitle;
@@ -64,6 +69,13 @@ public class MainActivity extends AppCompatActivity {
         String artist;
         String track_num;
         byte[] album_art;
+
+
+        // Create a database of songs and populate it.
+        songDB = new SongDatabase(userState);
+
+        // Create a location listener and make it update user state on change.
+        setUpLocation();
 
         songsView = (ListView) findViewById(R.id.songsView);
         songsList = new ArrayList<>();
@@ -107,12 +119,41 @@ public class MainActivity extends AppCompatActivity {
                 songsAlbumArt.add(null);
             }
         }
+        // Create a location listener and make it update user state on change.
+        setUpLocation();
+
+        // If the flashback button is pressed, open the flashback activity.
+        Button launchFlashbackActivity = (Button) findViewById(R.id.switchMode);
+        launchFlashbackActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Stop the current song from playing.
+                if (mediaPlayer != null) {
+                    mediaPlayer.release();
+                }
+                // Open the flashback mode.
+                Intent intent = new Intent(MainActivity.this, FlashbackActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, songTitles);
+        // Upload all of the songs from the raw folder.
+        ListView songsView = (ListView) findViewById(R.id.songsView);
+        ArrayList<String> songNames = new ArrayList<>();
+        for (Field field : R.raw.class.getFields()) {
+            // Add each song in the folder to the database.
+            Song song = new Song(field.getName(), "temp", "temp", 0);
+            songNames.add(field.getName());
+            // Record the name of the song so that we can display it on the screen.
+            songDB.insert(song);
+        }
+        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, songNames);
         songsView.setAdapter(adapter);
 
+        // Play the song whenever it's name is placed on the list.
         songsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
@@ -123,10 +164,20 @@ public class MainActivity extends AppCompatActivity {
                 byte[] album_art = null;
                 if (songsAlbumArt.get(pos) != null) {
                     album_art = songsAlbumArt.get(pos).toByteArray();
+            public void onItemClick(AdapterView<?> adapterView, View view, int index, long l) {
+                if (mediaPlayer != null) {
+                    mediaPlayer.release();
                 }
 
                 // switching display to current track display
                 launchTrackDisplay(resID, name, specificSongData, album_art);
+                String name = adapterView.getItemAtPosition(index).toString();
+                Song song = songDB.get(name);
+                song.startedPlaying(userState);
+                int resID = getResources().getIdentifier(name, "raw", getPackageName());
+
+                mediaPlayer = MediaPlayer.create(MainActivity.this, resID);
+                mediaPlayer.start();
             }
         });
 
@@ -145,21 +196,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
-
-        // Create the user.
-        UserState userState = new UserState();
-
-        // TODO: causing error, commented out to work on UI
-        // Create a database of songs and populate it.
-        // Song songDB = new SongDatabase(userState);
-        // TODO: actually make this method work. It's just skeleton code atm.
-        //populateSongs();
-
-        // TODO: method call causing error. Is not implemented?
-        // Create a location listener and make it update user state on change.
-       // setUpLocation();
-    //}
 
     private void setUpLocation() {
         // Record the user's location whenever it changes.
@@ -203,7 +239,5 @@ public class MainActivity extends AppCompatActivity {
         String locationProvider = LocationManager.GPS_PROVIDER;
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
     }
-
-    private void populateSongs() {}
 
 }
