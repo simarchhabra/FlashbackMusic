@@ -8,9 +8,9 @@ import java.util.Calendar;
 public class Song {
 
     // The data defining this song.
-    private String title, album, artist;
+    private String filename, title, album, artist, trackNumber;
     // The track in the album.
-    private int trackNumber;
+    private byte[] albumCover;
 
     // Optional metadata
     private String genre = "";
@@ -28,16 +28,20 @@ public class Song {
     private boolean[] timeSegments = new boolean[TimeSegment.numSegments];
     private ArrayList<Location> locations = new ArrayList<>();
     
-    public Song(String title, String album, String artist, int trackNumber) {
+    public Song(String filename, String title, String album, String artist, String trackNumber,
+                byte[] albumCover) {
+        this.filename = filename;
         this.title = title;
         this.album = album;
         this.artist = artist;
         this.trackNumber = trackNumber;
+        this.albumCover = albumCover;
     }
 
-    public Song(String title, String album, String artist, int trackNumber,
-            String genre, String comments, int year)
+    public Song(String filename, String title, String album, String artist, String trackNumber,
+            String genre, String comments, int year, byte[] albumCover)
     {
+        this.filename = filename;
         this.title = title;
         this.album = album;
         this.artist = artist;
@@ -45,6 +49,7 @@ public class Song {
         this.genre = genre;
         this.comments = comments;
         this.year = year;
+        this.albumCover = albumCover;
     }
 
     public void startedPlaying(UserState state) {
@@ -59,7 +64,7 @@ public class Song {
         place = state.getPlace();
         systemTime = state.getSystemTime();
     }
-    public String getName() {return title;}
+
     public String getTime() { return time; }
     public String getDate() { return date; }
     public String getPlace() { return place; }
@@ -72,4 +77,16 @@ public class Song {
     public String getTitle() { return title; }
     public String getAlbum() { return album; }
     public String getArtist() { return artist; }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public String getTrackNumber() {
+        return trackNumber;
+    }
+
+    public byte[] getAlbumCover() {
+        return albumCover;
+    }
 }

@@ -15,8 +15,10 @@ public class SongDatabase {
     // The information associated with the user.
     private UserState userState = null;
 
-    // When set to true, signifies that the user state has changed and heap needs to be updated.
-    private boolean hasStateChanged = false;
+    // The state of the user, last time songDatabase was updated.
+    private int dayOfTheWeek;
+    private TimeSegment timeSegment;
+    private Location location;
 
     // The array that stores all the loaded songs.
     private ArrayList<Song> songs;
@@ -26,6 +28,11 @@ public class SongDatabase {
     public SongDatabase(UserState userState) {
         // Store a reference to user state to use it in the future.
         this.userState = userState;
+        // Cache the state of the user for future reference.
+        this.dayOfTheWeek = userState.getDayOfWeek();
+        this.timeSegment = userState.getTimeSegment();
+        this.location = userState.getLocation();
+
         // Creates an array and a max heap that will store all the songs.
         this.songs = new ArrayList<>();
         this.flashbackList = new PriorityQueue<>(50, new SongComparator());
@@ -52,22 +59,23 @@ public class SongDatabase {
         }
     }
 
-    public void userStateChanged() {
-        hasStateChanged = true;
-    }
-
     public boolean hasStateChanged() {
-        return hasStateChanged;
+        // Compared the cached state with the actual one.
+        return userState.getTimeSegment() != timeSegment ||
+                userState.getLocation().equals(location) ||
+                userState.getDayOfWeek() != dayOfTheWeek;
     }
 
     // Creates a list of songs ordered by priority.
     public void generateFlashbackList() {
+        // Cache the state of the user for future reference.
+        dayOfTheWeek = userState.getDayOfWeek();
+        timeSegment = userState.getTimeSegment();
+        location = userState.getLocation();
+
         // Get rid of all the elements in the heap and re-add them with new priorities.
         flashbackList.clear();
         flashbackList.addAll(songs);
-
-        // The heap is now up to date with the user state.
-        hasStateChanged = false;
     }
 
     // Adds an element to the list of songs.
@@ -86,6 +94,7 @@ public class SongDatabase {
     }
 
     public boolean isEmpty() {
+        // If there is nothing left in the queue, or if the priority of all elements is 0.
         return flashbackList.isEmpty() || calculatePriority(flashbackList.peek()) == 0;
     }
 
@@ -110,13 +119,12 @@ public class SongDatabase {
         int priority = 0;
 
         // Check if the current user location is near one where this song was played.
-        Location userLoc = userState.getLocation();
-        for (Location location : song.getLocations()) {
+        for (Location songLocation : song.getLocations()) {
             // Get the location of the two points we are finding the distance between.
-            double lat1 = location.getLatitude();
-            double long1 = location.getLongitude();
-            double lat2 = userLoc.getLatitude();
-            double long2 = userLoc.getLongitude();
+            double lat1 = songLocation.getLatitude();
+            double long1 = songLocation.getLongitude();
+            double lat2 = location.getLatitude();
+            double long2 = location.getLongitude();
 
             double theta = long1 - long2;
             double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2))
@@ -135,10 +143,10 @@ public class SongDatabase {
         }
 
         // If this song was played on the same day of the week, increase priority.
-        if (song.getDaysOfWeek()[userState.getDayOfWeek() - 1]) priority++;
+        if (song.getDaysOfWeek()[dayOfTheWeek - 1]) priority++;
 
         // If this song was played in the same time segment, increase priority.
-        if (song.getTimeSegments()[userState.getTimeSegment().getIndex()]) priority++;
+        if (song.getTimeSegments()[timeSegment.getIndex()]) priority++;
 
         return priority;
     }

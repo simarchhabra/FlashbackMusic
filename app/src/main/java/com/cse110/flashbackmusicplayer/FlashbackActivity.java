@@ -53,7 +53,7 @@ public class FlashbackActivity extends AppCompatActivity {
 
         // Get the very first song that we will play.
         Song next = songDB.top(); songDB.pop();
-        int resID = getResources().getIdentifier(next.getTitle(), "raw", getPackageName());
+        int resID = getResources().getIdentifier(next.getFilename(), "raw", getPackageName());
         mediaPlayer = MediaPlayer.create(FlashbackActivity.this, resID);
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
