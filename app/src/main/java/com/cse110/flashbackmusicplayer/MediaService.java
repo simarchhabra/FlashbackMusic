@@ -109,11 +109,9 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (player != null) {
-            if (player.isPlaying()) {
-                player.stop();
-                player.release();
-            }
+        if (player != null && player.isPlaying()) {
+            player.stop();
+            player.release();
         }
     }
 }
