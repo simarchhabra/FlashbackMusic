@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     // List of the names of the songs in res/raw/
     List<String> songTitles = new ArrayList<>();
 
+    public List<String> albums = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         // For every single file in the res/raw folder...
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         ListView songsView = (ListView) findViewById(R.id.songsView);
+        ListView albumsView = (ListView) findViewById(R.id.albumsView);
+        Button albumButton = (Button) findViewById(R.id.albumsDisplayButton);
         Field[] fields = R.raw.class.getFields();
         for (Field field : fields) {
             String filename = field.getName();
@@ -69,7 +73,20 @@ public class MainActivity extends AppCompatActivity {
             String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             String track_num = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER);
             byte[] album_art = mmr.getEmbeddedPicture();
+            int albumIteration = 0;
+            boolean albumIsPresent = false;
+            while((albumIteration<albums.size())&&!albums.isEmpty()&& albumIsPresent == false) {
+                if(albums.get(albumIteration).equals(albumName))
+                {
+                    albumIsPresent = true;
+                }
+                albumIteration++;
+            }
 
+            if(albumIsPresent == false)
+            {
+                albums.add(albumName);
+            }
             // Create the song object from the metadata, and insert it into the database.
             Song song = new Song(filename, songTitle, albumName, artist, track_num, album_art);
             songDB.insert(song);
@@ -77,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
         // Display the songs list on the screen.
         ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, songTitles);
         songsView.setAdapter(adapter);
+
+
 
         // If the flashback button is pressed, open the flashback activity.
         Button launchFlashbackActivity = (Button) findViewById(R.id.switchMode);
@@ -89,6 +108,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
+        albumButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         // Play the song whenever it's name is placed on the list.
         songsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
