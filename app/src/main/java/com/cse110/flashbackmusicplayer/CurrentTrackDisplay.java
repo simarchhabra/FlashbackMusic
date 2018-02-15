@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -22,6 +23,8 @@ public class CurrentTrackDisplay extends AppCompatActivity {
 
     MediaPlayer mediaPlayer;
     boolean pauseDisplayed = true;
+    boolean isPlaying = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +58,6 @@ public class CurrentTrackDisplay extends AppCompatActivity {
             albumcover.setAdjustViewBounds(true);
         }
 
-        // call media player
-        startPlaying(song);
-
         final Button pauseButton = (Button) findViewById(R.id.pauseButton);
         pauseButton.setOnClickListener(
                 new View.OnClickListener(){
@@ -80,37 +80,27 @@ public class CurrentTrackDisplay extends AppCompatActivity {
         switchScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mediaPlayer != null) {
-                    mediaPlayer.release();
-                }
                 finish();
             }
         });
 
     }
 
-    /**
-     * Method for launching playback
-     */
-    public void startPlaying(Song song) {
-        int resID = getResources().getIdentifier(song.getFilename(), "raw", getPackageName());
-        song.startedPlaying(userState);
-
-        if (mediaPlayer != null) mediaPlayer.release();
-        mediaPlayer = MediaPlayer.create(CurrentTrackDisplay.this, resID);
-        mediaPlayer.start();
-    }
 
     /**
      * Method to enable play and pause
      */
     public void launchPlayPause(){
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
+        Intent serviceIntent = new Intent(CurrentTrackDisplay.this, MediaService.class);
+        if (isPlaying) {
+            serviceIntent.setAction("PAUSE");
+            isPlaying = false;
         }
         else {
-            mediaPlayer.start();
+            serviceIntent.setAction("PLAY");
+            isPlaying = true;
         }
+        startService(serviceIntent);
     }
 
 }

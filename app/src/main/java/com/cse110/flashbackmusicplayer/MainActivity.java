@@ -1,6 +1,9 @@
 package com.cse110.flashbackmusicplayer;
 
+import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaMetadataRetriever;
 import android.Manifest;
 import android.content.Context;
@@ -10,10 +13,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.net.Uri;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,6 +28,7 @@ import android.widget.ListView;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -45,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
         // Create a location listener and make it update user state on change.
         setUpLocation();
 
-        // List of all the song filenames in res/raw.
-        List<String> songsList = new ArrayList<>();
         // List of the names of the songs in res/raw/
         List<String> songTitles = new ArrayList<>();
         // List of all the albums in res/raw
@@ -58,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         for (Field field : fields) {
             // Get the name of the song file.
             String filename = field.getName();
-            songsList.add(filename);
 
             // Get the metadata from the song.
             Uri source = Uri.parse("android.resource://" + getPackageName() + "/raw/" + filename);
@@ -126,11 +129,41 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
                 // Get the name of the song to play.
-                String name = adapterView.getItemAtPosition(pos).toString();
-                Intent intent = new Intent(MainActivity.this, CurrentTrackDisplay.class);
-                intent.putExtra("NAME", name);
-                // Open a new activity, where the song will play.
-                startActivity(intent);
+                String[] playing = new String[1];
+                String toPlay = adapterView.getItemAtPosition(pos).toString();
+                // create an intent for MediaService
+                Intent serviceIntent = new Intent(MainActivity.this, MediaService.class);
+                // Create a receiver to store the name of the current song being played
+                BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        playing[0] = intent.getStringExtra("SONG_NAME");
+                    }
+                };
+                registerReceiver(broadcastReceiver, new IntentFilter(MediaService.ACTION_BROADCAST));
+
+                // if song is already playing and a different one chosen, stop playback and create
+                // new service for playback
+                if (checkSongPlaying(playing[0], toPlay) == ServicePlaybackState.DIFF_SONG) {
+                    unregisterReceiver(broadcastReceiver);
+                    stopService(serviceIntent);
+                    serviceIntent = new Intent(MainActivity.this, MediaService.class);
+                    serviceIntent.setAction("START");
+                    serviceIntent.putExtra("NAME", toPlay);
+                    startService(serviceIntent);
+                }
+                // if no song is currently being played, start new service for playback
+                else if (checkSongPlaying(playing[0], toPlay) == ServicePlaybackState.NO_SONG){
+                    serviceIntent = new Intent(MainActivity.this, MediaService.class);
+                    serviceIntent.setAction("START");
+                    serviceIntent.putExtra("NAME", toPlay);
+                    startService(serviceIntent);
+                }
+
+                Intent currIntent = new Intent(MainActivity.this, CurrentTrackDisplay.class);
+                currIntent.putExtra("NAME", toPlay);
+                // Open a new activity for displaying song metadata and addressing user functionality
+                startActivity(currIntent);
             }
         });
 
@@ -146,6 +179,27 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+    // Enum for possible states of song playback
+    private enum ServicePlaybackState{
+        NO_SONG, SAME_SONG, DIFF_SONG
+    };
+
+    /**
+     * Determines if the user-clicked song is the same as the one already playing or if no
+     * song is currently playing
+     */
+    private ServicePlaybackState checkSongPlaying(String playing, String toPlay) {
+        Log.d("Check", "Goes in function checkSongPlaying");
+        if (playing != null) {
+            Log.d("Access", "Knows current Song playing");
+            if (playing.equals(toPlay)) {
+                return ServicePlaybackState.SAME_SONG;
+            }
+            return ServicePlaybackState.DIFF_SONG;
+        }
+        Log.d("Access", "Does not know current song playing");
+        return ServicePlaybackState.NO_SONG;
     }
 
     private void setUpLocation() {
