@@ -56,7 +56,7 @@ public class CurrentTrackDisplay extends AppCompatActivity {
         }
 
         // call media player
-        launchInit(song);
+        startPlaying(song);
 
         final Button pauseButton = (Button) findViewById(R.id.pauseButton);
         pauseButton.setOnClickListener(
@@ -92,9 +92,11 @@ public class CurrentTrackDisplay extends AppCompatActivity {
     /**
      * Method for launching playback
      */
-    public void launchInit(Song song) {
+    public void startPlaying(Song song) {
         int resID = getResources().getIdentifier(song.getFilename(), "raw", getPackageName());
         song.startedPlaying(userState);
+
+        if (mediaPlayer != null) mediaPlayer.release();
         mediaPlayer = MediaPlayer.create(CurrentTrackDisplay.this, resID);
         mediaPlayer.start();
     }

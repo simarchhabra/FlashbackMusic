@@ -33,13 +33,6 @@ public class MainActivity extends AppCompatActivity {
     // All of the information associated with the user.
     static UserState userState = null;
 
-    // List of all the song filenames in res/raw.
-    List<String> songsList = new ArrayList<>();
-    // List of the names of the songs in res/raw/
-    List<String> songTitles = new ArrayList<>();
-
-    public List<String> albums = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,13 +45,18 @@ public class MainActivity extends AppCompatActivity {
         // Create a location listener and make it update user state on change.
         setUpLocation();
 
+        // List of all the song filenames in res/raw.
+        List<String> songsList = new ArrayList<>();
+        // List of the names of the songs in res/raw/
+        List<String> songTitles = new ArrayList<>();
+        // List of all the albums in res/raw
+        List<String> albumsList = new ArrayList<>();
+
         // For every single file in the res/raw folder...
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        ListView songsView = (ListView) findViewById(R.id.songsView);
-        ListView albumsView = (ListView) findViewById(R.id.albumsView);
-        Button albumButton = (Button) findViewById(R.id.albumsDisplayButton);
         Field[] fields = R.raw.class.getFields();
         for (Field field : fields) {
+            // Get the name of the song file.
             String filename = field.getName();
             songsList.add(filename);
 
@@ -73,29 +71,24 @@ public class MainActivity extends AppCompatActivity {
             String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             String track_num = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER);
             byte[] album_art = mmr.getEmbeddedPicture();
-            int albumIteration = 0;
-            boolean albumIsPresent = false;
-            while((albumIteration<albums.size())&&!albums.isEmpty()&& albumIsPresent == false) {
-                if(albums.get(albumIteration).equals(albumName))
-                {
-                    albumIsPresent = true;
-                }
-                albumIteration++;
-            }
 
-            if(albumIsPresent == false)
-            {
-                albums.add(albumName);
-            }
+            // Add this song's album to the albums listview if it doesn't already exist.
+            if (!albumsList.contains(albumName)) albumsList.add(albumName);
+
             // Create the song object from the metadata, and insert it into the database.
             Song song = new Song(filename, songTitle, albumName, artist, track_num, album_art);
             songDB.insert(song);
         }
+
         // Display the songs list on the screen.
-        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, songTitles);
-        songsView.setAdapter(adapter);
+        ListAdapter songAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, songTitles);
+        final ListView songsView = (ListView) findViewById(R.id.songsView);
+        songsView.setAdapter(songAdapter);
 
-
+        // Display the album list on the screen.
+        ListAdapter albumAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, albumsList);
+        final ListView albumsView = (ListView) findViewById(R.id.albumsView);
+        albumsView.setAdapter(albumAdapter);
 
         // If the flashback button is pressed, open the flashback activity.
         Button launchFlashbackActivity = (Button) findViewById(R.id.switchMode);
@@ -108,14 +101,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
+        Button albumButton = (Button) findViewById(R.id.albumsDisplayButton);
         albumButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                // Hide the track listview and unhide the album listview.
+                songsView.setVisibility(View.GONE);
+                albumsView.setVisibility(View.VISIBLE);
             }
         });
+
+        Button tracksButton = (Button) findViewById(R.id.tracksDisplayButton);
+        tracksButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Unhide the track listview and hide the album listview.
+                albumsView.setVisibility(View.GONE);
+                songsView.setVisibility(View.VISIBLE);
+            }
+        });
+
         // Play the song whenever it's name is placed on the list.
         songsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -123,6 +128,19 @@ public class MainActivity extends AppCompatActivity {
                 // Get the name of the song to play.
                 String name = adapterView.getItemAtPosition(pos).toString();
                 Intent intent = new Intent(MainActivity.this, CurrentTrackDisplay.class);
+                intent.putExtra("NAME", name);
+                // Open a new activity, where the song will play.
+                startActivity(intent);
+            }
+        });
+
+        // Play the songs in this album.
+        albumsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
+                // Get the name of the song to play.
+                String name = adapterView.getItemAtPosition(pos).toString();
+                Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
                 intent.putExtra("NAME", name);
                 // Open a new activity, where the song will play.
                 startActivity(intent);
