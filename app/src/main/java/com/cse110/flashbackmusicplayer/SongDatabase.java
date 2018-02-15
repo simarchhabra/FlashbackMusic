@@ -25,6 +25,7 @@ public class SongDatabase {
     // The max heap is generated when the user enters flashback mode and needs to play a song.
     private PriorityQueue<Song> flashbackList;
 
+
     public SongDatabase(UserState userState) {
         // Store a reference to user state to use it in the future.
         this.userState = userState;
@@ -111,6 +112,10 @@ public class SongDatabase {
         return null;
     }
 
+    public ArrayList<Song> getAllSongs()
+    {
+        return songs;
+    }
     /**
      * Calculates the priority of this song using the current state of the user
      * @return How likely this song is to be played.
