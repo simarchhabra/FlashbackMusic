@@ -17,6 +17,10 @@ public class Song {
     private String comments = "";
     private int year = 0;
 
+    // Whether the song was favorited or disliked. Should not both be true at the same time.
+    private boolean favorited = false;
+    private boolean disliked = false;
+
     // Last time, date, and place this song was played.
     private long systemTime = 0;
     private String time = "";
@@ -78,15 +82,13 @@ public class Song {
     public String getAlbum() { return album; }
     public String getArtist() { return artist; }
 
-    public String getFilename() {
-        return filename;
-    }
+    public String getFilename() { return filename; }
+    public String getTrackNumber() { return trackNumber; }
+    public byte[] getAlbumCover() { return albumCover; }
 
-    public String getTrackNumber() {
-        return trackNumber;
-    }
+    public boolean isFavorited() { return favorited; }
+    public void setFavorited(boolean favorited) { this.favorited = favorited; }
 
-    public byte[] getAlbumCover() {
-        return albumCover;
-    }
+    public boolean isDisliked() { return disliked; }
+    public void setDisliked(boolean disliked) { this.disliked = disliked; }
 }
