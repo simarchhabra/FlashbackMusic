@@ -3,6 +3,7 @@ package com.cse110.flashbackmusicplayer;
 import android.location.Location;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Comparator;
 
@@ -24,6 +25,7 @@ public class SongDatabase {
     private ArrayList<Song> songs;
     // The max heap is generated when the user enters flashback mode and needs to play a song.
     private PriorityQueue<Song> flashbackList;
+
 
     public SongDatabase(UserState userState) {
         // Store a reference to user state to use it in the future.
@@ -98,17 +100,36 @@ public class SongDatabase {
         return flashbackList.isEmpty() || calculatePriority(flashbackList.peek()) == 0;
     }
 
-
     // Gets a song from songs using name as key. Probably just do a linear search.
     // Used during regular mode, when user chooses a song to play.
     public Song get(String name) {
         // Go through all the songs in the queue and check if any match.
         for (Song song : songs) {
-            if (song.getTitle().equals(name))
+            if (song.getTitle().equals(name)) {
                 return song;
+            }
         }
 
         return null;
+    }
+
+    public ArrayList<Song> getAlbum(String albumName) {
+        // Go through all the songs in the queue and check if any album names match.
+        ArrayList<Song> album = new ArrayList<>();
+        for (Song song : songs) {
+            if (song.getAlbum().equals(albumName)) {
+                album.add(song);
+            }
+        }
+        album.sort(new Comparator<Song>() {
+            @Override
+            public int compare(Song s1, Song s2) {
+                int track1 = Integer.parseInt(s1.getTrackNumber().split("/")[0]);
+                int track2 = Integer.parseInt(s2.getTrackNumber().split("/")[0]);
+                return track1 < track2 ? -1 : 1;
+            }
+        });
+        return album;
     }
 
     /**

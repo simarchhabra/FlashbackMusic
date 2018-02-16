@@ -1,39 +1,53 @@
 package com.cse110.flashbackmusicplayer;
 
-
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.cse110.flashbackmusicplayer.MainActivity.musicSystem;
 import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
 import static com.cse110.flashbackmusicplayer.MainActivity.userState;
 
-public class FlashbackActivity extends AppCompatActivity {
+public class AlbumActivity extends AppCompatActivity {
 
-    // In charge of handling all requests to play music.
-    MusicSystem musicSystem = null;
+    ArrayList<Song> songs = null;
+    List<String> trackTitles = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_flashback);
+        setContentView(R.layout.activity_album);
 
-        // Create the system that will play all the music.
-        musicSystem = new MusicSystem(FlashbackActivity.this);
+        // Get the name of the song we are playing.
+        String albumName = getIntent().getExtras().getString("NAME");
+        songs = songDB.getAlbum(albumName);
 
-        // Create the play list.
-        songDB.generateFlashbackList();
-
-        // Play the song with the nighest priority.
+        ArrayList<Song> songs = songDB.getAlbum(albumName);
+        for(int i = 0; i<songs.size();i++)
+        {
+            trackTitles.add(songs.get(i).getTitle());
+        }
+        // Play the song.
         musicSystem.playTracks(this::nextSong);
+
 
         final Button pauseButton = (Button) findViewById(R.id.pauseButton);
         if(musicSystem.isPaused()) {
@@ -53,29 +67,16 @@ public class FlashbackActivity extends AppCompatActivity {
             }
         );
 
-        // Return back to normal mode.
-        Button switchScreen = (Button) findViewById(R.id.switchBack);
+        final Button switchScreen = (Button) findViewById(R.id.backButton);
         switchScreen.setOnClickListener(view -> finish());
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        musicSystem.destroy();
-    }
-
     public Song nextSong() {
-        // If there are no songs in the flashback playlist or the state of the user has changed
-        // since the last time the playlist was generated, attempt to generate it again.
-        if (songDB.isEmpty() || songDB.hasStateChanged()) {
-            songDB.generateFlashbackList();
-
-            // If the list is still empty, then there are no possible songs to play.
-            if (songDB.isEmpty()) return null;
-        }
+        // If there are no songs left to play in the album, finish.
+        if (songs.isEmpty()) return null;
 
         // Get the very first song that we will play.
-        Song next = songDB.top(); songDB.pop();
+        Song next = songs.get(0); songs.remove(0);
 
         // Draw the metadata for the song.
         displaySong(next);
@@ -97,6 +98,9 @@ public class FlashbackActivity extends AppCompatActivity {
         TextView songAlbum = (TextView) findViewById(R.id.songAlbum);
         String songAlbumStr = song.getAlbum() + "\nTrack #: " + song.getTrackNumber();
         songAlbum.setText(songAlbumStr);
+        ListAdapter songAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, trackTitles);
+        final ListView tracksView = (ListView) findViewById(R.id.track_list);
+        tracksView.setAdapter(songAdapter);
 
         // Create image for album cover
         ImageView albumcover = (ImageView) findViewById(R.id.album_cover);
@@ -111,5 +115,4 @@ public class FlashbackActivity extends AppCompatActivity {
             albumcover.setAdjustViewBounds(true);
         }
     }
-
 }
