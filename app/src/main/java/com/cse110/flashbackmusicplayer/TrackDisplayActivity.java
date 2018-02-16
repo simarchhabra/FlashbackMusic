@@ -6,8 +6,12 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import static com.cse110.flashbackmusicplayer.MainActivity.musicSystem;
@@ -53,7 +57,11 @@ public class TrackDisplayActivity extends AppCompatActivity {
     private void displayTrack(Song song) {
         // Access and display title, artist metadata
         TextView songTitle = (TextView) findViewById(R.id.songTitle);
-        String songTitleStr= song.getTitle() + "\n" + song.getArtist();
+        String songTitleStr= song.getTitle();
+        if(song.getArtist()!=null)
+        {
+            songTitleStr = songTitleStr+ "\n"+ song.getArtist();
+        }
         songTitle.setText(songTitleStr);
 
         // access and display album, track number metadata
