@@ -2,7 +2,7 @@ package com.cse110.flashbackmusicplayer;
 
 import android.location.Location;
 
-public class FakeUserState extends UserState {
+public class MockUserState extends UserState {
     // The current up-to-date position of the user and the name of the closest location.
     Location location = new Location("gps");
     String place = "";
@@ -12,7 +12,7 @@ public class FakeUserState extends UserState {
     String time = "";
     long systemTime = 0;
 
-    public FakeUserState() {}
+    public MockUserState() {}
 
     public Location getLocation() { return new Location(location); }
     public String getPlace() { return place; }
