@@ -95,7 +95,11 @@ public class FlashbackActivity extends AppCompatActivity {
     private void displaySong(Song song) {
         // Access and display title, artist metadata
         TextView songTitle = (TextView) findViewById(R.id.songTitle);
-        String songTitleStr= song.getTitle() + "\n" + song.getArtist();
+        String songTitleStr= song.getTitle();
+        if(song.getArtist()!=null)
+        {
+            songTitleStr = songTitleStr+ "\n"+ song.getArtist();
+        }
         songTitle.setText(songTitleStr);
 
         // Access and display album, track number metadata

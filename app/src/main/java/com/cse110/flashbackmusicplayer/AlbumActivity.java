@@ -29,6 +29,7 @@ public class AlbumActivity extends AppCompatActivity {
 
     MediaPlayer mediaPlayer;
     boolean pauseDisplayed = true;
+    List<String> trackTitles = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,10 @@ public class AlbumActivity extends AppCompatActivity {
         // Get the name of the song we are playing.
         String albumName = getIntent().getExtras().getString("NAME");
         ArrayList<Song> songs = songDB.getAlbum(albumName);
-
+        for(int i = 0; i<songs.size();i++)
+        {
+            trackTitles.add(songs.get(i).getTitle());
+        }
         playNextSong(songs);
 
         // Draw all of the songs in this album.
@@ -81,7 +85,7 @@ public class AlbumActivity extends AppCompatActivity {
     /**
      * Method for launching playback
      */
-    public void playNextSong(ArrayList<Song> songs) {
+    public void playNextSong(final ArrayList<Song> songs) {
         // If there are no songs left to play in the album, finish.
         if (songs.isEmpty()) return;
 
@@ -106,13 +110,20 @@ public class AlbumActivity extends AppCompatActivity {
     private void displaySong(Song song) {
         // Access and display title, artist metadata
         TextView songTitle = (TextView) findViewById(R.id.songTitle);
-        String songTitleStr= song.getTitle() + "\n" + song.getArtist();
+        String songTitleStr= song.getTitle();
+        if(song.getArtist()!=null)
+        {
+            songTitleStr = songTitleStr+ "\n"+ song.getArtist();
+        }
         songTitle.setText(songTitleStr);
 
         // Access and display album, track number metadata
         TextView songAlbum = (TextView) findViewById(R.id.songAlbum);
         String songAlbumStr = song.getAlbum() + "\nTrack #: " + song.getTrackNumber();
         songAlbum.setText(songAlbumStr);
+        ListAdapter songAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, trackTitles);
+        final ListView tracksView = (ListView) findViewById(R.id.track_list);
+        tracksView.setAdapter(songAdapter);
 
         // Create image for album cover
         ImageView albumcover = (ImageView) findViewById(R.id.album_cover);

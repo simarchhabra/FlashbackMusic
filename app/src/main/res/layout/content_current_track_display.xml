@@ -35,14 +35,19 @@
 
     <Button
         android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/back"
+        android:typeface="sans"
+        android:gravity="center"
         android:text="Back"
+        android:textColor="@android:color/background_light"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:gravity="center" />
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <Button
         android:id="@+id/pauseButton"
@@ -66,6 +71,16 @@
         app:layout_constraintTop_toTopOf="parent"
         android:gravity="center"
         />
+
+    <Button
+        android:id="@+id/fav_dis_button"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/nuetral"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>
