@@ -22,13 +22,13 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.cse110.flashbackmusicplayer.MainActivity.musicSystem;
 import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
 import static com.cse110.flashbackmusicplayer.MainActivity.userState;
 
 public class AlbumActivity extends AppCompatActivity {
 
-    MediaPlayer mediaPlayer;
-    boolean pauseDisplayed = true;
+    ArrayList<Song> songs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,70 +37,44 @@ public class AlbumActivity extends AppCompatActivity {
 
         // Get the name of the song we are playing.
         String albumName = getIntent().getExtras().getString("NAME");
-        ArrayList<Song> songs = songDB.getAlbum(albumName);
+        songs = songDB.getAlbum(albumName);
 
-        playNextSong(songs);
-
-        // Draw all of the songs in this album.
-        //ArrayList<String> songTitles = new ArrayList<>();
-        //for (Song song : songs) songTitles.add(song.getTitle());
-        //ListAdapter songAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, songTitles);
-        //final ListView songsView = (ListView) findViewById(R.id.songsInAlbum);
-        //songsView.setAdapter(songAdapter);
+        // Play the song.
+        musicSystem.playTracks(this::nextSong);
 
         final Button pauseButton = (Button) findViewById(R.id.pauseButton);
-        pauseButton.setOnClickListener(
-                new View.OnClickListener(){
-                    @Override
-                    public void onClick(View view){
-                        launchPlayPause();
-                        if(pauseDisplayed) {
-                            pauseButton.setBackgroundResource(R.drawable.play);
-                            pauseDisplayed = false;
-                        }
-                        else{
-                            pauseButton.setBackgroundResource(R.drawable.pause);
-                            pauseDisplayed = true;
-                        }
-                    }
+        if(musicSystem.isPaused()) {
+            pauseButton.setBackgroundResource(R.drawable.play);
+        }
+        else{
+            pauseButton.setBackgroundResource(R.drawable.pause);
+        }
+        pauseButton.setOnClickListener( view -> {
+                musicSystem.togglePause();
+                if(musicSystem.isPaused()) {
+                    pauseButton.setBackgroundResource(R.drawable.pause);
                 }
+                else{
+                    pauseButton.setBackgroundResource(R.drawable.play);
+                }
+            }
         );
 
         final Button switchScreen = (Button) findViewById(R.id.backButton);
-        switchScreen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mediaPlayer != null) {
-                    mediaPlayer.release();
-                }
-                finish();
-            }
-        });
+        switchScreen.setOnClickListener(view -> finish());
     }
 
-    /**
-     * Method for launching playback
-     */
-    public void playNextSong(ArrayList<Song> songs) {
+    public Song nextSong() {
         // If there are no songs left to play in the album, finish.
-        if (songs.isEmpty()) return;
+        if (songs.isEmpty()) return null;
 
         // Get the very first song that we will play.
         Song next = songs.get(0); songs.remove(0);
-        int resID = getResources().getIdentifier(next.getFilename(), "raw", getPackageName());
+
+        // Draw the metadata for the song.
         displaySong(next);
 
-        if (mediaPlayer != null) mediaPlayer.release();
-        mediaPlayer = MediaPlayer.create(AlbumActivity.this, resID);
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                playNextSong(songs);
-            }
-        });
-
-        next.startedPlaying(userState);
-        mediaPlayer.start();
+        return next;
     }
 
     private void displaySong(Song song) {
@@ -125,18 +99,6 @@ public class AlbumActivity extends AppCompatActivity {
         else {
             albumcover.setImageResource(R.drawable.nocover);
             albumcover.setAdjustViewBounds(true);
-        }
-    }
-
-    /**
-     * Method to enable play and pause
-     */
-    public void launchPlayPause(){
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-        }
-        else {
-            mediaPlayer.start();
         }
     }
 }

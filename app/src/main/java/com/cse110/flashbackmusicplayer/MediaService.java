@@ -21,9 +21,11 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     private static final String ACTION_PAUSE = "PAUSE";
     // generic broadcast string
     public static final String ACTION_BROADCAST = "BROADCAST";
+    public static final String ACTION_FINISHED = "FINISHED";
 
     // Broadcast intent
     Intent sendSong;
+    Intent finished;
     // song to play
     Song song;
     // actual MediaPlayer instance
@@ -35,13 +37,13 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     public void onCreate() {
         // Create intent
         sendSong = new Intent(ACTION_BROADCAST);
+        finished = new Intent(ACTION_FINISHED);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            // if wanting to create new service, make mediaplayer have same functionality as
-            // MediaPlayer.create() method but make it async instead of synchronous
+            // Create player.
             if (intent.getAction().equals(ACTION_START)) {
                 song = findSong(intent);
                 player = new MediaPlayer();
@@ -57,11 +59,11 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                     e.printStackTrace();
                 }
             }
-            // if wanting to pause, pause media player
+            // Pause player.
             else if (intent.getAction().equals(ACTION_PAUSE)) {
                 player.pause();
             }
-            // otherwise, resume playback
+            // Resume player.
             else if (intent.getAction().equals(ACTION_PLAY)){
                 player.start();
             }
@@ -70,9 +72,12 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             e.printStackTrace();
         }
 
-        // remove any pending posts in queue
+        // Notify the caller of this service when it is complete.
+        player.setOnCompletionListener(mediaPlayer -> sendBroadcast(finished));
+
+        // Remove any pending posts in queue.
         handler.removeCallbacks(sendName);
-        // post to thread
+        // Post to thread.
         handler.post(sendName);
 
         return START_STICKY;
@@ -83,7 +88,8 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         @Override
         public void run() {
             if (song != null) {
-                sendSong.putExtra("SONG_NAME", song.getTitle());
+                sendSong.putExtra("NAME", song.getTitle());
+                sendSong.putExtra("PAUSED", !player.isPlaying() && player.getCurrentPosition() > 1);
                 sendBroadcast(sendSong);
             }
         }

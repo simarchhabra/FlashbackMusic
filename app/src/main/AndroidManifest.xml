@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CurrentTrackDisplay"
+            android:name=".TrackDisplayActivity"
             android:label="@string/title_activity_current_track_display"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
