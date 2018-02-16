@@ -14,11 +14,11 @@ import static org.junit.Assert.*;
 
 public class SongClassTest {
 
-    private FakeUserState state;
+    private MockUserState state;
 
     @Before
     public void init() {
-        state = new FakeUserState();
+        state = new MockUserState();
     }
 
     @Test

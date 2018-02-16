@@ -29,6 +29,7 @@ import static com.cse110.flashbackmusicplayer.MainActivity.userState;
 public class AlbumActivity extends AppCompatActivity {
 
     ArrayList<Song> songs = null;
+    List<String> trackTitles = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +40,14 @@ public class AlbumActivity extends AppCompatActivity {
         String albumName = getIntent().getExtras().getString("NAME");
         songs = songDB.getAlbum(albumName);
 
+        ArrayList<Song> songs = songDB.getAlbum(albumName);
+        for(int i = 0; i<songs.size();i++)
+        {
+            trackTitles.add(songs.get(i).getTitle());
+        }
         // Play the song.
         musicSystem.playTracks(this::nextSong);
+
 
         final Button pauseButton = (Button) findViewById(R.id.pauseButton);
         if(musicSystem.isPaused()) {
@@ -80,13 +87,20 @@ public class AlbumActivity extends AppCompatActivity {
     private void displaySong(Song song) {
         // Access and display title, artist metadata
         TextView songTitle = (TextView) findViewById(R.id.songTitle);
-        String songTitleStr= song.getTitle() + "\n" + song.getArtist();
+        String songTitleStr= song.getTitle();
+        if(song.getArtist()!=null)
+        {
+            songTitleStr = songTitleStr+ "\n"+ song.getArtist();
+        }
         songTitle.setText(songTitleStr);
 
         // Access and display album, track number metadata
         TextView songAlbum = (TextView) findViewById(R.id.songAlbum);
         String songAlbumStr = song.getAlbum() + "\nTrack #: " + song.getTrackNumber();
         songAlbum.setText(songAlbumStr);
+        ListAdapter songAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, trackTitles);
+        final ListView tracksView = (ListView) findViewById(R.id.track_list);
+        tracksView.setAdapter(songAdapter);
 
         // Create image for album cover
         ImageView albumcover = (ImageView) findViewById(R.id.album_cover);
