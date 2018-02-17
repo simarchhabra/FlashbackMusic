@@ -24,7 +24,6 @@ import java.util.List;
 
 import static com.cse110.flashbackmusicplayer.MainActivity.musicSystem;
 import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
-import static com.cse110.flashbackmusicplayer.MainActivity.userState;
 
 public class AlbumActivity extends AppCompatActivity {
 
@@ -48,7 +47,7 @@ public class AlbumActivity extends AppCompatActivity {
         // Play the song.
         musicSystem.playTracks(this::nextSong);
 
-
+        // Pause or play the current song.
         final Button pauseButton = (Button) findViewById(R.id.pauseButton);
         if(musicSystem.isPaused()) {
             pauseButton.setBackgroundResource(R.drawable.play);
@@ -67,8 +66,15 @@ public class AlbumActivity extends AppCompatActivity {
             }
         );
 
+        // Go back to the selection screen.
         final Button switchScreen = (Button) findViewById(R.id.backButton);
         switchScreen.setOnClickListener(view -> finish());
+
+        // Go to the next song.
+        final Button skip = (Button) findViewById(R.id.nextButton);
+        skip.setOnClickListener(view -> {
+            musicSystem.skipTrack();
+        });
     }
 
     public Song nextSong() {
@@ -87,8 +93,21 @@ public class AlbumActivity extends AppCompatActivity {
 
     private void displayHistory(Song song){
         TextView songHistory = (TextView) findViewById(R.id.history);
-        String songTitleStr= "Last Played: "+ song.getPlace()+ "\n"+song.getTime()+", " + song.getDate();
-        songHistory.setText(songTitleStr);
+
+        // Get the formatted strings describing when the track was last played.
+        String place = song.getPlace();
+        String time = song.getTime();
+        String date = song.getDate();
+
+        // If any of these do not exist, then the track is being played for the first time.
+        if (place == null || time == null || date == null) {
+            // Don't write anything.
+            songHistory.setText("");
+        }
+        else {
+            String songTitleStr= "Last Played: "+ song.getPlace()+ "\n"+song.getTime()+", " + song.getDate();
+            songHistory.setText(songTitleStr);
+        }
     }
 
     private void displaySong(Song song) {
@@ -121,5 +140,52 @@ public class AlbumActivity extends AppCompatActivity {
             albumcover.setImageResource(R.drawable.nocover);
             albumcover.setAdjustViewBounds(true);
         }
+
+        // Set the image of the like/dislike button.
+        Button fav_dislike = (Button) findViewById(R.id.fav_dis_button);
+        if (song.isFavorited() && !song.isDisliked()) {
+            // Change the image of the button.
+            fav_dislike.setBackgroundResource(R.drawable.favourite);
+        }
+        else if (!song.isFavorited() && song.isDisliked()) {
+            // Change the image of the button.
+            fav_dislike.setBackgroundResource(R.drawable.dislike);
+        }
+        else if (!song.isDisliked() && !song.isFavorited()) {
+            // Change the image of the button.
+            fav_dislike.setBackgroundResource(R.drawable.neutral);
+        }
+        fav_dislike.setOnClickListener(view -> {
+            // If it's neutral, favorite.
+            if (!song.isFavorited() && !song.isDisliked()) {
+                // Transition to the new state.
+                song.setFavorited(true);
+                song.setDisliked(false);
+                // Change the image of the button.
+                fav_dislike.setBackgroundResource(R.drawable.favourite);
+            }
+            // Else if it's favorited, dislike.
+            else if (song.isFavorited() && !song.isDisliked()) {
+                // Transition to the new state.
+                song.setFavorited(false);
+                song.setDisliked(true);
+                // Change the image of the button.
+                fav_dislike.setBackgroundResource(R.drawable.dislike);
+                // We have to skip this song because it is disliked.
+                musicSystem.skipTrack();
+            }
+            // Else if it's disliked, return it to neutral.
+            else if (song.isDisliked() && !song.isFavorited()) {
+                // Transition to the new state.
+                song.setFavorited(false);
+                song.setDisliked(false);
+                // Change the image of the button.
+                fav_dislike.setBackgroundResource(R.drawable.neutral);
+            }
+            // This should never happen, unless we set the states wrong.
+            else {
+                throw new IllegalStateException("Cannot have song both favorited and disliked");
+            }
+        });
     }
 }

@@ -3,7 +3,6 @@ package com.cse110.flashbackmusicplayer;
 import android.location.Location;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Comparator;
 
@@ -12,9 +11,6 @@ import java.util.Comparator;
  * by the user.
  */
 public class SongDatabase {
-
-    // The information associated with the user.
-    private UserState userState = null;
 
     // The state of the user, last time songDatabase was updated.
     private int dayOfTheWeek;
@@ -27,13 +23,11 @@ public class SongDatabase {
     private PriorityQueue<Song> flashbackList;
 
 
-    public SongDatabase(UserState userState) {
-        // Store a reference to user state to use it in the future.
-        this.userState = userState;
+    public SongDatabase() {
         // Cache the state of the user for future reference.
-        this.dayOfTheWeek = userState.getDayOfWeek();
-        this.timeSegment = userState.getTimeSegment();
-        this.location = userState.getLocation();
+        this.dayOfTheWeek = UserState.getInstance().getDayOfWeek();
+        this.timeSegment = UserState.getInstance().getTimeSegment();
+        this.location = UserState.getInstance().getLocation();
 
         // Creates an array and a max heap that will store all the songs.
         this.songs = new ArrayList<>();
@@ -55,25 +49,30 @@ public class SongDatabase {
                 return 1;
             }
 
-            // TODO: break ties using favorited songs and if both are favorited or neither, then by
-            // which one was most recently played.
+            // Try to break ties by seeing if one (and only one) is favorited.
+            if (s1.isFavorited() != s2.isFavorited()) {
+                // Return whichever song is favorited.
+                return s1.isFavorited() ? -1 : 1;
+            }
+
+            // Otherwise, the one that was most recently played has a greater priority.
             return s1.getSystemTime() > s2.getSystemTime() ? -1 : 1;
         }
     }
 
     public boolean hasStateChanged() {
         // Compared the cached state with the actual one.
-        return userState.getTimeSegment() != timeSegment ||
-                userState.getLocation().equals(location) ||
-                userState.getDayOfWeek() != dayOfTheWeek;
+        return UserState.getInstance().getTimeSegment() != timeSegment ||
+                UserState.getInstance().getLocation().equals(location) ||
+                UserState.getInstance().getDayOfWeek() != dayOfTheWeek;
     }
 
     // Creates a list of songs ordered by priority.
     public void generateFlashbackList() {
         // Cache the state of the user for future reference.
-        dayOfTheWeek = userState.getDayOfWeek();
-        timeSegment = userState.getTimeSegment();
-        location = userState.getLocation();
+        dayOfTheWeek = UserState.getInstance().getDayOfWeek();
+        timeSegment = UserState.getInstance().getTimeSegment();
+        location = UserState.getInstance().getLocation();
 
         // Get rid of all the elements in the heap and re-add them with new priorities.
         flashbackList.clear();

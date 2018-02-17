@@ -1,8 +1,9 @@
 package com.cse110.flashbackmusicplayer;
 
 import android.location.Location;
+import android.location.LocationManager;
 
-public class MockUserState extends UserState {
+public class MockUserState implements UserState {
     // The current up-to-date position of the user and the name of the closest location.
     Location location = new Location("gps");
     String place = "";
@@ -24,6 +25,12 @@ public class MockUserState extends UserState {
         return systemTime;
     }
 
+    public void locationUpdated(double latitude, double longitude, String place) {
+        location = new Location(LocationManager.GPS_PROVIDER);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        this.place = place;
+    }
     public void setLocation(Location location) { this.location = location; }
     public void setPlace(String place) { this.place = place; }
     public void setTimeSegment(TimeSegment timeSegment) { this.timeSegment = timeSegment; }

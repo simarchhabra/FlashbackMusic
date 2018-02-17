@@ -13,20 +13,15 @@ public class Song {
     // The track in the album.
     private byte[] albumCover;
 
-    // Optional metadata
-    private String genre = "";
-    private String comments = "";
-    private int year = 0;
-
     // Whether the song was favorited or disliked. Should not both be true at the same time.
     private boolean favorited = false;
     private boolean disliked = false;
 
     // Last time, date, and place this song was played.
     private long systemTime = 0;
-    private String time = "";
-    private String date = "";
-    private String place = "";
+    private String time = null;
+    private String date = null;
+    private String place = null;
 
     // Lists of all the locations, times, and days this song has been played.
     private boolean[] daysOfWeek = new boolean[7]; // There are 7 days in the week.
@@ -40,20 +35,6 @@ public class Song {
         this.album = album;
         this.artist = artist;
         this.trackNumber = trackNumber;
-        this.albumCover = albumCover;
-    }
-
-    public Song(String filename, String title, String album, String artist, String trackNumber,
-            String genre, String comments, int year, byte[] albumCover)
-    {
-        this.filename = filename;
-        this.title = title;
-        this.album = album;
-        this.artist = artist;
-        this.trackNumber = trackNumber;
-        this.genre = genre;
-        this.comments = comments;
-        this.year = year;
         this.albumCover = albumCover;
     }
 

@@ -34,9 +34,6 @@ public class MainActivity extends AppCompatActivity {
     // A database of all the songs that are stored in the res folder.
     static SongDatabase songDB = null;
 
-    // All of the information associated with the user.
-    static UserState userState = null;
-
     // In charge of handling all requests to play music.
     static MusicSystem musicSystem = null;
 
@@ -45,10 +42,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // Create the user.
-        userState = new UserState();
         // Create a database of songs and populate it.
-        songDB = new SongDatabase(userState);
+        songDB = new SongDatabase();
         // Create the system that will play all the music.
         musicSystem = new MusicSystem(MainActivity.this);
         // Create a location listener and make it update user state on change.
@@ -172,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                 double lon = location.getLongitude();
 
                 // Update the user state with the new location.
-                userState.locationUpdated(lat, lon, "templocation");
+                UserState.getInstance().locationUpdated(lat, lon, "templocation");
             }
 
             @Override

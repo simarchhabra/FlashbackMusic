@@ -64,8 +64,9 @@ public class MusicSystem {
 
     public void playTracks(Callable<Song> func) {
         try {
-            // Get the song we want to play.
+            // Get the song we want to play that is not disliked.
             Song song = func.call();
+            while (song != null && song.isDisliked()) song = func.call();
 
             // Play the song.
             if (song != null) playTrack(song.getTitle());
@@ -80,6 +81,7 @@ public class MusicSystem {
                     try {
                         // Play the song.
                         song = func.call();
+                        while (song != null && song.isDisliked()) song = func.call();
                         if (song != null) playTrack(song.getTitle());
 
                     } catch (Exception e) {
@@ -94,6 +96,14 @@ public class MusicSystem {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void skipTrack() {
+        // We can just finish the song we are currently playing. In album and flashback this will
+        // get the next song. In regular mode it will do nothing.
+        Intent serviceIntent = new Intent(root, MediaService.class);
+        serviceIntent.setAction("STOP");
+        root.startService(serviceIntent);
     }
 
     // Enum for possible states of song playback
@@ -138,8 +148,12 @@ public class MusicSystem {
 
     public void destroy() {
         Intent serviceIntent = new Intent(root, MediaService.class);
-        root.unregisterReceiver(onCompletionListener);
-        root.unregisterReceiver(broadcastReceiver);
+        try {
+            root.unregisterReceiver(onCompletionListener);
+            root.unregisterReceiver(broadcastReceiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
         root.stopService(serviceIntent);
     }
 

@@ -4,66 +4,32 @@ import android.location.Location;
 
 import java.util.Calendar;
 
-public class UserState {
+public interface UserState {
 
-    // The current up-to-date position of the user and the name of the closest location.
-    Location location = new Location("gps");
-    String place = "";
+    // All of the information associated with the user at the given moment.
+    static UserStateImpl userState = new UserStateImpl();
 
-    public UserState() {}
-
-    public void locationUpdated(double latitude, double longitude, String place) {
-        location.setLatitude(latitude);
-        location.setLongitude(longitude);
-        this.place = place;
+    public static UserState getInstance() {
+        return userState;
     }
 
-    public Location getLocation() {
-        return new Location(location);
+    public static UserState snapshot() {
+        return new UserStateSnapshot(userState);
     }
 
-    public String getPlace() {
-        return place;
-    }
+    public void locationUpdated(double latitude, double longitude, String place);
 
-    public TimeSegment getTimeSegment() {
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.HOUR_OF_DAY);
+    public Location getLocation();
 
-        // Get the current time segment.
-        if (day >= 5 && day < 11) {
-            return TimeSegment.MORNING;
-        }
-        else if (day >= 11 && day < 17) {
-            return TimeSegment.NOON;
-        }
-        else {
-            return TimeSegment.EVENING;
-        }
-    }
+    public String getPlace();
 
-    public int getDayOfWeek() {
-        Calendar calendar = Calendar.getInstance();
-        return calendar.get(Calendar.DAY_OF_WEEK);
-    }
+    public TimeSegment getTimeSegment();
 
-    public String getDate() {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        return "" + month + "/" + day + "/" + year;
-    }
+    public int getDayOfWeek();
 
-    public String getTime() {
-        Calendar calendar = Calendar.getInstance();
-        int hours = calendar.get(Calendar.HOUR_OF_DAY);
-        int minutes = calendar.get(Calendar.MINUTE);
-        int seconds = calendar.get(Calendar.SECOND);
-        return "" + hours + ":" + minutes + ":" + seconds;
-    }
+    public String getDate();
 
-    public long getSystemTime() {
-        return System.currentTimeMillis();
-    }
+    public String getTime();
+
+    public long getSystemTime();
 }
