@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,12 +21,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SeekBar;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+
 
     // A database of all the songs that are stored in the res folder.
     static SongDatabase songDB = null;
@@ -36,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
     // In charge of handling all requests to play music.
     static MusicSystem musicSystem = null;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         // Create the user.
         userState = new UserState();
         // Create a database of songs and populate it.
@@ -49,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
         musicSystem = new MusicSystem(MainActivity.this);
         // Create a location listener and make it update user state on change.
         setUpLocation();
+
+
+        Intent serviceIntent1 = new Intent(this, MediaService.class);
 
         // List of the names of the songs in res/raw/
         List<String> songTitles = new ArrayList<>();

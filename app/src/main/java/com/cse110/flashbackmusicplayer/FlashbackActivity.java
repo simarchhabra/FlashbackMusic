@@ -79,8 +79,15 @@ public class FlashbackActivity extends AppCompatActivity {
 
         // Draw the metadata for the song.
         displaySong(next);
+        displayHistory(next);
 
         return next;
+    }
+
+    private void displayHistory(Song song){
+        TextView songHistory = (TextView) findViewById(R.id.history);
+        String songTitleStr= "Last Played: "+ song.getPlace()+ "\n"+song.getTime()+", " + song.getDate();
+        songHistory.setText(songTitleStr);
     }
 
     private void displaySong(Song song) {

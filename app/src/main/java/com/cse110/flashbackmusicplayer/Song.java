@@ -1,6 +1,7 @@
 package com.cse110.flashbackmusicplayer;
 
 import android.location.Location;
+import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,7 +9,7 @@ import java.util.Calendar;
 public class Song {
 
     // The data defining this song.
-    private String filename, title, album, artist, trackNumber;
+    private String filename, title, album, artist, trackNumber, trackDuration;
     // The track in the album.
     private byte[] albumCover;
 
