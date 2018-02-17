@@ -48,6 +48,16 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             if (intent.getAction().equals(ACTION_START)) {
                 // Get the song we are playing.
                 song = findSong(intent);
+
+                // If the song is disliked, we do not need to play it.
+                if (song.isDisliked()) {
+                    // Notify that we did not play any song.
+                    sendSong.putExtra("NAME", (String) null);
+                    sendSong.putExtra("PAUSED", false);
+                    sendBroadcast(sendSong);
+                    return START_STICKY;
+                }
+
                 // Create the media player.
                 player = new MediaPlayer();
                 // Record the state of the user when we started playing the song.
@@ -96,6 +106,10 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             // Stop playing the current song.
             else if (intent.getAction().equals(ACTION_STOP)) {
                 sendBroadcast(finished);
+                // Notify that we did not play any song.
+                sendSong.putExtra("NAME", (String) null);
+                sendSong.putExtra("PAUSED", false);
+                sendBroadcast(sendSong);
                 player.stop();
             }
         }
@@ -106,16 +120,6 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         return START_STICKY;
     }
 
-    // create runnable object to broadcast name of song being played
-    private Runnable sendName = new Runnable() {
-        @Override
-        public void run() {
-            if (song != null) {
-
-            }
-        }
-    };
-    
     private Song findSong(Intent intent) {
         String name = intent.getExtras().getString("NAME");
         return songDB.get(name);
@@ -123,10 +127,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     public void onPrepared(MediaPlayer player) {
         player.start();
-        /// TODO: Get rid of below line. It is correctly written on line 71. This is for testing.
-        song.startedPlaying(UserState.getInstance());
     }
-
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -142,6 +143,10 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public void onDestroy() {
         super.onDestroy();
+        // Notify that this player is displayed, so no songs are played.
+        sendSong.putExtra("NAME", (String) null);
+        sendSong.putExtra("PAUSED", false);
+        sendBroadcast(sendSong);
         if (player != null) {
             player.stop();
             player.release();

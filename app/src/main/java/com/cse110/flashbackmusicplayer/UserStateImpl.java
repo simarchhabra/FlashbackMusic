@@ -51,17 +51,25 @@ public class UserStateImpl implements UserState {
     public String getDate() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
+        int month = calendar.get(Calendar.MONTH) + 1; // January is 0
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         return "" + month + "/" + day + "/" + year;
     }
 
     public String getTime() {
         Calendar calendar = Calendar.getInstance();
-        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+        int hours = calendar.get(Calendar.HOUR);
+        String hours_string = String.valueOf(hours);
+        if (hours / 10 == 0) hours_string = "0" + hours_string;
+
         int minutes = calendar.get(Calendar.MINUTE);
-        int seconds = calendar.get(Calendar.SECOND);
-        return "" + hours + ":" + minutes + ":" + seconds;
+        String minutes_string = String.valueOf(minutes);
+        if (minutes / 10 == 0) minutes_string = "0" + minutes_string;
+
+        int am_pm = calendar.get(Calendar.AM_PM);
+        String am_pm_string = am_pm == Calendar.AM ? "am" : "pm";
+
+        return hours_string + ":" + minutes_string + " " + am_pm_string;
     }
 
     public long getSystemTime() {

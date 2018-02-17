@@ -69,9 +69,13 @@ public class TrackDisplayActivity extends AppCompatActivity {
         String date = song.getDate();
 
         // If any of these do not exist, then the track is being played for the first time.
-        if (place == null || time == null || date == null) {
+        if (time == null || date == null) {
             // Don't write anything.
             songHistory.setText("");
+        }
+        else if (place == null) {
+            String songTitleStr= "Last Played: "+song.getTime()+", " + song.getDate();
+            songHistory.setText(songTitleStr);
         }
         else {
             String songTitleStr= "Last Played: "+ song.getPlace()+ "\n"+song.getTime()+", " + song.getDate();
@@ -139,6 +143,8 @@ public class TrackDisplayActivity extends AppCompatActivity {
                     fav_dislike.setBackgroundResource(R.drawable.dislike);
                     // We have to skip this song because it is disliked.
                     musicSystem.skipTrack();
+                    // Finish this activity and return us back to the main screen.
+                    finish();
                 }
                 // Else if it's disliked, return it to neutral.
                 else if (song.isDisliked() && !song.isFavorited()) {
@@ -147,6 +153,8 @@ public class TrackDisplayActivity extends AppCompatActivity {
                     song.setDisliked(false);
                     // Change the image of the button.
                     fav_dislike.setBackgroundResource(R.drawable.neutral);
+                    // Play the song.
+                    musicSystem.playTrack(song.getTitle());
                 }
                 // This should never happen, unless we set the states wrong.
                 else {

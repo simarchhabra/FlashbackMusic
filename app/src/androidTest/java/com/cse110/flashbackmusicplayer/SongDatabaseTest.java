@@ -19,7 +19,7 @@ public class SongDatabaseTest {
     @Before
     public void init() {
         state = new MockUserState();
-        songDB = new SongDatabase(state);
+        songDB = new SongDatabase();
     }
 
     @Test

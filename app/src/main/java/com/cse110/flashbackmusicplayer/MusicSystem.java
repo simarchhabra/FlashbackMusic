@@ -27,7 +27,7 @@ public class MusicSystem {
     }
 
     public void playTrack(String toPlay) {
-        // create an intent for MediaService
+        // Create an intent for MediaService
         Intent serviceIntent = new Intent(root, MediaService.class);
         // Create a receiver to store the name of the current song being played
         broadcastReceiver = new BroadcastReceiver() {
