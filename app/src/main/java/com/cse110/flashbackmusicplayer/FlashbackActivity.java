@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
@@ -33,20 +34,21 @@ public class FlashbackActivity extends AppCompatActivity {
         // Play the song with the nighest priority.
         musicSystem.playTracks(this::nextSong);
 
+
         final Button pauseButton = (Button) findViewById(R.id.pauseButton);
         if(musicSystem.isPaused()) {
-            pauseButton.setBackgroundResource(R.drawable.play);
+            pauseButton.setBackgroundResource(R.drawable.playwhite);
         }
         else{
-            pauseButton.setBackgroundResource(R.drawable.pause);
+            pauseButton.setBackgroundResource(R.drawable.pausewhite);
         }
         pauseButton.setOnClickListener( view -> {
                 musicSystem.togglePause();
                 if(musicSystem.isPaused()) {
-                    pauseButton.setBackgroundResource(R.drawable.pause);
+                    pauseButton.setBackgroundResource(R.drawable.pausewhite);
                 }
                 else{
-                    pauseButton.setBackgroundResource(R.drawable.play);
+                    pauseButton.setBackgroundResource(R.drawable.playwhite);
                 }
             }
         );

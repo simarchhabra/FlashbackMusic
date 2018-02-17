@@ -5,6 +5,7 @@
     android:id="@+id/scrollView3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.cse110.flashbackmusicplayer.AlbumActivity"
     tools:showIn="@layout/activity_album">
@@ -13,48 +14,51 @@
         android:id="@+id/songTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="290dp"
-        android:fontFamily="sans-serif-medium"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/abhaya_libre_bold"
+        android:textColor="@android:color/background_light"
         android:gravity="center"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/album_cover" />
 
     <TextView
         android:id="@+id/songAlbum"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-medium"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/abhaya_libre_bold"
+        android:textColor="@android:color/background_light"
         android:gravity="center"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/songTitle" />
 
     <Button
         android:id="@+id/backButton"
-        android:layout_width="55dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:alpha="0.3"
-        android:background="@drawable/back"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/backwhite"
         android:fontFamily="@font/abhaya_libre_bold"
         android:gravity="center"
-        android:text="Back"
         android:textColor="@android:color/background_light"
         android:textStyle="bold"
         android:typeface="sans"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"  />
 
     <ImageView
         android:id="@+id/album_cover"
         android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:layout_marginEnd="70dp"
-        android:layout_marginStart="70dp"
+        android:layout_height="150dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginStart="100dp"
         android:layout_marginTop="64dp"
         android:contentDescription="@string/desc"
         android:gravity="center"
@@ -65,13 +69,14 @@
 
     <Button
         android:id="@+id/pauseButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="135dp"
-        android:layout_marginTop="400dp"
-        android:background="@drawable/pause"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="136dp"
+        android:layout_marginTop="20dp"
+        android:alpha="0.7"
+        android:background="@drawable/pausewhite"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/seekBar2" />
 
     <TextView
         android:id="@+id/history"
@@ -80,7 +85,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="Location placeholder"
+        android:fontFamily="@font/abhaya_libre_bold"
+        android:text=""
+        android:textColor="@android:color/background_light"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -88,38 +95,43 @@
 
     <Button
         android:id="@+id/fav_dis_button"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginEnd="14dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/neutral"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/nextButton"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginEnd="135dp"
-        android:layout_marginTop="412dp"
-        android:background="@drawable/next"
+        android:layout_marginEnd="14dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/nuetralwhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <SeekBar
         android:id="@+id/seekBar2"
         android:layout_width="0dp"
+        android:progressDrawable="@drawable/custom_seekbar"
+        android:maxHeight="3dp"
+        android:minHeight="3dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="30dp"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="370dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/songAlbum" />
+
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:alpha="0.7"
+        android:layout_marginEnd="132dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/nextwhite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar2" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/linearLayout2"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="parent"
@@ -127,14 +139,16 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.028">
+        app:layout_constraintVertical_bias="0.0">
 
         <ListView
             android:id="@+id/track_list"
-            android:layout_width="fill_parent"
-            android:layout_height="190dp"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
             android:layout_marginTop="500dp"
+            android:background="@drawable/lightbackground"
             android:scrollbars="vertical"
+            android:textColor="@android:color/background_light"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0"

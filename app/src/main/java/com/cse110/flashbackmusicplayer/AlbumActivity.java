@@ -50,18 +50,18 @@ public class AlbumActivity extends AppCompatActivity {
         // Pause or play the current song.
         final Button pauseButton = (Button) findViewById(R.id.pauseButton);
         if(musicSystem.isPaused()) {
-            pauseButton.setBackgroundResource(R.drawable.play);
+            pauseButton.setBackgroundResource(R.drawable.playwhite);
         }
         else{
-            pauseButton.setBackgroundResource(R.drawable.pause);
+            pauseButton.setBackgroundResource(R.drawable.pausewhite);
         }
         pauseButton.setOnClickListener( view -> {
                 musicSystem.togglePause();
                 if(musicSystem.isPaused()) {
-                    pauseButton.setBackgroundResource(R.drawable.pause);
+                    pauseButton.setBackgroundResource(R.drawable.pausewhite);
                 }
                 else{
-                    pauseButton.setBackgroundResource(R.drawable.play);
+                    pauseButton.setBackgroundResource(R.drawable.playwhite);
                 }
             }
         );

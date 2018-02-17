@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -38,18 +39,18 @@ public class TrackDisplayActivity extends AppCompatActivity {
         // Pause or play the song.
         final Button pauseButton = (Button) findViewById(R.id.pauseButton);
         if(musicSystem.isPaused()) {
-            pauseButton.setBackgroundResource(R.drawable.play);
+            pauseButton.setBackgroundResource(R.drawable.playwhite);
         }
         else{
-            pauseButton.setBackgroundResource(R.drawable.pause);
+            pauseButton.setBackgroundResource(R.drawable.pausewhite);
         }
         pauseButton.setOnClickListener( view -> {
                 musicSystem.togglePause();
                 if(musicSystem.isPaused()) {
-                    pauseButton.setBackgroundResource(R.drawable.pause);
+                    pauseButton.setBackgroundResource(R.drawable.pausewhite);
                 }
                 else{
-                    pauseButton.setBackgroundResource(R.drawable.play);
+                    pauseButton.setBackgroundResource(R.drawable.playwhite);
                 }
             }
         );
