@@ -12,12 +12,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import static com.cse110.flashbackmusicplayer.MainActivity.musicSystem;
 import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
 
 public class TrackDisplayActivity extends AppCompatActivity {
+
+    SeekBar sb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,7 @@ public class TrackDisplayActivity extends AppCompatActivity {
 
         // Draw the song metadata on the screen.
         displayTrack(song);
+        displayHistory(song);
 
         final Button pauseButton = (Button) findViewById(R.id.pauseButton);
         if(musicSystem.isPaused()) {
@@ -49,9 +53,16 @@ public class TrackDisplayActivity extends AppCompatActivity {
             }
         );
 
+
         final Button switchScreen = (Button) findViewById(R.id.backButton);
         switchScreen.setOnClickListener(view -> finish());
 
+    }
+
+    private void displayHistory(Song song){
+        TextView songHistory = (TextView) findViewById(R.id.history);
+        String songTitleStr= "Last Played: "+ song.getPlace()+ "\n"+song.getTime()+", " + song.getDate();
+        songHistory.setText(songTitleStr);
     }
 
     private void displayTrack(Song song) {

@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.media.MediaPlayer;
 import android.os.PowerManager;
+import android.widget.SeekBar;
 
 import java.io.IOException;
 
@@ -110,6 +111,11 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     public IBinder onBind(Intent intent) {
         // No binding necessary
         return null;
+    }
+
+    private void getDuration()
+    {
+        player.getDuration();
     }
 
     @Override
