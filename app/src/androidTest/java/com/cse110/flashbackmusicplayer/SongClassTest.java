@@ -179,13 +179,6 @@ public class SongClassTest {
         Song s2 = new Song("_123_go", "123 go", "New and Best of Keaton Simons", "Keaton Simons",
                 "1/10", albumCover);
 
-        // Create using the second constructor.
-        byte[] albumCover2 = {1, 1, 1, 0, 0, 1, 0, 1};
-        Song s3 = new Song("filename", "title", "album", "artist", "trackNumber", "genre",
-                "comments about song", 1000, albumCover2);
-        Song s4 = new Song("_123_go", "123 go", "New and Best of Keaton Simons", "Keaton Simons",
-                "1/10", "country", "very good song", 2010, albumCover2);
-
         // Make sure that all of the getters return the correct field.
         assertEquals("filename", s1.getFilename());
         assertEquals("title", s1.getTitle());
@@ -200,20 +193,6 @@ public class SongClassTest {
         assertEquals("Keaton Simons", s2.getArtist());
         assertEquals("1/10", s2.getTrackNumber());
         assertArrayEquals(albumCover, s2.getAlbumCover());
-
-        assertEquals("filename", s3.getFilename());
-        assertEquals("title", s3.getTitle());
-        assertEquals("album", s3.getAlbum());
-        assertEquals("artist", s3.getArtist());
-        assertEquals("trackNumber", s3.getTrackNumber());
-        assertArrayEquals(albumCover2, s3.getAlbumCover());
-
-        assertEquals("_123_go", s4.getFilename());
-        assertEquals("123 go", s4.getTitle());
-        assertEquals("New and Best of Keaton Simons", s4.getAlbum());
-        assertEquals("Keaton Simons", s4.getArtist());
-        assertEquals("1/10", s4.getTrackNumber());
-        assertArrayEquals(albumCover2, s4.getAlbumCover());
     }
 
 }

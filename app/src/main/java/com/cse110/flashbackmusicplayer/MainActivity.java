@@ -18,8 +18,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-
-
     // A database of all the songs that are stored in the res folder.
     static SongDatabase songDB = null;
 
@@ -107,13 +105,13 @@ public class MainActivity extends AppCompatActivity {
             // Get the name of the song to play.
             String name = adapterView.getItemAtPosition(pos).toString();
 
-            // Play the song.
-            musicSystem.playTrack(name);
-
             // Open a new activity for displaying song metadata and addressing user functionality
             Intent intent = new Intent(MainActivity.this, TrackDisplayActivity.class);
-            intent.putExtra("NAME", name);
+            intent.putExtra("TRACK_NAME", name);
             startActivity(intent);
+
+            // Play the song.
+            musicSystem.playTrack(name);
         });
 
         // Play the songs in this album if an album is clicked.
@@ -123,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Open a new activity for displaying song metadata and addressing user functionality
             Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
-            intent.putExtra("NAME", name);
+            intent.putExtra("ALBUM_NAME", name);
             startActivity(intent);
         });
     }

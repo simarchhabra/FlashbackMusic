@@ -23,10 +23,13 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     // generic broadcast string
     public static final String ACTION_BROADCAST = "BROADCAST";
     public static final String ACTION_FINISHED = "FINISHED";
+    public static final String ACTION_PROGRESS = "PROGRESS";
+    public static final String ACTION_SEEK = "SEEK";
 
     // Broadcast intent
     Intent sendSong;
     Intent finished;
+    Intent progress;
     // song to play
     Song song;
     // actual MediaPlayer instance
@@ -39,6 +42,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         // Create intent
         sendSong = new Intent(ACTION_BROADCAST);
         finished = new Intent(ACTION_FINISHED);
+        progress = new Intent(ACTION_PROGRESS);
     }
 
     @Override
@@ -112,13 +116,36 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                 sendBroadcast(sendSong);
                 player.stop();
             }
+            else if(intent.getAction().equals(ACTION_SEEK)) {
+                int position = intent.getIntExtra("PROGRESS", 0);
+                player.seekTo(position);
+            }
         }
         catch (NullPointerException e) {
             e.printStackTrace();
         }
 
+        // remove any pending posts in queue
+        handler.removeCallbacks(sendProgress);
+        // post to thread
+        handler.post(sendProgress);
+
         return START_STICKY;
     }
+
+    private Runnable sendProgress = new Runnable() {
+        @Override
+        public void run() {
+            if (player != null && player.isPlaying()) {
+                progress.putExtra("PROGRESS", player.getCurrentPosition());
+                progress.putExtra("MAX", player.getDuration());
+                sendBroadcast(progress);
+            }
+            handler.postDelayed(this, 5000);
+        }
+    };
+
+
 
     private Song findSong(Intent intent) {
         String name = intent.getExtras().getString("NAME");
@@ -150,6 +177,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         if (player != null) {
             player.stop();
             player.release();
+            player = null;
         }
     }
 }
