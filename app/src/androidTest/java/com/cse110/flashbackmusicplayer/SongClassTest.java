@@ -2,16 +2,18 @@ package com.cse110.flashbackmusicplayer;
 
 import android.location.Location;
 import android.location.LocationManager;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import static org.junit.Assert.*;
 
-
+@RunWith(AndroidJUnit4.class)
 public class SongClassTest {
 
     private MockUserState state;

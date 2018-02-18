@@ -2,6 +2,7 @@ package com.cse110.flashbackmusicplayer;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Button;
 
 import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
@@ -15,6 +16,8 @@ public class FlashbackActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("FlashbackActivity", "FlashbackActivity has been created");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flashback);
 
@@ -42,6 +45,7 @@ public class FlashbackActivity extends AppCompatActivity {
         final Button skip = (Button) findViewById(R.id.nextButton);
         skip.setOnClickListener(view -> {
             musicSystem.skipTrack();
+            Log.d("FlashbackActivity", "Skipped a track");
         });
     }
 
@@ -49,6 +53,7 @@ public class FlashbackActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         musicSystem.destroy();
+        Log.d("FlashbackActivity", "FlashbackActivity has been destroyed");
     }
 
     public Song nextSong() {
@@ -63,6 +68,7 @@ public class FlashbackActivity extends AppCompatActivity {
 
         // Get the very first song that we will play.
         Song next = songDB.top(); songDB.pop();
+        Log.d("FlashbackActivity", "Retrieved song " + next.getTitle());
 
         // Record the name of teh track.
         getIntent().putExtra("TRACK_NAME", next.getTitle());

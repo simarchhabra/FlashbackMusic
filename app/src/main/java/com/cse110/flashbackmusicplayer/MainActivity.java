@@ -1,11 +1,15 @@
 package com.cse110.flashbackmusicplayer;
 
+
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
+
 import android.os.Bundle;
+
 import android.support.v7.app.AppCompatActivity;
 import android.net.Uri;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,13 +28,14 @@ public class MainActivity extends AppCompatActivity {
     // In charge of handling all requests to play music.
     static MusicSystem musicSystem = null;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("MainActivity", "MainActivity has been created");
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         // Create a database of songs and populate it.
-        songDB = new SongDatabase();
+        songDB = new SongDatabase(UserState.getInstance());
         // Create the system that will play all the music.
         musicSystem = new MusicSystem(MainActivity.this);
         // Create a location listener and make it update user state on change.
@@ -78,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             // Open the flashback mode.
             Intent intent = new Intent(MainActivity.this, FlashbackActivity.class);
             startActivity(intent);
-
+            Log.d("MainActivity", "Starting flashback mode");
         });
 
         Button albumButton = (Button) findViewById(R.id.albumsDisplayButton);
@@ -89,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             tracksButton.setSelected(false);
             songsView.setVisibility(View.GONE);
             albumsView.setVisibility(View.VISIBLE);
+            Log.d("MainActivity", "Opened album list");
         });
 
 
@@ -98,12 +104,14 @@ public class MainActivity extends AppCompatActivity {
             tracksButton.setSelected(true);
             albumsView.setVisibility(View.GONE);
             songsView.setVisibility(View.VISIBLE);
+            Log.d("MainActivity", "Opened tracks list");
         });
 
         // Play the song whenever it's name is clicked on the list.
         songsView.setOnItemClickListener((adapterView, view, pos, l) -> {
             // Get the name of the song to play.
             String name = adapterView.getItemAtPosition(pos).toString();
+            Log.d("MainActivity", "Clicked on song " + name);
 
             // Open a new activity for displaying song metadata and addressing user functionality
             Intent intent = new Intent(MainActivity.this, TrackDisplayActivity.class);
@@ -118,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         albumsView.setOnItemClickListener((adapterView, view, pos, l) -> {
             // Get the name of the song to play.
             String name = adapterView.getItemAtPosition(pos).toString();
+            Log.d("MainActivity", "Playing album " + name);
 
             // Open a new activity for displaying song metadata and addressing user functionality
             Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
@@ -140,14 +149,19 @@ public class MainActivity extends AppCompatActivity {
         String track_num = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER);
         byte[] album_art = mmr.getEmbeddedPicture();
 
+        Log.d("MainActivity", "Loaded song from " + filename + " <" +
+                songTitle + ", " + albumName + ", " + artist + ", " + track_num + ">");
+
         // Create the song object from the metadata.
         return new Song(filename, songTitle, albumName, artist, track_num, album_art);
     }
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         musicSystem.destroy();
+        Log.d("MainActivity", "MainActivity has been destroyed");
     }
 
 }

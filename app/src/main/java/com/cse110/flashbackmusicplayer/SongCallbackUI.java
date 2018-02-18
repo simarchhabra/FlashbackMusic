@@ -3,6 +3,7 @@ package com.cse110.flashbackmusicplayer;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -42,16 +43,23 @@ public class SongCallbackUI implements SongCallback {
                     musicSystem.skipTrack();
                     break;
             }
+            Log.d("SongCallbackUI", "Favorite/Dislike/Neutral button pressed. Song is now " + song.getLikedStatus());
             setLikedStatus(song.getLikedStatus());
         });
 
         // Pause or play the song.
         final Button pauseButton = (Button) activity.findViewById(R.id.pauseButton);
-        pauseButton.setOnClickListener( view -> musicSystem.togglePause() );
+        pauseButton.setOnClickListener( view -> {
+            Log.d("SongCallbackUI", "Pause button pressed");
+            musicSystem.togglePause();
+        } );
 
         // Go back to the selection screen.
         final Button switchScreen = (Button) activity.findViewById(R.id.backButton);
-        switchScreen.setOnClickListener(view -> activity.finish());
+        switchScreen.setOnClickListener(view -> {
+            Log.d("SongCallbackUI", "Going back to the previous screen.");
+            activity.finish();
+        });
 
         // If the user moves the seekbar, update the progress of the song.
         SeekBar seekBar = (SeekBar) activity.findViewById(R.id.slideTrack);
@@ -62,11 +70,12 @@ public class SongCallbackUI implements SongCallback {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                Log.d("SongCallbackUI", "Seek bar pressed");
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.d("SongCallbackUI", "Seek bar released on " + (seekBar.getProgress()*1.0/seekBar.getMax()) + "%");
                 musicSystem.seekTime(seekBar.getProgress());
             }
         });
@@ -74,6 +83,7 @@ public class SongCallbackUI implements SongCallback {
 
     @Override
     public void setSeekbarTo(int progress, int max) {
+        Log.d("SongCallbackUI", "Moving seekbar to " + (progress * 1.0 / max));
         // Get the seekbar.
         SeekBar seekBar = (SeekBar) activity.findViewById(R.id.slideTrack);
         seekBar.setMax(0);
@@ -94,23 +104,25 @@ public class SongCallbackUI implements SongCallback {
         switch (likedStatus) {
             case NEUTRAL:
                 fav_dislike.setBackgroundResource(R.drawable.neutralwhite);
+                Log.d("SongCallbackUI", "Set favorite/dislike image to neutral");
                 break;
             case DISLIKED:
                 fav_dislike.setBackgroundResource(R.drawable.dislikewhite);
+                Log.d("SongCallbackUI", "Set favorite/dislike image to dislike");
                 break;
             case FAVORITED:
                 fav_dislike.setBackgroundResource(R.drawable.favouritewhite);
+                Log.d("SongCallbackUI", "Set favorite/dislike image to favorite");
                 break;
         }
     }
 
     @Override
     public void redraw() {
+        Log.d("SongCallbackUI", "Drawing the UI");
         // Get the name of the song we are playing.
         String name = activity.getIntent().getExtras().getString("TRACK_NAME");
         Song song = songDB.get(name);
-
-        TextView songHistory = (TextView) activity.findViewById(R.id.history);
 
         if (song != null) {
 
@@ -120,6 +132,7 @@ public class SongCallbackUI implements SongCallback {
             String date = song.getDate();
 
             // If any of these do not exist, then the track is being played for the first time.
+            TextView songHistory = (TextView) activity.findViewById(R.id.history);
             if (time == null || date == null) {
                 // Don't write anything.
                 songHistory.setText("");

@@ -30,6 +30,7 @@ public class MusicSystem {
 
     public void setSongCallback(SongCallback songCallback) {
         this.songCallback = songCallback;
+        Log.d("MusicSystem", "New song callback set");
     }
 
     public void playTrack(String toPlay) {
@@ -41,6 +42,7 @@ public class MusicSystem {
             public void onReceive(Context context, Intent intent) {
                 currSong = intent.getStringExtra("NAME");
                 isPaused = intent.getBooleanExtra("PAUSED", false);
+                Log.d("MusicSystem", "Received song name and paused state: " + currSong + " " + isPaused);
             }
         };
         root.registerReceiver(broadcastReceiver, new IntentFilter(MediaService.ACTION_BROADCAST));
@@ -53,6 +55,7 @@ public class MusicSystem {
                 if (songCallback != null) {
                     songCallback.setSeekbarTo(progress, max);
                 }
+                Log.d("MusicSystem", "Received progress broadcast");
             }
         };
         root.registerReceiver(seekbarStateReceiver, new IntentFilter(MediaService.ACTION_PROGRESS));
@@ -61,6 +64,7 @@ public class MusicSystem {
         // new service for playback
         ServicePlaybackState playbackState = checkSongPlaying(currSong, toPlay);
         if (playbackState == ServicePlaybackState.DIFF_SONG) {
+            Log.d("MusicSystem", "Playing " + toPlay + ". This is a different song from before.");
             root.unregisterReceiver(broadcastReceiver);
             root.unregisterReceiver(seekbarStateReceiver);
             root.stopService(serviceIntent);
@@ -75,6 +79,7 @@ public class MusicSystem {
         }
         // if no song is currently being played, start new service for playback
         else if (playbackState == ServicePlaybackState.NO_SONG){
+            Log.d("MusicSystem", "Playing " + toPlay + ". This is the first song we are playing.");
             serviceIntent = new Intent(root, MediaService.class);
             serviceIntent.setAction("START");
             serviceIntent.putExtra("NAME", toPlay);
@@ -83,6 +88,9 @@ public class MusicSystem {
             if (songCallback != null) {
                 songCallback.setSeekbarTo(0, 0);
             }
+        }
+        else {
+            Log.d("MusicSystem", "Playing " + toPlay + " . Same as the current song we were playing.");
         }
     }
 
@@ -107,7 +115,10 @@ public class MusicSystem {
                         // Play the song.
                         song = func.call();
                         while (song != null && song.isDisliked()) song = func.call();
-                        if (song != null) playTrack(song.getTitle());
+                        if (song != null) {
+                            playTrack(song.getTitle());
+                            Log.d("MusicSystem", "The next song in the list is " + song.getTitle());
+                        }
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -129,6 +140,7 @@ public class MusicSystem {
         Intent serviceIntent = new Intent(root, MediaService.class);
         serviceIntent.setAction("STOP");
         root.startService(serviceIntent);
+        Log.d("MusicSystem", "Sent STOP message to mediaservice");
     }
 
     public void seekTime(int currProgress) {
@@ -136,6 +148,7 @@ public class MusicSystem {
         serviceIntent.setAction("SEEK");
         serviceIntent.putExtra("PROGRESS", currProgress);
         root.startService(serviceIntent);
+        Log.d("MusicSystem", "Sent SEEK message to mediaservice");
     }
 
 
@@ -150,15 +163,12 @@ public class MusicSystem {
      * song is currently playing
      */
     private ServicePlaybackState checkSongPlaying(String playing, String toPlay) {
-        Log.d("Check", "Goes in function checkSongPlaying");
         if (playing != null) {
-            Log.d("Access", "Knows current Song playing");
             if (playing.equals(toPlay)) {
                 return ServicePlaybackState.SAME_SONG;
             }
             return ServicePlaybackState.DIFF_SONG;
         }
-        Log.d("Access", "Does not know current song playing");
         return ServicePlaybackState.NO_SONG;
     }
 
@@ -173,9 +183,11 @@ public class MusicSystem {
         Intent serviceIntent = new Intent(root, MediaService.class);
         if (isPaused) {
             serviceIntent.setAction("PLAY");
+            Log.d("MusicSystem", "Sent PLAY message to mediaservice");
         }
         else {
             serviceIntent.setAction("PAUSE");
+            Log.d("MusicSystem", "Sent PAUSE message to mediaservice");
         }
         root.startService(serviceIntent);
     }
@@ -194,6 +206,7 @@ public class MusicSystem {
             e.printStackTrace();
         }
         root.stopService(serviceIntent);
+        Log.d("MusicSystem", "Music system destroyed.");
     }
 
 }

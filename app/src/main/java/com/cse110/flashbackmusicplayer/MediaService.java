@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.media.MediaPlayer;
 import android.os.PowerManager;
+import android.util.Log;
 import android.widget.SeekBar;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onCreate() {
+        Log.d("MediaService", "MediaService has been created");
         // Create intent
         sendSong = new Intent(ACTION_BROADCAST);
         finished = new Intent(ACTION_FINISHED);
@@ -50,11 +52,13 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         try {
             // Create player.
             if (intent.getAction().equals(ACTION_START)) {
+                Log.d("MediaService", "MediaService started with ACTION_START");
                 // Get the song we are playing.
                 song = findSong(intent);
 
                 // If the song is disliked, we do not need to play it.
                 if (song.isDisliked()) {
+                    Log.d("MediaService", "The song is disliked");
                     // Notify that we did not play any song.
                     sendSong.putExtra("NAME", (String) null);
                     sendSong.putExtra("PAUSED", false);
@@ -83,6 +87,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                             sendBroadcast(finished);
                             // Record the time this song was finished.
                             song.startedPlaying(snapshot);
+                            Log.d("MediaService", "Track has finished");
                         }
                 );
 
@@ -93,6 +98,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             }
             // Pause player.
             else if (intent.getAction().equals(ACTION_PAUSE)) {
+                Log.d("MediaService", "MediaService has been started with ACTION_PAUSE");
                 player.pause();
                 // Notify the Music system of the successful start.
                 sendSong.putExtra("NAME", song.getTitle());
@@ -101,6 +107,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             }
             // Resume player.
             else if (intent.getAction().equals(ACTION_PLAY)){
+                Log.d("MediaService", "MediaService has been started with ACTION_PLAY");
                 player.start();
                 // Notify the Music system of the successful start.
                 sendSong.putExtra("NAME", song.getTitle());
@@ -109,6 +116,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             }
             // Stop playing the current song.
             else if (intent.getAction().equals(ACTION_STOP)) {
+                Log.d("MediaService", "MediaService has been started with ACTION_STOP");
                 sendBroadcast(finished);
                 // Notify that we did not play any song.
                 sendSong.putExtra("NAME", (String) null);
@@ -117,6 +125,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                 player.stop();
             }
             else if(intent.getAction().equals(ACTION_SEEK)) {
+                Log.d("MediaService", "MediaService has been started with ACTION_SEEK");
                 int position = intent.getIntExtra("PROGRESS", 0);
                 player.seekTo(position);
             }
@@ -140,11 +149,11 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                 progress.putExtra("PROGRESS", player.getCurrentPosition());
                 progress.putExtra("MAX", player.getDuration());
                 sendBroadcast(progress);
+                Log.d("MediaService", "Track progress broadcast sent");
             }
             handler.postDelayed(this, 5000);
         }
     };
-
 
 
     private Song findSong(Intent intent) {
@@ -162,11 +171,6 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
         return null;
     }
 
-    private void getDuration()
-    {
-        player.getDuration();
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -179,5 +183,6 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             player.release();
             player = null;
         }
+        Log.d("MediaService", "MediaService has been destroyed");
     }
 }

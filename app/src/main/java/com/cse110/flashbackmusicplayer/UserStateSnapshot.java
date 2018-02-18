@@ -1,6 +1,7 @@
 package com.cse110.flashbackmusicplayer;
 
 import android.location.Location;
+import android.location.LocationManager;
 
 public class UserStateSnapshot implements UserState {
 
@@ -24,7 +25,10 @@ public class UserStateSnapshot implements UserState {
 
     @Override
     public void locationUpdated(double latitude, double longitude, String place) {
-
+        location = new Location(LocationManager.GPS_PROVIDER);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        this.place = place;
     }
 
     @Override

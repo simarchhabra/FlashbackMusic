@@ -2,6 +2,7 @@ package com.cse110.flashbackmusicplayer;
 
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -14,6 +15,7 @@ public class UserStateImpl implements UserState {
     public UserStateImpl() {}
 
     public void locationUpdated(double latitude, double longitude, String place) {
+        Log.d("UserStateImpl", "Set the latitude and longitude to " + latitude + " " + longitude);
         location.setLatitude(latitude);
         location.setLongitude(longitude);
         this.place = place;
@@ -33,19 +35,24 @@ public class UserStateImpl implements UserState {
 
         // Get the current time segment.
         if (day >= 5 && day < 11) {
+            Log.d("UserStateImpl", "Returned Morning. The hour is: " + day);
             return TimeSegment.MORNING;
         }
         else if (day >= 11 && day < 17) {
+            Log.d("UserStateImpl", "Returned Noon. The hour is: " + day);
             return TimeSegment.NOON;
         }
         else {
+            Log.d("UserStateImpl", "Returned Evening. The hour is: " + day);
             return TimeSegment.EVENING;
         }
     }
 
     public int getDayOfWeek() {
         Calendar calendar = Calendar.getInstance();
-        return calendar.get(Calendar.DAY_OF_WEEK);
+        int day_of_week = calendar.get(Calendar.DAY_OF_WEEK);
+        Log.d("UserStateImpl", "The day of week is " + day_of_week);
+        return day_of_week;
     }
 
     public String getDate() {
@@ -53,7 +60,9 @@ public class UserStateImpl implements UserState {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1; // January is 0
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-        return "" + month + "/" + day + "/" + year;
+        String date = "" + month + "/" + day + "/" + year;
+        Log.d("UserStateImpl", "The date is " + date);
+        return date;
     }
 
     public String getTime() {
@@ -69,7 +78,9 @@ public class UserStateImpl implements UserState {
         int am_pm = calendar.get(Calendar.AM_PM);
         String am_pm_string = am_pm == Calendar.AM ? "am" : "pm";
 
-        return hours_string + ":" + minutes_string + " " + am_pm_string;
+        String time = hours_string + ":" + minutes_string + " " + am_pm_string;
+        Log.d("UserStateImpl", "The time is " + time);
+        return time;
     }
 
     public long getSystemTime() {

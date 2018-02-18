@@ -11,6 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,9 +30,11 @@ public class LocationSystem {
                 // Get the new updated location of the user.
                 double lat = location.getLatitude();
                 double lon = location.getLongitude();
+                Log.d("LocationSystem", "The location changed to " + lat + " " + lon);
 
                 // Get the name of the place the user is at.
                 String place = getPlace(lat, lon);
+
 
                 // Update the user state with the new location.
                 state.locationUpdated(lat, lon, place);
@@ -63,9 +66,14 @@ public class LocationSystem {
 
         // Check if the address was successfully obtained.
         if (addresses != null && addresses.size() == 1) {
-            return addresses.get(0).getAddressLine(0);
+            String place = addresses.get(0).getAddressLine(0);
+            Log.d("LocationSystem", "The place is " + place);
+            return place;
         }
-        return null;
+        else {
+            Log.d("LocationSystem", "No place name could be extracted");
+            return null;
+        }
     }
 
     private void setPermissions(LocationListener locationListener) {
@@ -77,6 +85,7 @@ public class LocationSystem {
 
             ActivityCompat.requestPermissions(activity,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+            Log.d("LocationSystem", "Requested permission to access GPS data");
             return;
         }
 

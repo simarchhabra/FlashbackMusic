@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,6 +34,8 @@ public class AlbumActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("AlbumActivity", "AlbumActivity has been created");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
 
@@ -54,6 +57,9 @@ public class AlbumActivity extends AppCompatActivity {
         if (!songs.isEmpty()) {
             getIntent().putExtra("TRACK_NAME", songs.get(0).getTitle());
         }
+        else {
+            getIntent().putExtra("TRACK_NAME", "empty_track");
+        }
 
         // Set the callback so that the music system can update the UI.
         ui = new SongCallbackUI(AlbumActivity.this);
@@ -66,6 +72,7 @@ public class AlbumActivity extends AppCompatActivity {
         final Button skip = (Button) findViewById(R.id.nextButton);
         skip.setOnClickListener(view -> {
             musicSystem.skipTrack();
+            Log.d("AlbumActivity", "Skipped a track");
         });
     }
 
@@ -75,6 +82,7 @@ public class AlbumActivity extends AppCompatActivity {
 
         // Get the very first song that we will play.
         Song next = songs.get(0); songs.remove(0);
+        Log.d("AlbumActivity", "Retrieved song " + next.getTitle());
 
         // Record the name of teh track.
         getIntent().putExtra("TRACK_NAME", next.getTitle());

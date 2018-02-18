@@ -1,6 +1,7 @@
 package com.cse110.flashbackmusicplayer;
 
 import android.location.Location;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.PriorityQueue;
@@ -22,12 +23,16 @@ public class SongDatabase {
     // The max heap is generated when the user enters flashback mode and needs to play a song.
     private PriorityQueue<Song> flashbackList;
 
+    private UserState state;
 
-    public SongDatabase() {
+
+    public SongDatabase(UserState state) {
+        this.state = state;
+
         // Cache the state of the user for future reference.
-        this.dayOfTheWeek = UserState.getInstance().getDayOfWeek();
-        this.timeSegment = UserState.getInstance().getTimeSegment();
-        this.location = UserState.getInstance().getLocation();
+        this.dayOfTheWeek = state.getDayOfWeek();
+        this.timeSegment = state.getTimeSegment();
+        this.location = state.getLocation();
 
         // Creates an array and a max heap that will store all the songs.
         this.songs = new ArrayList<>();
@@ -62,21 +67,25 @@ public class SongDatabase {
 
     public boolean hasStateChanged() {
         // Compared the cached state with the actual one.
-        return UserState.getInstance().getTimeSegment() != timeSegment ||
-                UserState.getInstance().getLocation().equals(location) ||
-                UserState.getInstance().getDayOfWeek() != dayOfTheWeek;
+        boolean changed = state.getTimeSegment() != timeSegment ||
+                state.getLocation().equals(location) ||
+                state.getDayOfWeek() != dayOfTheWeek;
+        Log.d("SongDatabase", "The database state has " + (changed ? "changed" : "not changed"));
+        return changed;
     }
 
     // Creates a list of songs ordered by priority.
     public void generateFlashbackList() {
         // Cache the state of the user for future reference.
-        dayOfTheWeek = UserState.getInstance().getDayOfWeek();
-        timeSegment = UserState.getInstance().getTimeSegment();
-        location = UserState.getInstance().getLocation();
+        dayOfTheWeek = state.getDayOfWeek();
+        timeSegment = state.getTimeSegment();
+        location = state.getLocation();
 
         // Get rid of all the elements in the heap and re-add them with new priorities.
         flashbackList.clear();
         flashbackList.addAll(songs);
+
+        Log.d("SongDatabase", "Generated FlashbackList");
     }
 
     // Adds an element to the list of songs.
@@ -96,7 +105,9 @@ public class SongDatabase {
 
     public boolean isEmpty() {
         // If there is nothing left in the queue, or if the priority of all elements is 0.
-        return flashbackList.isEmpty() || calculatePriority(flashbackList.peek()) == 0;
+        boolean empty = flashbackList.isEmpty() || calculatePriority(flashbackList.peek()) == 0;
+        Log.d("SongDatabase", "The list is " + (empty ? "empty" : "not empty"));
+        return empty;
     }
 
     // Gets a song from songs using name as key. Probably just do a linear search.
