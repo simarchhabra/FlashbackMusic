@@ -6,6 +6,7 @@
     android:id="@+id/coordinatorLayout3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#0a113e"
     tools:context="com.cse110.flashbackmusicplayer.MainActivity">
 
     <Button
@@ -16,7 +17,10 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Toggle Flashback"
+        android:text="Enter Flashback Mode"
+        android:fontFamily="@font/abhaya_libre_bold"
+        android:textColor="#ffffff"
+        android:background="@drawable/custom_button"
         app:layout_constraintBottom_toTopOf="@+id/tracksDisplayButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,6 +32,11 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/abhaya_libre_bold"
+        android:textColor="#ffffff"
+        android:background="@drawable/custom_button"
         android:text="Tracks"
         app:layout_constraintBottom_toTopOf="@+id/listViews"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,9 +47,14 @@
         android:id="@+id/albumsDisplayButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginStart="8dp"
+        android:background="@drawable/custom_button"
+        android:fontFamily="@font/abhaya_libre_bold"
         android:text="Albums"
-        app:layout_constraintBaseline_toBaselineOf="@+id/tracksDisplayButton"
+        android:textColor="#ffffff"
+        app:layout_constraintBottom_toTopOf="@+id/listViews"
         app:layout_constraintEnd_toStartOf="@+id/tracksDisplayButton"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -56,11 +70,17 @@
             android:id="@+id/albumsView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:dividerHeight="1dp"
+            android:divider="#244a54"
             android:visibility="visible"/>
 
         <ListView
             android:id="@+id/songsView"
+            android:divider="#244a54"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:dividerHeight="1dp"

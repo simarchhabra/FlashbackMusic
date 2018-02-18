@@ -92,7 +92,7 @@
         android:layout_height="30dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="20dp"
-        android:background="@drawable/nuetralwhite"
+        android:background="@drawable/neutralwhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -61,12 +61,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Display the songs list on the screen.
-        ListAdapter songAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, songTitles);
+        ListAdapter songAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, songTitles);
         final ListView songsView = (ListView) findViewById(R.id.songsView);
         songsView.setAdapter(songAdapter);
 
         // Display the album list on the screen.
-        ListAdapter albumAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, albumsList);
+        ListAdapter albumAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, albumsList);
         final ListView albumsView = (ListView) findViewById(R.id.albumsView);
         albumsView.setAdapter(albumAdapter);
 
@@ -84,15 +84,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Button albumButton = (Button) findViewById(R.id.albumsDisplayButton);
+        Button tracksButton = (Button) findViewById(R.id.tracksDisplayButton);
         albumButton.setOnClickListener(view -> {
             // Hide the track listview and unhide the album listview.
+            albumButton.setSelected(true);
+            tracksButton.setSelected(false);
             songsView.setVisibility(View.GONE);
             albumsView.setVisibility(View.VISIBLE);
         });
 
-        Button tracksButton = (Button) findViewById(R.id.tracksDisplayButton);
+
         tracksButton.setOnClickListener(view -> {
             // Unhide the track listview and hide the album listview.
+            albumButton.setSelected(false);
+            tracksButton.setSelected(true);
             albumsView.setVisibility(View.GONE);
             songsView.setVisibility(View.VISIBLE);
         });

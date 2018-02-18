@@ -141,15 +141,15 @@ public class FlashbackActivity extends AppCompatActivity {
         Button fav_dislike = (Button) findViewById(R.id.fav_dis_button);
         if (song.isFavorited() && !song.isDisliked()) {
             // Change the image of the button.
-            fav_dislike.setBackgroundResource(R.drawable.favourite);
+            fav_dislike.setBackgroundResource(R.drawable.favouritewhite);
         }
         else if (!song.isFavorited() && song.isDisliked()) {
             // Change the image of the button.
-            fav_dislike.setBackgroundResource(R.drawable.dislike);
+            fav_dislike.setBackgroundResource(R.drawable.dislikewhite);
         }
         else if (!song.isDisliked() && !song.isFavorited()) {
             // Change the image of the button.
-            fav_dislike.setBackgroundResource(R.drawable.neutral);
+            fav_dislike.setBackgroundResource(R.drawable.neutralwhite);
         }
         fav_dislike.setOnClickListener(view -> {
             // If it's neutral, favorite.
@@ -158,7 +158,7 @@ public class FlashbackActivity extends AppCompatActivity {
                 song.setFavorited(true);
                 song.setDisliked(false);
                 // Change the image of the button.
-                fav_dislike.setBackgroundResource(R.drawable.favourite);
+                fav_dislike.setBackgroundResource(R.drawable.favouritewhite);
             }
             // Else if it's favorited, dislike.
             else if (song.isFavorited() && !song.isDisliked()) {
@@ -166,7 +166,7 @@ public class FlashbackActivity extends AppCompatActivity {
                 song.setFavorited(false);
                 song.setDisliked(true);
                 // Change the image of the button.
-                fav_dislike.setBackgroundResource(R.drawable.dislike);
+                fav_dislike.setBackgroundResource(R.drawable.dislikewhite);
                 // We have to skip this song because it is disliked.
                 musicSystem.skipTrack();
             }
@@ -176,7 +176,7 @@ public class FlashbackActivity extends AppCompatActivity {
                 song.setFavorited(false);
                 song.setDisliked(false);
                 // Change the image of the button.
-                fav_dislike.setBackgroundResource(R.drawable.neutral);
+                fav_dislike.setBackgroundResource(R.drawable.neutralwhite);
             }
             // This should never happen, unless we set the states wrong.
             else {
