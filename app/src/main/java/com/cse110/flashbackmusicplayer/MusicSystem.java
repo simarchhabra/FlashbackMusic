@@ -14,16 +14,22 @@ import java.util.concurrent.Callable;
 public class MusicSystem {
 
     private Activity root;
+    private SongCallback songCallback;
     private String currSong = null;
     private boolean isPaused = false;
 
     // Classes to receiver messages from the service.
     BroadcastReceiver broadcastReceiver;
     BroadcastReceiver onCompletionListener;
+    BroadcastReceiver seekbarStateReceiver;
 
 
     public MusicSystem(Activity root) {
         this.root = root;
+    }
+
+    public void setSongCallback(SongCallback songCallback) {
+        this.songCallback = songCallback;
     }
 
     public void playTrack(String toPlay) {
@@ -38,18 +44,34 @@ public class MusicSystem {
             }
         };
         root.registerReceiver(broadcastReceiver, new IntentFilter(MediaService.ACTION_BROADCAST));
+        // Create a receiver that will update the UI to display the current progress of song.
+        seekbarStateReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int progress = intent.getIntExtra("PROGRESS", 0);
+                int max = intent.getIntExtra("MAX", 0);
+                if (songCallback != null) {
+                    songCallback.setSeekbarTo(progress, max);
+                }
+            }
+        };
+        root.registerReceiver(seekbarStateReceiver, new IntentFilter(MediaService.ACTION_PROGRESS));
 
         // If song is already playing and a different one chosen, stop playback and create
         // new service for playback
         ServicePlaybackState playbackState = checkSongPlaying(currSong, toPlay);
         if (playbackState == ServicePlaybackState.DIFF_SONG) {
             root.unregisterReceiver(broadcastReceiver);
+            root.unregisterReceiver(seekbarStateReceiver);
             root.stopService(serviceIntent);
             serviceIntent = new Intent(root, MediaService.class);
             serviceIntent.setAction("START");
             serviceIntent.putExtra("NAME", toPlay);
             root.startService(serviceIntent);
             isPaused = false;
+            if (songCallback != null) {
+                songCallback.setSeekbarTo(0, 0);
+            }
         }
         // if no song is currently being played, start new service for playback
         else if (playbackState == ServicePlaybackState.NO_SONG){
@@ -58,6 +80,9 @@ public class MusicSystem {
             serviceIntent.putExtra("NAME", toPlay);
             root.startService(serviceIntent);
             isPaused = false;
+            if (songCallback != null) {
+                songCallback.setSeekbarTo(0, 0);
+            }
         }
     }
 
@@ -106,6 +131,15 @@ public class MusicSystem {
         root.startService(serviceIntent);
     }
 
+    public void seekTime(int currProgress) {
+        Intent serviceIntent = new Intent(root, MediaService.class);
+        serviceIntent.setAction("SEEK");
+        serviceIntent.putExtra("PROGRESS", currProgress);
+        root.startService(serviceIntent);
+    }
+
+
+
     // Enum for possible states of song playback
     private enum ServicePlaybackState{
         NO_SONG, SAME_SONG, DIFF_SONG
@@ -132,6 +166,10 @@ public class MusicSystem {
      * Method to enable play and pause
      */
     public void togglePause(){
+        if (songCallback != null) {
+            songCallback.setPaused(!isPaused);
+        }
+
         Intent serviceIntent = new Intent(root, MediaService.class);
         if (isPaused) {
             serviceIntent.setAction("PLAY");
@@ -151,6 +189,7 @@ public class MusicSystem {
         try {
             root.unregisterReceiver(onCompletionListener);
             root.unregisterReceiver(broadcastReceiver);
+            root.unregisterReceiver(seekbarStateReceiver);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }

@@ -9,13 +9,17 @@ import java.util.Calendar;
 public class Song {
 
     // The data defining this song.
-    private String filename, title, album, artist, trackNumber, trackDuration;
+    private String filename, title, album, artist, trackNumber;
     // The track in the album.
     private byte[] albumCover;
 
     // Whether the song was favorited or disliked. Should not both be true at the same time.
-    private boolean favorited = false;
-    private boolean disliked = false;
+    public enum LIKED_STATUS {
+        FAVORITED,
+        DISLIKED,
+        NEUTRAL
+    }
+    private LIKED_STATUS likedStatus = LIKED_STATUS.NEUTRAL;
 
     // Last time, date, and place this song was played.
     private long systemTime = 0;
@@ -68,9 +72,9 @@ public class Song {
     public String getTrackNumber() { return trackNumber; }
     public byte[] getAlbumCover() { return albumCover; }
 
-    public boolean isFavorited() { return favorited; }
-    public void setFavorited(boolean favorited) { this.favorited = favorited; }
+    public boolean isFavorited() { return likedStatus == LIKED_STATUS.FAVORITED; }
+    public boolean isDisliked() { return likedStatus == LIKED_STATUS.DISLIKED; }
 
-    public boolean isDisliked() { return disliked; }
-    public void setDisliked(boolean disliked) { this.disliked = disliked; }
+    public LIKED_STATUS getLikedStatus() { return likedStatus; }
+    public void setLikedStatus(LIKED_STATUS likedStatus) { this.likedStatus = likedStatus; }
 }

@@ -29,46 +29,38 @@ public class AlbumActivity extends AppCompatActivity {
 
     ArrayList<Song> songs = null;
     List<String> trackTitles = new ArrayList<>();
+    SongCallback ui = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
 
-        // Get the name of the song we are playing.
-        String albumName = getIntent().getExtras().getString("NAME");
+        // Get the name of the songs we are playing.
+        String albumName = getIntent().getExtras().getString("ALBUM_NAME");
         songs = songDB.getAlbum(albumName);
 
+        // Display a list of all the songs in this album.
         ArrayList<Song> songs = songDB.getAlbum(albumName);
         for(int i = 0; i<songs.size();i++)
         {
             trackTitles.add(songs.get(i).getTitle());
         }
+        ListAdapter songAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, trackTitles);
+        final ListView tracksView = (ListView) findViewById(R.id.track_list);
+        tracksView.setAdapter(songAdapter);
+
+        // Get the first song in the album, and add it to the intent.
+        if (!songs.isEmpty()) {
+            getIntent().putExtra("TRACK_NAME", songs.get(0).getTitle());
+        }
+
+        // Set the callback so that the music system can update the UI.
+        ui = new SongCallbackUI(AlbumActivity.this);
+        musicSystem.setSongCallback(ui);
+
         // Play the song.
         musicSystem.playTracks(this::nextSong);
-
-        // Pause or play the current song.
-        final Button pauseButton = (Button) findViewById(R.id.pauseButton);
-        if(musicSystem.isPaused()) {
-            pauseButton.setBackgroundResource(R.drawable.playwhite);
-        }
-        else{
-            pauseButton.setBackgroundResource(R.drawable.pausewhite);
-        }
-        pauseButton.setOnClickListener( view -> {
-                musicSystem.togglePause();
-                if(musicSystem.isPaused()) {
-                    pauseButton.setBackgroundResource(R.drawable.pausewhite);
-                }
-                else{
-                    pauseButton.setBackgroundResource(R.drawable.playwhite);
-                }
-            }
-        );
-
-        // Go back to the selection screen.
-        final Button switchScreen = (Button) findViewById(R.id.backButton);
-        switchScreen.setOnClickListener(view -> finish());
 
         // Go to the next song.
         final Button skip = (Button) findViewById(R.id.nextButton);
@@ -84,108 +76,12 @@ public class AlbumActivity extends AppCompatActivity {
         // Get the very first song that we will play.
         Song next = songs.get(0); songs.remove(0);
 
+        // Record the name of teh track.
+        getIntent().putExtra("TRACK_NAME", next.getTitle());
+
         // Draw the metadata for the song.
-        displaySong(next);
-        displayHistory(next);
+        ui.redraw();
 
         return next;
-    }
-
-    private void displayHistory(Song song){
-        TextView songHistory = (TextView) findViewById(R.id.history);
-
-        // Get the formatted strings describing when the track was last played.
-        String place = song.getPlace();
-        String time = song.getTime();
-        String date = song.getDate();
-
-        // If any of these do not exist, then the track is being played for the first time.
-        if (place == null || time == null || date == null) {
-            // Don't write anything.
-            songHistory.setText("");
-        }
-        else {
-            String songTitleStr= "Last Played: "+ song.getPlace()+ "\n"+song.getTime()+", " + song.getDate();
-            songHistory.setText(songTitleStr);
-        }
-    }
-
-    private void displaySong(Song song) {
-        // Access and display title, artist metadata
-        TextView songTitle = (TextView) findViewById(R.id.songTitle);
-        String songTitleStr= song.getTitle();
-        if(song.getArtist()!=null)
-        {
-            songTitleStr = songTitleStr+ "\n"+ song.getArtist();
-        }
-        songTitle.setText(songTitleStr);
-
-        // Access and display album, track number metadata
-        TextView songAlbum = (TextView) findViewById(R.id.songAlbum);
-        String songAlbumStr = song.getAlbum() + "\nTrack #: " + song.getTrackNumber();
-        songAlbum.setText(songAlbumStr);
-        ListAdapter songAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, trackTitles);
-        final ListView tracksView = (ListView) findViewById(R.id.track_list);
-        tracksView.setAdapter(songAdapter);
-
-        // Create image for album cover
-        ImageView albumcover = (ImageView) findViewById(R.id.album_cover);
-        byte[] albumArtData = song.getAlbumCover();
-        if (albumArtData != null) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(albumArtData, 0, albumArtData.length);
-            albumcover.setImageBitmap(bitmap);
-            albumcover.setAdjustViewBounds(true);
-        }
-        else {
-            albumcover.setImageResource(R.drawable.nocover);
-            albumcover.setAdjustViewBounds(true);
-        }
-
-        // Set the image of the like/dislike button.
-        Button fav_dislike = (Button) findViewById(R.id.fav_dis_button);
-        if (song.isFavorited() && !song.isDisliked()) {
-            // Change the image of the button.
-            fav_dislike.setBackgroundResource(R.drawable.favouritewhite);
-        }
-        else if (!song.isFavorited() && song.isDisliked()) {
-            // Change the image of the button.
-            fav_dislike.setBackgroundResource(R.drawable.dislikewhite);
-        }
-        else if (!song.isDisliked() && !song.isFavorited()) {
-            // Change the image of the button.
-            fav_dislike.setBackgroundResource(R.drawable.neutralwhite);
-        }
-        fav_dislike.setOnClickListener(view -> {
-            // If it's neutral, favorite.
-            if (!song.isFavorited() && !song.isDisliked()) {
-                // Transition to the new state.
-                song.setFavorited(true);
-                song.setDisliked(false);
-                // Change the image of the button.
-                fav_dislike.setBackgroundResource(R.drawable.favouritewhite);
-            }
-            // Else if it's favorited, dislike.
-            else if (song.isFavorited() && !song.isDisliked()) {
-                // Transition to the new state.
-                song.setFavorited(false);
-                song.setDisliked(true);
-                // Change the image of the button.
-                fav_dislike.setBackgroundResource(R.drawable.dislikewhite);
-                // We have to skip this song because it is disliked.
-                musicSystem.skipTrack();
-            }
-            // Else if it's disliked, return it to neutral.
-            else if (song.isDisliked() && !song.isFavorited()) {
-                // Transition to the new state.
-                song.setFavorited(false);
-                song.setDisliked(false);
-                // Change the image of the button.
-                fav_dislike.setBackgroundResource(R.drawable.neutralwhite);
-            }
-            // This should never happen, unless we set the states wrong.
-            else {
-                throw new IllegalStateException("Cannot have song both favorited and disliked");
-            }
-        });
     }
 }
