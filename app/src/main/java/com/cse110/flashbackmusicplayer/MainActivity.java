@@ -2,6 +2,8 @@ package com.cse110.flashbackmusicplayer;
 
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.media.MediaMetadataRetriever;
 
 import android.os.Bundle;
@@ -15,6 +17,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+
+import android.content.SharedPreferences.Editor;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -159,6 +164,24 @@ public class MainActivity extends AppCompatActivity {
 
         // Create the song object from the metadata.
         return new Song(filename, songTitle, albumName, artist, track_num, album_art);
+    }
+
+    public void saveSong(Song song) {
+        SharedPreferences settings;
+        Editor editor;
+
+        settings = getSharedPreferences(song.getFilename(), MODE_PRIVATE);
+        editor = settings.edit();
+
+        //Using the filename of the song as the filename stored in the sharedPreferences file
+        //editor.putString("filename", song.getFilename());
+        editor.putString("title", song.getTitle());
+        editor.putString("album", song.getAlbum());
+        editor.putString("artist", song.getArtist());
+        editor.putString("trackNumber", song.getTrackNumber());
+        editor.putString("genre", song.getGenre());
+        editor.putString("albumCover", song.getAlbumCover().toString());
+        editor.commit();
     }
 
 
