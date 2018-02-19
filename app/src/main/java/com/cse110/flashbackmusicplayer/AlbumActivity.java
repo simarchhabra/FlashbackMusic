@@ -84,6 +84,12 @@ public class AlbumActivity extends AppCompatActivity {
         Song next = songs.get(0); songs.remove(0);
         Log.d("AlbumActivity", "Retrieved song " + next.getTitle());
 
+        // If the song is disliked, then we do not play it.
+        if (next.isDisliked()) {
+            Log.d("AlbumActivity", "Song " + next.getTitle() + " is disliked");
+            return nextSong();
+        }
+
         // Record the name of teh track.
         getIntent().putExtra("TRACK_NAME", next.getTitle());
 

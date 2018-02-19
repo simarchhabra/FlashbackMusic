@@ -28,18 +28,23 @@ public class MainActivity extends AppCompatActivity {
     // In charge of handling all requests to play music.
     static MusicSystem musicSystem = null;
 
+    // All of the parameters of the user.
+    static UserState userState = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("MainActivity", "MainActivity has been created");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        // Initialize the user.
+        userState = new UserStateImpl();
         // Create a database of songs and populate it.
-        songDB = new SongDatabase(UserState.getInstance());
+        songDB = new SongDatabase(userState);
         // Create the system that will play all the music.
         musicSystem = new MusicSystem(MainActivity.this);
         // Create a location listener and make it update user state on change.
-        new LocationSystem(this, UserState.getInstance());
+        new LocationSystem(this, userState);
 
         // List of the names of the songs in res/raw/
         List<String> songTitles = new ArrayList<>();
@@ -159,8 +164,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         musicSystem.destroy();
+        super.onDestroy();
         Log.d("MainActivity", "MainActivity has been destroyed");
     }
 
