@@ -199,14 +199,13 @@ public class MusicSystem {
     public void destroy() {
         Intent serviceIntent = new Intent(root, MediaService.class);
         try {
-            root.unregisterReceiver(broadcastReceiver);
             root.unregisterReceiver(onCompletionListener);
+            root.unregisterReceiver(broadcastReceiver);
             root.unregisterReceiver(seekbarStateReceiver);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
         root.stopService(serviceIntent);
-
         Log.d("MusicSystem", "Music system destroyed.");
     }
 

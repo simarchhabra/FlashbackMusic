@@ -45,12 +45,16 @@ public class Test_play_select_album {
 
         DataInteraction appCompatTextView = onData(anything())
                 .inAdapterView(allOf(withId(R.id.albumsView)))
-                .atPosition(1);
+                .atPosition(0);
         appCompatTextView.perform(click());
 
         ViewInteraction textView = onView(
                 allOf(withId(R.id.songTitle), isDisplayed()));
         textView.check(matches(withText("Origin\nTerry Oldfield")));
+
+        ViewInteraction textView2 = onView(
+                allOf(withId(R.id.history)));
+        textView2.check(matches(isDisplayed()));
 
         ViewInteraction listView = onView(
                 allOf(withId(R.id.track_list)));

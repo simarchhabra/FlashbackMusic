@@ -69,9 +69,8 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                 // Create the media player.
                 player = new MediaPlayer();
                 // Record the state of the user when we started playing the song.
-                UserState snapshot = MainActivity.userState.snapshot();
-                String resource = "android.resource://" + getPackageName() + "/raw/" + song.getFilename();
-                Uri source = Uri.parse(resource);
+                UserState snapshot = UserState.snapshot();
+                Uri source = Uri.parse("android.resource://" + getPackageName() + "/raw/" + song.getFilename());
                 player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {
                     player.setDataSource(getApplicationContext(), source);
@@ -85,16 +84,12 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
 
                 // Notify the caller of this service when it is complete.
                 player.setOnCompletionListener(mediaPlayer -> {
-                    // The song is finished, so we aren't playing a song any more.
-                    sendSong.putExtra("NAME", (String) null);
-                    sendSong.putExtra("PAUSED", false);
-                    sendBroadcast(sendSong);
-                    // Notify that we have finished.
-                    sendBroadcast(finished);
-                    // Record the time this song was finished.
-                    song.startedPlaying(snapshot);
-                    Log.d("MediaService", "Track has finished");
-                });
+                            sendBroadcast(finished);
+                            // Record the time this song was finished.
+                            song.startedPlaying(snapshot);
+                            Log.d("MediaService", "Track has finished");
+                        }
+                );
 
                 // Notify the Music system of the successful start.
                 sendSong.putExtra("NAME", song.getTitle());

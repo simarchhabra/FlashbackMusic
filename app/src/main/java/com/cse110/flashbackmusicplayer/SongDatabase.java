@@ -67,13 +67,11 @@ public class SongDatabase {
 
     public boolean hasStateChanged() {
         // Compared the cached state with the actual one.
-
         boolean changed = state.getTimeSegment() != timeSegment ||
                 state.getLocation().equals(location) ||
                 state.getDayOfWeek() != dayOfTheWeek;
         Log.d("SongDatabase", "The database state has " + (changed ? "changed" : "not changed"));
         return changed;
-
     }
 
     // Creates a list of songs ordered by priority.
@@ -150,9 +148,6 @@ public class SongDatabase {
      */
     public int calculatePriority(Song song) {
         int priority = 0;
-
-        // If the song is disliked, its priority is zero.
-        if (song.isDisliked()) return 0;
 
         // Check if the current user location is near one where this song was played.
         for (Location songLocation : song.getLocations()) {

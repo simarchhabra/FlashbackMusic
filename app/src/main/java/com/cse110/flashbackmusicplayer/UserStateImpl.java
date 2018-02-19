@@ -14,11 +14,6 @@ public class UserStateImpl implements UserState {
 
     public UserStateImpl() {}
 
-    @Override
-    public UserState snapshot() {
-        return new UserStateSnapshot(this);
-    }
-
     public void locationUpdated(double latitude, double longitude, String place) {
         Log.d("UserStateImpl", "Set the latitude and longitude to " + latitude + " " + longitude);
         location.setLatitude(latitude);

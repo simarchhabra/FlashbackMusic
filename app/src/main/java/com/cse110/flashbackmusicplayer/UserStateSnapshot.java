@@ -14,18 +14,13 @@ public class UserStateSnapshot implements UserState {
     private long systemTime;
 
     public UserStateSnapshot(UserState state) {
-        this.location = new Location(state.getLocation());
+        this.location = state.getLocation();
         this.place = state.getPlace();
         this.timeSegment = state.getTimeSegment();
         this.dayOfWeek = state.getDayOfWeek();
         this.date = state.getDate();
         this.time = state.getTime();
         this.systemTime = state.getSystemTime();
-    }
-
-    @Override
-    public UserState snapshot() {
-        return new UserStateSnapshot(this);
     }
 
     @Override

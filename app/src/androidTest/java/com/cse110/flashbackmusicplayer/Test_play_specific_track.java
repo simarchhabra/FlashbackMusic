@@ -47,9 +47,7 @@ public class Test_play_specific_track {
 
         DataInteraction appCompatTextView = onData(anything())
                 .inAdapterView(allOf(withId(R.id.songsView)))
-
-                .atPosition(1);
-
+                .atPosition(0);
         appCompatTextView.perform(click());
 
         ViewInteraction textView = onView(

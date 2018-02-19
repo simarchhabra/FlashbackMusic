@@ -17,9 +17,6 @@ public class SongCallbackUI implements SongCallback {
 
     private Activity activity;
 
-    private Song song;
-    private String name;
-
     public SongCallbackUI(Activity activity) {
         this.activity = activity;
 
@@ -27,8 +24,8 @@ public class SongCallbackUI implements SongCallback {
         redraw();
 
         // Get the name of the song we are playing.
-        name = activity.getIntent().getExtras().getString("TRACK_NAME");
-        song = songDB.get(name);
+        String name = activity.getIntent().getExtras().getString("TRACK_NAME");
+        Song song = songDB.get(name);
 
         // Change the like status button when it is clicked.
         Button fav_dislike = (Button) activity.findViewById(R.id.fav_dis_button);
@@ -124,8 +121,8 @@ public class SongCallbackUI implements SongCallback {
     public void redraw() {
         Log.d("SongCallbackUI", "Drawing the UI");
         // Get the name of the song we are playing.
-        name = activity.getIntent().getExtras().getString("TRACK_NAME");
-        song = songDB.get(name);
+        String name = activity.getIntent().getExtras().getString("TRACK_NAME");
+        Song song = songDB.get(name);
 
         if (song != null) {
 
