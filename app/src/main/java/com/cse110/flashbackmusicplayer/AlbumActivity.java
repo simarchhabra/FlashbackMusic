@@ -62,7 +62,7 @@ public class AlbumActivity extends AppCompatActivity {
         }
 
         // Set the callback so that the music system can update the UI.
-        ui = new SongCallbackUI(AlbumActivity.this);
+        ui = new SongCallbackUI(AlbumActivity.this, musicSystem);
         musicSystem.setSongCallback(ui);
 
         // Play the song.

@@ -16,7 +16,7 @@ public class TrackDisplayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_current_track_display);
 
         // Set the callback so that the music system can update the UI.
-        SongCallback ui = new SongCallbackUI(TrackDisplayActivity.this);
+        SongCallback ui = new SongCallbackUI(TrackDisplayActivity.this, musicSystem);
         musicSystem.setSongCallback(ui);
         }
 }

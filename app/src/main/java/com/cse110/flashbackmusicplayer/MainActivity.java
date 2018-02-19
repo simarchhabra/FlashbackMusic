@@ -1,6 +1,7 @@
 package com.cse110.flashbackmusicplayer;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -83,19 +84,6 @@ public class MainActivity extends AppCompatActivity {
         final ListView albumsView = (ListView) findViewById(R.id.albumsView);
         albumsView.setAdapter(albumAdapter);
 
-        // If the flashback button is pressed, open the flashback activity.
-        Button launchFlashbackActivity = (Button) findViewById(R.id.switchMode);
-        launchFlashbackActivity.setOnClickListener(view -> {
-            // Stop the music from playing.
-            Intent serviceIntent = new Intent(this, MediaService.class);
-            stopService(serviceIntent);
-
-            // Open the flashback mode.
-            Intent intent = new Intent(MainActivity.this, FlashbackActivity.class);
-            startActivity(intent);
-            Log.d("MainActivity", "Starting flashback mode");
-        });
-
         Button albumButton = (Button) findViewById(R.id.albumsDisplayButton);
         Button tracksButton = (Button) findViewById(R.id.tracksDisplayButton);
         albumButton.setOnClickListener(view -> {
@@ -143,6 +131,28 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("ALBUM_NAME", name);
             startActivity(intent);
         });
+
+        // If the flashback button is pressed, open the flashback activity.
+        Button launchFlashbackActivity = (Button) findViewById(R.id.switchMode);
+        launchFlashbackActivity.setOnClickListener(view -> {
+            // Stop the music from playing.
+            musicSystem.destroy();
+
+            // Open the flashback mode.
+            Intent intent = new Intent(MainActivity.this, FlashbackActivity.class);
+            startActivityForResult(intent, 1);
+            Log.d("MainActivity", "Starting flashback mode");
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                musicSystem = new MusicSystem(MainActivity.this);
+            }
+        }
     }
 
     private Song createSongFromFile(String filename) {
@@ -181,6 +191,17 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("trackNumber", song.getTrackNumber());
         editor.putString("albumCover", song.getAlbumCover().toString());
         editor.commit();
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
 

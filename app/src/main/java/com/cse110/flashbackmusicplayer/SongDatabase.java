@@ -133,13 +133,10 @@ public class SongDatabase {
                 album.add(song);
             }
         }
-        album.sort(new Comparator<Song>() {
-            @Override
-            public int compare(Song s1, Song s2) {
-                int track1 = Integer.parseInt(s1.getTrackNumber().split("/")[0]);
-                int track2 = Integer.parseInt(s2.getTrackNumber().split("/")[0]);
-                return track1 < track2 ? -1 : 1;
-            }
+        album.sort((s1, s2) -> {
+            int track1 = Integer.parseInt(s1.getTrackNumber().split("/")[0]);
+            int track2 = Integer.parseInt(s2.getTrackNumber().split("/")[0]);
+            return track1 < track2 ? -1 : 1;
         });
         return album;
     }

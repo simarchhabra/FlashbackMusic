@@ -1,5 +1,7 @@
 package com.cse110.flashbackmusicplayer;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -35,7 +37,7 @@ public class FlashbackActivity extends AppCompatActivity {
         // Create the system that will play all the music.
         musicSystem = new MusicSystem(FlashbackActivity.this);
         // Set the callback so that the music system can update the UI.
-        ui = new SongCallbackUI(FlashbackActivity.this);
+        ui = new SongCallbackUI(FlashbackActivity.this, musicSystem);
         musicSystem.setSongCallback(ui);
 
         // Play the song with the nighest priority.
@@ -54,6 +56,10 @@ public class FlashbackActivity extends AppCompatActivity {
         super.onDestroy();
         musicSystem.destroy();
         Log.d("FlashbackActivity", "FlashbackActivity has been destroyed");
+
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK,returnIntent);
+        finish();
     }
 
     public Song nextSong() {

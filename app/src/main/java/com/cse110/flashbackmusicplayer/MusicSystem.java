@@ -113,6 +113,7 @@ public class MusicSystem {
                     Song song = null;
                     try {
                         // Play the song.
+                        currSong = null;
                         song = func.call();
                         while (song != null && song.isDisliked()) song = func.call();
                         if (song != null) {
@@ -200,10 +201,18 @@ public class MusicSystem {
         Intent serviceIntent = new Intent(root, MediaService.class);
         try {
             root.unregisterReceiver(broadcastReceiver);
+        } catch (IllegalArgumentException e) {
+            //e.printStackTrace();
+        }
+        try {
             root.unregisterReceiver(onCompletionListener);
+        } catch (IllegalArgumentException e) {
+            //e.printStackTrace();
+        }
+        try {
             root.unregisterReceiver(seekbarStateReceiver);
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         root.stopService(serviceIntent);
 

@@ -10,18 +10,19 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import static com.cse110.flashbackmusicplayer.MainActivity.musicSystem;
 import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
 
 public class SongCallbackUI implements SongCallback {
 
     private Activity activity;
+    private MusicSystem musicSystem;
 
     private Song song;
     private String name;
 
-    public SongCallbackUI(Activity activity) {
+    public SongCallbackUI(Activity activity, MusicSystem musicSystem) {
         this.activity = activity;
+        this.musicSystem = musicSystem;
 
         // Display the UI on the activity screen.
         redraw();
