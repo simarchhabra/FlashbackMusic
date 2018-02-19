@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+ 
+<gpx xmlns="http://www.topografix.com/GPX/1/1" creator="bikehike.co.uk" version="1.1" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+
+  <metadata>
+    <time>2018-02-19T00:22:06Z</time>
+    <bounds minlat="32.881700" minlon="-117.261810" maxlat="32.963060" maxlon="-117.240330" /> 
+  </metadata>
+  
+  <rte>
+    <name>bikehike course</name>
+    <number>1</number>
+    <rtept lat="32.881700" lon="-117.241040">
+      <ele>0</ele>
+      <time>2018-02-19T00:22:06Z</time>
+      <name>pt0</name>
+    </rtept>
+    <rtept lat="32.892130" lon="-117.240640">
+      <ele>0</ele>
+      <time>2018-02-19T00:22:30Z</time>
+      <name>pt22</name>
+    </rtept>
+    <rtept lat="32.920050" lon="-117.249140">
+      <ele>0</ele>
+      <time>2018-02-19T00:23:00Z</time>
+      <name>pt43</name>
+    </rtept>
+    <rtept lat="32.932860" lon="-117.260200">
+      <ele>0</ele>
+      <time>2018-02-19T00:23:30Z</time>
+      <name>pt63</name>
+    </rtept>
+    <rtept lat="32.947650" lon="-117.260860">
+      <ele>0</ele>
+      <time>2018-02-19T00:24:00Z</time>
+      <name>pt83</name>
+    </rtept>
+    <rtept lat="32.955170" lon="-117.256430">
+      <ele>0</ele>
+      <time>2018-02-19T00:24:30Z</time>
+      <name>pt106</name>
+    </rtept>
+   <rtept lat="32.961540" lon="-117.255650">
+      <ele>0</ele>
+      <time>2018-02-19T00:25:00Z</time>
+      <name>pt139</name>
+    </rtept>
+    <rtept lat="32.962850" lon="-117.255060">
+      <ele>0</ele>
+      <time>2018-02-19T00:25:31Z</time>
+      <name>pt150</name>
+    </rtept>
+    <rtept lat="32.962450" lon="-117.251840">
+      <ele>0</ele>
+      <time>2018-02-19T00:26:00Z</time>
+      <name>pt162</name>
+    </rtept>
+    <rtept lat="32.962930" lon="-117.248960">
+      <ele>0</ele>
+      <time>2018-02-19T00:26:30Z</time>
+      <name>pt170</name>
+    </rtept>
+  </rte>
+</gpx>

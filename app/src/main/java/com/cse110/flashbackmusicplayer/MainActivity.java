@@ -179,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("album", song.getAlbum());
         editor.putString("artist", song.getArtist());
         editor.putString("trackNumber", song.getTrackNumber());
-        editor.putString("genre", song.getGenre());
         editor.putString("albumCover", song.getAlbumCover().toString());
         editor.commit();
     }
