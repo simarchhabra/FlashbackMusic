@@ -1,5 +1,8 @@
 package com.cse110.flashbackmusicplayer;
 
+/**
+ * Created by Amritansh on 2/18/2018.
+ */
 
 import android.location.Location;
 import android.location.LocationManager;
@@ -32,37 +35,18 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 
-/**
- * Created by Amritansh on 2/17/2018.
- */
-
-
-//Tests for song played in different Time Segments.
-public class Test_flashback_change_cond {
-
+public class Test_flashback_same_cond {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
-    //To test flashback
-    static MockUserState state;
-    @Before
-    public void setup() {
-        state = new MockUserState();
-        MainActivity.userState = state;
-
-    }
-
-    static SeekBarThumbCoordinatesProvider seekBarThumbCoordinatesProvider;
     @Test
-    public void testFlashbackCond (){
-
+    public void testFlashbackCond () {
         MockUserState state = new MockUserState();
         MainActivity.userState = state;
 
@@ -89,18 +73,20 @@ public class Test_flashback_change_cond {
         state.setTime("10:20:00");
 
 
+        //Through the mock state, the songs somehow dont need to be played fully
+        //So not dragging them all te way
 
+        //Finding andclickng the tracks button
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.tracksDisplayButton), withText("Tracks"),
                         isDisplayed()));
         appCompatButton.perform(click());
 
+        //Playing after the storm
         DataInteraction appCompatTextView = onData(anything())
                 .inAdapterView(allOf(withId(R.id.songsView)))
                 .atPosition(1);
         appCompatTextView.perform(click());
-
-//        assertTrue(s1.getTimeSegments()[2]);
 
         try {
             Thread.sleep(5000);
@@ -111,20 +97,20 @@ public class Test_flashback_change_cond {
         ViewInteraction appCompatbBar = onView(allOf(withId(R.id.slideTrack), isDisplayed()));
         appCompatbBar.perform(scrubSeekBarAction(2500000));
 
+        //Going back
         ViewInteraction backButton = onView(
                 allOf(withId(R.id.backButton), isDisplayed()));
         backButton.perform(click());
 
-        state.setTimeSegment(TimeSegment.MORNING);
-
         appCompatButton.perform(click());
 
+        state.setSystemTime(2);
+
+        //PLaying Flying the Eagle
         DataInteraction appCompatTextView2 = onData(anything())
                 .inAdapterView(allOf(withId(R.id.songsView)))
                 .atPosition(13);
         appCompatTextView2.perform(click());
-
-//        assertTrue(s2.getTimeSegments()[1]);
 
         try {
             Thread.sleep(5000);
@@ -132,33 +118,27 @@ public class Test_flashback_change_cond {
             e.printStackTrace();
         }
 
-        appCompatbBar.perform(scrubSeekBarAction(2500000));
+        appCompatbBar.perform(scrubSeekBarAction(3000000));
 
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
+        //Going back
         backButton.perform(click());
 
-        state.setTimeSegment(TimeSegment.EVENING);
-
+        ///Launching flashback mode
         ViewInteraction appFlashButton = onView(
                 allOf(withId(R.id.switchMode), isDisplayed()));
         appFlashButton.perform(click());
 
-        ViewInteraction titleView = onView(
-                allOf(withId(R.id.songTitle), isDisplayed()));
-        titleView.check(matches(withText("After The Storm\nTerry Oldfield")));
-
-        ViewInteraction backButton2 = onView(
-                allOf(withId(R.id.backButton), isDisplayed()));
-        backButton2.perform(click());
-
-        state.setTimeSegment(TimeSegment.MORNING);
-
-        appFlashButton.perform(click());
-
+        //Firsts song played should be Flying the eagle
+        //TODO is not tho. Fix this
         ViewInteraction titleView2 = onView(
                 allOf(withId(R.id.songTitle), isDisplayed()));
         titleView2.check(matches(withText("Flight of the Eagle\nTerry Oldfield")));
-
 
     }
 
@@ -170,4 +150,8 @@ public class Test_flashback_change_cond {
                 Press.PINPOINT));
     }
 
+
+
 }
+
+

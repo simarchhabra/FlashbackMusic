@@ -25,6 +25,11 @@ public class MockUserState implements UserState {
         return systemTime;
     }
 
+    @Override
+    public UserState snapshot() {
+        return new UserStateSnapshot(this);
+    }
+
     public void locationUpdated(double latitude, double longitude, String place) {
         location = new Location(LocationManager.GPS_PROVIDER);
         location.setLatitude(latitude);
