@@ -2,6 +2,7 @@ package com.cse110.flashbackmusicplayer;
 
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.Log;
 
 public class UserStateSnapshot implements UserState {
 
@@ -14,6 +15,7 @@ public class UserStateSnapshot implements UserState {
     private long systemTime;
 
     public UserStateSnapshot(UserState state) {
+        Log.d("UserStateSnapshot", "Snapshot created at " + state.getSystemTime());
         this.location = new Location(state.getLocation());
         this.place = state.getPlace();
         this.timeSegment = state.getTimeSegment();
