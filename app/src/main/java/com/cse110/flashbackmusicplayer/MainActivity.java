@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         albumsView.setAdapter(albumAdapter);
 
         Button albumButton = (Button) findViewById(R.id.albumsDisplayButton);
+        albumButton.setSelected(true);
         Button tracksButton = (Button) findViewById(R.id.tracksDisplayButton);
         albumButton.setOnClickListener(view -> {
             // Hide the track listview and unhide the album listview.
