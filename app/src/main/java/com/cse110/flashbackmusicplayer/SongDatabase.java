@@ -15,6 +15,7 @@ public class SongDatabase {
 
     // The state of the user, last time songDatabase was updated.
     private int dayOfTheWeek;
+    private int weekOfYear;
     private TimeSegment timeSegment;
     private Location location;
 
@@ -22,6 +23,8 @@ public class SongDatabase {
     private ArrayList<Song> songs;
     // The max heap is generated when the user enters flashback mode and needs to play a song.
     private PriorityQueue<Song> flashbackList;
+
+    private PriorityQueue<Song> vibeList;
 
     private UserState state;
 
@@ -37,6 +40,8 @@ public class SongDatabase {
         // Creates an array and a max heap that will store all the songs.
         this.songs = new ArrayList<>();
         this.flashbackList = new PriorityQueue<>(50, new SongComparator());
+
+        this.vibeList = new PriorityQueue<>(50, new SongComparator());
     }
 
     private class SongComparator implements Comparator<Song>
@@ -88,6 +93,17 @@ public class SongDatabase {
         flashbackList.addAll(songs);
 
         Log.d("SongDatabase", "Generated FlashbackList");
+    }
+
+    public void generateVibeFlashbackList() {
+
+        dayOfTheWeek = state.getDayOfWeek();
+        weekOfYear = state.getWeekOfYear();
+        location = state.getLocation();
+
+        vibeList.clear();
+        vibeList.addAll(songs);
+
     }
 
     // Adds an element to the list of songs.
@@ -180,6 +196,50 @@ public class SongDatabase {
 
         // If this song was played in the same time segment, increase priority.
         if (song.getTimeSegments()[timeSegment.getIndex()]) priority++;
+
+        return priority;
+    }
+
+    /**
+     * Calculates the priority of this song using the current state of the user
+     * @return How likely this song is to be played.
+     */
+    public int calculatePriority2(Song song) {
+        int priority = 0;
+
+        // If the song is disliked, its priority is zero.
+        if (song.isDisliked()) return 0;
+
+        // Check if the current user location is near one where this song was played.
+        for (Location songLocation : song.getLocations()) {
+            // Get the location of the two points we are finding the distance between.
+            double lat1 = songLocation.getLatitude();
+            double long1 = songLocation.getLongitude();
+            double lat2 = location.getLatitude();
+            double long2 = location.getLongitude();
+
+            double theta = long1 - long2;
+            double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2))
+                    + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                    * Math.cos(Math.toRadians(theta));
+            dist = Math.acos(dist);
+            dist = Math.toDegrees(dist);
+            // Turn degrees to minutes, turn minutes to nautical miles, turn nautical miles to feet.
+            dist = dist * 60 * 1.1515 * 6076.12;
+
+            if (dist < 1000) {
+                // Increase the priority, and stop calculating any other locations.
+                priority++;
+                break;
+            }
+        }
+
+        // If this song was played on the same day of the week, increase priority.
+        //if (song.getDaysOfWeek()[dayOfTheWeek - 1]) priority++;
+
+        if(song.getWeeksOfYear()[weekOfYear]) priority++;
+
+
 
         return priority;
     }

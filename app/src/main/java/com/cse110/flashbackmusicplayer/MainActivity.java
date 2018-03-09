@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     // All of the parameters of the user.
     static UserState userState = null;
 
+    static FirebaseManager db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("MainActivity", "MainActivity has been created");
@@ -52,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         // Create a location listener and make it update user state on change.
         new LocationSystem(this, userState);
 
+        db = new FirebaseManager();
+
         // List of the names of the songs in res/raw/
         List<String> songTitles = new ArrayList<>();
         // List of all the albums in res/raw
@@ -65,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
 
             // Create the song object from file.
             Song song = createSongFromFile(filename);
+
+            song.registerObserver(db);
+
             // Add the song to the database.
             songDB.insert(song);
 

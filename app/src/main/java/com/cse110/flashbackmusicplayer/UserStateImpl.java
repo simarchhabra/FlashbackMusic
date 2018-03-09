@@ -60,6 +60,14 @@ public class UserStateImpl implements UserState {
         return day_of_week;
     }
 
+    public int getWeekOfYear() {
+        Calendar calendar = Calendar.getInstance();
+
+        int week_of_year = calendar.get(Calendar.WEEK_OF_YEAR);
+        Log.d("UserStateImpl", "The weak of year is " + week_of_year);
+        return week_of_year;
+    }
+
     public String getDate() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);

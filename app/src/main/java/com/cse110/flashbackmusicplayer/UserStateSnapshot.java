@@ -10,6 +10,7 @@ public class UserStateSnapshot implements UserState {
     private String place;
     private TimeSegment timeSegment;
     private int dayOfWeek;
+    private int weekOfYear;
     private String date;
     private String time;
     private long systemTime;
@@ -20,6 +21,7 @@ public class UserStateSnapshot implements UserState {
         this.place = state.getPlace();
         this.timeSegment = state.getTimeSegment();
         this.dayOfWeek = state.getDayOfWeek();
+        this.weekOfYear = state.getWeekOfYear();
         this.date = state.getDate();
         this.time = state.getTime();
         this.systemTime = state.getSystemTime();
@@ -56,6 +58,11 @@ public class UserStateSnapshot implements UserState {
     @Override
     public int getDayOfWeek() {
         return dayOfWeek;
+    }
+
+    @Override
+    public int getWeekOfYear() {
+        return weekOfYear;
     }
 
     @Override

@@ -18,6 +18,8 @@ public interface UserState {
 
     public int getDayOfWeek();
 
+    public int getWeekOfYear();
+
     public String getDate();
 
     public String getTime();

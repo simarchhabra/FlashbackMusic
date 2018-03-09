@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
- 
-<gpx xmlns="http://www.topografix.com/GPX/1/1" creator="bikehike.co.uk" version="1.1" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+
+<gpx xmlns="http://www.topografix.com/GPX/1/1" creator="bikehike.co.uk" version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd
+http://www.topografix.com/GPX/1/1 ">
 
   <metadata>
     <time>2018-02-19T00:22:06Z</time>
-    <bounds minlat="32.881700" minlon="-117.261810" maxlat="32.963060" maxlon="-117.240330" /> 
+    <bounds minlat="32.881700" minlon="-117.261810" maxlat="32.963060" maxlon="-117.240330" />
   </metadata>
-  
+
   <rte>
     <name>bikehike course</name>
     <number>1</number>
@@ -42,7 +42,7 @@
       <time>2018-02-19T00:24:30Z</time>
       <name>pt106</name>
     </rtept>
-   <rtept lat="32.961540" lon="-117.255650">
+    <rtept lat="32.961540" lon="-117.255650">
       <ele>0</ele>
       <time>2018-02-19T00:25:00Z</time>
       <name>pt139</name>
