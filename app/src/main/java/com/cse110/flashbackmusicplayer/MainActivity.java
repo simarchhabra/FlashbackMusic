@@ -2,13 +2,18 @@ package com.cse110.flashbackmusicplayer;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.MediaMetadataRetriever;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.net.Uri;
 
@@ -16,15 +21,20 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import android.content.SharedPreferences.Editor;
+import android.widget.Toast;
+
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,12 +87,12 @@ public class MainActivity extends AppCompatActivity {
         // Display the songs list on the screen.
         ListAdapter songAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, songTitles);
         final ListView songsView = (ListView) findViewById(R.id.songsView);
-        songsView.setAdapter(songAdapter);
+        //songsView.setAdapter(songAdapter);
 
         // Display the album list on the screen.
         ListAdapter albumAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, albumsList);
         final ListView albumsView = (ListView) findViewById(R.id.albumsView);
-        albumsView.setAdapter(albumAdapter);
+        //albumsView.setAdapter(albumAdapter);
 
         Button albumButton = (Button) findViewById(R.id.albumsDisplayButton);
         albumButton.setSelected(true);
@@ -143,6 +153,38 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, FlashbackActivity.class);
             startActivityForResult(intent, 1);
             Log.d("MainActivity", "Starting flashback mode");
+        });
+
+        // If the download songs button is pressed, open an activity that lets you download.
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // https://developer.android.com/guide/topics/ui/dialogs.html
+                // Create a popup window asking the user to enter a URL.
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Download song(s)");
+                builder.setMessage("Enter URL:");
+
+                // Create a place to enter the URL.
+                final EditText urlInput = new EditText(MainActivity.this);
+                builder.setView(urlInput);
+
+                // Create the accept and cancel buttons.
+                builder.setPositiveButton("Download", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        String url = urlInput.getText().toString();
+                        //AsyncTask<String, Void, String> loader = new TrackLoader(MainActivity.this);
+                        //AsyncTask<String, Void, String> unzipper = new TrackUnzipper(loader);
+                        AsyncTask<String, Void, String> downloader = new TrackDownloader(MainActivity.this);
+                        downloader.execute(url);
+                    }
+                });
+                builder.setNegativeButton("Cancel", null);
+
+                //builder.create();
+                builder.show();
+            }
         });
     }
 
