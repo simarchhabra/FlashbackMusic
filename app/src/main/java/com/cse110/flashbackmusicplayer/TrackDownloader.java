@@ -1,63 +1,73 @@
 package com.cse110.flashbackmusicplayer;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
 
-public class TrackDownloader extends AsyncTask<String, Void, String> {
 
-    private Activity activity;
+public class TrackDownloader extends AsyncTask<String, Void, Long> {
+
     private DownloadManager manager;
 
-    public TrackDownloader(Activity activity) {
-        this.activity = activity;
-        manager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
-        activity.registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    public TrackDownloader(DownloadManager manager) {
+        this.manager = manager;
+
     }
 
     @Override
-    protected String doInBackground(String... params) {
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(params[0]));
-        manager.enqueue(request);
+    protected Long doInBackground(String... params) {
+        // Get the name of the file we are downloading using HTTP as described here:
+        // https://stackoverflow.com/questions/33886576/using-android-downloadmanager-how-do-i-get-file-name
+        HttpURLConnection con = null;
+        String filename = "unknown-file";
+        String extension = ".unknown";
+        try {
+            con = (HttpURLConnection) (new URL(params[0])).openConnection();
+            String content = con.getHeaderField("Content-Disposition");
+            String contentSplit[] = content.split(";");
 
-        return null;
-    }
-
-
-    private BroadcastReceiver receiver = new BroadcastReceiver(){
-        // https://stackoverflow.com/questions/13321984/android-downloadmanager-get-filename
-        // How to set up a bundle of extras to get the name of the downloaded song.
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            DownloadManager.Query query = new DownloadManager.Query();
-            Bundle extras = intent.getExtras();
-            query.setFilterById(extras.getLong(DownloadManager.EXTRA_DOWNLOAD_ID));
-            Cursor cursor = manager.query(query);
-            if (cursor.moveToFirst()) {
-                String title = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_TITLE));
-                String uris = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_URI));
-                int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-
-                if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                    Toast.makeText(activity, "Finished downloading " + title, Toast.LENGTH_SHORT).show();
-                    activity.unregisterReceiver(receiver);
+            // Search for the content field that has the filename.
+            for (String field : contentSplit) {
+                if (field.contains("filename=")) {
+                    filename = field.replace("filename=","").replace("\"", "").replace(";", "").trim();
+                    extension = filename.substring(filename.lastIndexOf('.') + 1);
+                    break;
                 }
-                if (status==DownloadManager.STATUS_FAILED) {
-                    Uri uri = Uri.parse(uris);
-                    DownloadManager.Request request = new DownloadManager.Request(uri);
-                    manager.enqueue(request);
-                }
-
             }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    };
+
+        Uri uri = Uri.parse(params[0]);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
+        request.setMimeType(MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension));
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+
+
+        return manager.enqueue(request);
+    }
 }

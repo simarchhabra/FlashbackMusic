@@ -70,7 +70,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                 player = new MediaPlayer();
                 // Record the state of the user when we started playing the song.
                 UserState snapshot = MainActivity.userState.snapshot();
-                String resource = "android.resource://" + getPackageName() + "/raw/" + song.getFilename();
+                String resource = song.getFilename();
                 Uri source = Uri.parse(resource);
                 player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 try {

@@ -3,6 +3,7 @@ package com.cse110.flashbackmusicplayer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -36,7 +37,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TrackContainer {
 
     // A database of all the songs that are stored in the res folder.
     static SongDatabase songDB = null;
@@ -46,6 +47,16 @@ public class MainActivity extends AppCompatActivity {
 
     // All of the parameters of the user.
     static UserState userState = null;
+
+    // In charge of downloading all of the songs.
+    static DownloadSystem downloadSystem = null;
+
+    // List of the names of all the songs.
+    List<String> songTitles;
+    ArrayAdapter songAdapter;
+    // List of all the albums.
+    List<String> albumsList;
+    ArrayAdapter albumAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,40 +70,27 @@ public class MainActivity extends AppCompatActivity {
         songDB = new SongDatabase(userState);
         // Create the system that will play all the music.
         musicSystem = new MusicSystem(MainActivity.this);
+        // Create the system that will download everything.
+        downloadSystem = new DownloadSystem(MainActivity.this, MainActivity.this);
+        registerReceiver(downloadSystem, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         // Create a location listener and make it update user state on change.
         new LocationSystem(this, userState);
 
-        // List of the names of the songs in res/raw/
-        List<String> songTitles = new ArrayList<>();
-        // List of all the albums in res/raw
-        List<String> albumsList = new ArrayList<>();
 
-        // For every single file in the res/raw folder...
-        Field[] fields = R.raw.class.getFields();
-        for (Field field : fields) {
-            // Get the name of the song file.
-            String filename = field.getName();
-
-            // Create the song object from file.
-            Song song = createSongFromFile(filename);
-            // Add the song to the database.
-            songDB.insert(song);
-
-            // Record this songs title to display it.
-            songTitles.add(song.getTitle());
-            // Add this song's album to the albums listview if it doesn't already exist.
-            if (!albumsList.contains(song.getAlbum())) albumsList.add(song.getAlbum());
-        }
+        // Initialize list views that will display the tracks and the albums.
+        songTitles = new ArrayList<>();
+        albumsList = new ArrayList<>();
 
         // Display the songs list on the screen.
-        ListAdapter songAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, songTitles);
+        songAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, songTitles);
         final ListView songsView = (ListView) findViewById(R.id.songsView);
-        //songsView.setAdapter(songAdapter);
+        songsView.setAdapter(songAdapter);
 
         // Display the album list on the screen.
-        ListAdapter albumAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, albumsList);
+        albumAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, albumsList);
         final ListView albumsView = (ListView) findViewById(R.id.albumsView);
-        //albumsView.setAdapter(albumAdapter);
+        albumsView.setAdapter(albumAdapter);
+
 
         Button albumButton = (Button) findViewById(R.id.albumsDisplayButton);
         albumButton.setSelected(true);
@@ -157,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
         // If the download songs button is pressed, open an activity that lets you download.
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -174,10 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 builder.setPositiveButton("Download", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String url = urlInput.getText().toString();
-                        //AsyncTask<String, Void, String> loader = new TrackLoader(MainActivity.this);
-                        //AsyncTask<String, Void, String> unzipper = new TrackUnzipper(loader);
-                        AsyncTask<String, Void, String> downloader = new TrackDownloader(MainActivity.this);
-                        downloader.execute(url);
+                        downloadSystem.downloadTrack(url);
                     }
                 });
                 builder.setNegativeButton("Cancel", null);
@@ -198,45 +194,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private Song createSongFromFile(String filename) {
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-
-        // Get the metadata from the song.
-        Uri source = Uri.parse("android.resource://" + getPackageName() + "/raw/" + filename);
-        mmr.setDataSource(this, source);
-
-        // Extract information from the metadata.
-        String songTitle = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-        String albumName = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-        String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-        String track_num = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER);
-        byte[] album_art = mmr.getEmbeddedPicture();
-
-        Log.d("MainActivity", "Loaded song from " + filename + " <" +
-                songTitle + ", " + albumName + ", " + artist + ", " + track_num + ">");
-
-        // Create the song object from the metadata.
-        return new Song(filename, songTitle, albumName, artist, track_num, album_art);
-    }
-
-    public void saveSong(Song song) {
-        SharedPreferences settings;
-        Editor editor;
-
-        settings = getSharedPreferences(song.getFilename(), MODE_PRIVATE);
-        editor = settings.edit();
-
-        //Using the filename of the song as the filename stored in the sharedPreferences file
-        //editor.putString("filename", song.getFilename());
-        editor.putString("title", song.getTitle());
-        editor.putString("album", song.getAlbum());
-        editor.putString("artist", song.getArtist());
-        editor.putString("trackNumber", song.getTrackNumber());
-        editor.putString("albumCover", song.getAlbumCover().toString());
-        editor.commit();
-    }
-
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -251,8 +208,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         musicSystem.destroy();
+        unregisterReceiver(downloadSystem);
         super.onDestroy();
         Log.d("MainActivity", "MainActivity has been destroyed");
     }
 
+    @Override
+    public void addTrack(Song song) {
+        // Add the song to the database.
+        songDB.insert(song);
+
+        // Record this songs title to display it.
+        songTitles.add(song.getTitle());
+        songAdapter.notifyDataSetChanged();
+        // Add this song's album to the albums listview if it doesn't already exist.
+        if (!albumsList.contains(song.getAlbum())) {
+            albumsList.add(song.getAlbum());
+            albumAdapter.notifyDataSetChanged();
+        }
+    }
 }

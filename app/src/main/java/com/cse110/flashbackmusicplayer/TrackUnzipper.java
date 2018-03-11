@@ -1,60 +1,92 @@
 package com.cse110.flashbackmusicplayer;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-/**
- * Created by Moi on 3/10/2018.
- */
 
-class TrackUnzipper extends AsyncTask<String, Void, String> {
+class TrackUnzipper extends AsyncTask<String, Void, Boolean> {
 
-    private final AsyncTask<String, Void, String> asynctask;
+    // The object that is notified when this task finishes.
+    public TrackUnzipperObserver observer = null;
 
-    public TrackUnzipper(AsyncTask<String, Void, String> task) {
-        this.asynctask = task;
+    // The list of files we created.
+    private List<String> filenames = null;
+
+    // Observer class from this subject.
+    public interface TrackUnzipperObserver {
+        void update(List<String> filenames);
     }
 
+    public TrackUnzipper(TrackUnzipperObserver observer) {
+        this.observer = observer;
+    }
+
+    /*
+     * Looked at this code to understand how to unzip something:
+     * https://stackoverflow.com/questions/3382996/how-to-unzip-files-programmatically-in-android
+     */
     @Override
-    protected String doInBackground(String... params) {
-        try {
-            String urlString = params[0];
-            URL url = new URL(urlString);
-            File file = new File(Environment.getExternalStorageDirectory() + "/" + urlString);
+    protected Boolean doInBackground(String... params) {
+        filenames = new ArrayList<>();
 
-            // Open a connection to the URL with the tracks zip file.
-            URLConnection urlConnection = url.openConnection();
+        try
+        {
+            // Get the path as it appears in the phone
+            String filepath = Uri.parse(params[0]).getPath();
+            String dir = filepath.substring(0, filepath.lastIndexOf(File.separator) + 1);
 
-            // Get a stream of the bytes from the URL.
-            InputStream inputStream = urlConnection.getInputStream();
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+            InputStream inputStream = new FileInputStream(filepath);
+            ZipInputStream zipStream = new ZipInputStream(new BufferedInputStream(inputStream));
 
-            // Write the bytes to the file.
-            FileOutputStream output = new FileOutputStream(file);
-            int i = 0;
-            while ((i = bufferedInputStream.read()) != -1) {
-                output.write(i);
+            // Get the files in the zip folder.
+            ZipEntry entry;
+            while ((entry = zipStream.getNextEntry()) != null)
+            {
+                // Get the name of the first file.
+                String filename = entry.getName();
+                filenames.add(dir + filename);
+
+                // Read from the zipped file and copy the file to the directory.
+                FileOutputStream fout = new FileOutputStream(dir + filename);
+
+                byte[] buffer = new byte[1024];
+                int count;
+                while ((count = zipStream.read(buffer)) != -1)
+                {
+                    fout.write(buffer, 0, count);
+                }
+
+                fout.close();
+                zipStream.closeEntry();
             }
 
-            output.close();
-
-        } catch (IOException e) {
+            zipStream.close();
+        }
+        catch(IOException e)
+        {
             e.printStackTrace();
+            return false;
         }
 
-        return params[0];
+        return true;
     }
 
     @Override
-    protected void onPostExecute(String result) {
-        asynctask.execute(result);
+    protected void onPostExecute(Boolean result) {
+        observer.update(filenames);
     }
 }
