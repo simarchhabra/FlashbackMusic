@@ -100,4 +100,10 @@ public class UserStateImpl implements UserState {
         return System.currentTimeMillis();
     }
 
+    int id = 0;
+    @Override
+    public String getUser() {
+        return "" + id++;
+    }
+
 }

@@ -1,13 +1,9 @@
 package com.cse110.flashbackmusicplayer;
 
-import java.util.Observer;
-
-/**
- * Created by Amritansh on 3/8/2018.
- */
+import android.location.Location;
 
 public interface SongSubject {
-    public void registerObserver(DBObserver o);
-    public void removeObserver(Observer o);
-    public void notifyObservers();
+    public void registerObserver(SongObserver o);
+    public void removeObserver(SongObserver o);
+    public void notifyObservers(String user, long time, Location location);
 }

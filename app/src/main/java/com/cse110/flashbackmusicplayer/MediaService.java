@@ -9,7 +9,6 @@ import android.os.IBinder;
 import android.media.MediaPlayer;
 import android.os.PowerManager;
 import android.util.Log;
-import android.widget.SeekBar;
 
 import java.io.IOException;
 
@@ -92,7 +91,7 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
                     // Notify that we have finished.
                     sendBroadcast(finished);
                     // Record the time this song was finished.
-                    song.startedPlaying(snapshot);
+                    song.donePlaying(snapshot);
                     Log.d("MediaService", "Track has finished");
                 });
 

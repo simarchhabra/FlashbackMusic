@@ -9,11 +9,6 @@ import android.widget.Button;
 
 import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
 
-
-/**
- * Created by Amritansh on 3/4/2018.
- */
-
 public class VibeActivity extends AppCompatActivity {
 
     // In charge of handling all requests to play music.
