@@ -6,23 +6,25 @@ import java.util.Calendar;
 
 public interface UserState {
 
-    public UserState snapshot();
+    UserState snapshot();
 
-    public void locationUpdated(double latitude, double longitude, String place);
+    void locationUpdated(double latitude, double longitude, String place);
 
-    public Location getLocation();
+    Location getLocation();
 
-    public String getPlace();
+    String getPlace();
 
-    public TimeSegment getTimeSegment();
+    TimeSegment getTimeSegment();
 
-    public int getDayOfWeek();
+    int getDayOfWeek();
 
-    public int getWeekOfYear();
+    int getWeekOfYear();
 
-    public String getDate();
+    String getDate();
 
-    public String getTime();
+    String getTime();
 
-    public long getSystemTime();
+    long getSystemTime();
+
+    String getUser();
 }

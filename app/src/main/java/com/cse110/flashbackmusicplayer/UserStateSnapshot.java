@@ -14,6 +14,7 @@ public class UserStateSnapshot implements UserState {
     private String date;
     private String time;
     private long systemTime;
+    private String user;
 
     public UserStateSnapshot(UserState state) {
         Log.d("UserStateSnapshot", "Snapshot created at " + state.getSystemTime());
@@ -25,6 +26,7 @@ public class UserStateSnapshot implements UserState {
         this.date = state.getDate();
         this.time = state.getTime();
         this.systemTime = state.getSystemTime();
+        this.user = state.getUser();
     }
 
     @Override
@@ -78,5 +80,10 @@ public class UserStateSnapshot implements UserState {
     @Override
     public long getSystemTime() {
         return systemTime;
+    }
+
+    @Override
+    public String getUser() {
+        return user;
     }
 }

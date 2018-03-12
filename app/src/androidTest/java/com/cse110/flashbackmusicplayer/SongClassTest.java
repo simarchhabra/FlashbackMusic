@@ -40,7 +40,7 @@ public class SongClassTest {
         String place = "Revelle, UCSD"; state.setPlace(place);
         long sysTime = 100121503; state.setSystemTime(sysTime);
 
-        song.startedPlaying(state);
+        song.donePlaying(state);
 
         // Check if the song object, remembers all of this.
         assertEquals(time, song.getTime());
@@ -72,7 +72,7 @@ public class SongClassTest {
         // Test playing once on Sunday.
         state.setDayOfWeek(Calendar.SUNDAY);
         daysOfWeek[0] = true;
-        song.startedPlaying(state);
+        song.donePlaying(state);
         assertArrayEquals(daysOfWeek, song.getDaysOfWeek());
 
         // Play a song on Monday and Tuesday.
@@ -81,11 +81,11 @@ public class SongClassTest {
         // monday
         state.setDayOfWeek(Calendar.MONDAY);
         daysOfWeek[1] = true;
-        song.startedPlaying(state);
+        song.donePlaying(state);
         // tuesday
         state.setDayOfWeek(Calendar.TUESDAY);
         daysOfWeek[2] = true;
-        song.startedPlaying(state);
+        song.donePlaying(state);
         assertArrayEquals(daysOfWeek, song.getDaysOfWeek());
 
         // Play a song on all 3 days of the week.
@@ -94,7 +94,7 @@ public class SongClassTest {
         for (int i = 0; i < 7; i++) {
             state.setDayOfWeek(i + 1);
             daysOfWeek[i] = true;
-            song.startedPlaying(state);
+            song.donePlaying(state);
         }
         assertArrayEquals(daysOfWeek, song.getDaysOfWeek());
     }
@@ -110,7 +110,7 @@ public class SongClassTest {
         // Test playing in the morning.
         state.setTimeSegment(TimeSegment.MORNING);
         timeSegments[TimeSegment.MORNING.getIndex()] = true;
-        song.startedPlaying(state);
+        song.donePlaying(state);
         assertArrayEquals(timeSegments, song.getTimeSegments());
 
         // Play a song in the noon and evening.
@@ -120,11 +120,11 @@ public class SongClassTest {
         timeSegments = new boolean[TimeSegment.numSegments];
         state.setTimeSegment(TimeSegment.NOON);
         timeSegments[TimeSegment.NOON.getIndex()] = true;
-        song.startedPlaying(state);
+        song.donePlaying(state);
         // evening
         state.setTimeSegment(TimeSegment.EVENING);
         timeSegments[TimeSegment.EVENING.getIndex()] = true;
-        song.startedPlaying(state);
+        song.donePlaying(state);
         assertArrayEquals(timeSegments, song.getTimeSegments());
 
         // Play a song in all 3 sections of the day.
@@ -133,15 +133,15 @@ public class SongClassTest {
         timeSegments = new boolean[TimeSegment.numSegments];
         state.setTimeSegment(TimeSegment.MORNING);
         timeSegments[TimeSegment.MORNING.getIndex()] = true;
-        song.startedPlaying(state);
+        song.donePlaying(state);
         // noon
         state.setTimeSegment(TimeSegment.NOON);
         timeSegments[TimeSegment.NOON.getIndex()] = true;
-        song.startedPlaying(state);
+        song.donePlaying(state);
         // evening
         state.setTimeSegment(TimeSegment.EVENING);
         timeSegments[TimeSegment.EVENING.getIndex()] = true;
-        song.startedPlaying(state);
+        song.donePlaying(state);
         assertArrayEquals(timeSegments, song.getTimeSegments());
     }
 
@@ -161,7 +161,7 @@ public class SongClassTest {
         Song song = new Song("filename", "title", "album", "artist", "trackNumber", albumCover);
         for (Location location : locations) {
             state.setLocation(location);
-            song.startedPlaying(state);
+            song.donePlaying(state);
         }
 
         // Check if all the locations we played were added to the array.

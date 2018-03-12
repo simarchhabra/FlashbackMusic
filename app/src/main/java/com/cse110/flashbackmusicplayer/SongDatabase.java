@@ -192,10 +192,10 @@ public class SongDatabase {
         }
 
         // If this song was played on the same day of the week, increase priority.
-        if (song.getDaysOfWeek()[dayOfTheWeek - 1]) priority++;
+        //if (song.getDaysOfWeek()[dayOfTheWeek - 1]) priority++;
 
         // If this song was played in the same time segment, increase priority.
-        if (song.getTimeSegments()[timeSegment.getIndex()]) priority++;
+        //if (song.getTimeSegments()[timeSegment.getIndex()]) priority++;
 
         return priority;
     }
@@ -237,7 +237,7 @@ public class SongDatabase {
         // If this song was played on the same day of the week, increase priority.
         //if (song.getDaysOfWeek()[dayOfTheWeek - 1]) priority++;
 
-        if(song.getWeeksOfYear()[weekOfYear]) priority++;
+        //if(song.getWeeksOfYear()[weekOfYear]) priority++;
 
 
 

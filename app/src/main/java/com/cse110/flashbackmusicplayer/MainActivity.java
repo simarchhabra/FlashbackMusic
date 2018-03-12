@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         new LocationSystem(this, userState);
 
         // Get a reference to the firebase manager.
-        db = new FirebaseManager();
+        db = new FirebaseManager(songDB);
 
         // Initialize list views that will display the tracks and the albums.
         songTitles = new ArrayList<>();
@@ -224,6 +224,7 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         songDB.insert(song);
         // Add the firebase database as an observer of the song.
         song.registerObserver(db);
+        db.registerObserver(song);
 
         // Record this songs title to display it.
         songTitles.add(song.getTitle());

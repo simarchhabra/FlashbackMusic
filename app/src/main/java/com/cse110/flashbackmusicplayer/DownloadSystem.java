@@ -69,14 +69,14 @@ public class DownloadSystem extends BroadcastReceiver {
                 String extension = filepath.substring(filepath.lastIndexOf('.') + 1);
                 if (extension.equals("mp3")) {
                     // Add it to activities list of songs.
-                    container.addTrack(createSongFromFile(filepath));
+                    container.addTrack(createSongFromFile(filepath, url));
                 }
                 else if (extension.equals("zip")) {
                     // Unzip the file.
                     TrackUnzipper unzipper = new TrackUnzipper(filenames -> {
                         for (String file : filenames) {
                             // Add it to activities list of songs.
-                            container.addTrack(createSongFromFile(file));
+                            container.addTrack(createSongFromFile(file, url));
                         }
                     });
                     unzipper.execute(filepath);
@@ -92,7 +92,7 @@ public class DownloadSystem extends BroadcastReceiver {
         cursor.close();
     }
 
-    private Song createSongFromFile(String filename) {
+    private Song createSongFromFile(String filename, String url) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 
         // Get the metadata from the song.
@@ -106,14 +106,18 @@ public class DownloadSystem extends BroadcastReceiver {
         String track_num = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER);
         byte[] album_art = mmr.getEmbeddedPicture();
 
+        // Handle null case.
         songTitle = songTitle != null ? songTitle : "unnamed_song";
         albumName = albumName != null ? albumName : "no_album";
         artist = artist != null ? artist : "unnamed_artist";
+
+        // Get rid of illegal characters in song name.
+        songTitle = songTitle.replace(".", "dot").replace("#", "hash").replace("$", "S").replace("[", "(").replace("]", ")");
 
         Log.d("DownloadSystem", "Loaded song from " + filename + " <" +
                 songTitle + ", " + albumName + ", " + artist + ", " + track_num + ">");
 
         // Create the song object from the metadata.
-        return new Song(filename, songTitle, albumName, artist, track_num, album_art);
+        return new Song(filename, url, songTitle, albumName, artist, track_num, album_art);
     }
 }
