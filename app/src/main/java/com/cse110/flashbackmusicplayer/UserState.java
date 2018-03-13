@@ -11,20 +11,8 @@ public interface UserState {
     void locationUpdated(double latitude, double longitude, String place);
 
     Location getLocation();
-
-    String getPlace();
-
-    TimeSegment getTimeSegment();
-
-    int getDayOfWeek();
-
-    int getWeekOfYear();
-
-    String getDate();
-
-    String getTime();
+    String getUser();
+    int getDayOfYear();
 
     long getSystemTime();
-
-    String getUser();
 }

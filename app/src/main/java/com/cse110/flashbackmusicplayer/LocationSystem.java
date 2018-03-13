@@ -19,9 +19,11 @@ import java.util.List;
 public class LocationSystem {
 
     private Activity activity;
+    private static Geocoder geocoder;
 
     public LocationSystem(Activity activity, UserState state) {
         this.activity = activity;
+        geocoder = new Geocoder(activity);
 
         // Record the user's location whenever it changes.
         LocationListener locationListener = new LocationListener() {
@@ -30,7 +32,7 @@ public class LocationSystem {
                 // Get the new updated location of the user.
                 double lat = location.getLatitude();
                 double lon = location.getLongitude();
-                Log.d("LocationSystem", "The location changed to " + lat + " " + lon);
+                //Log.d("LocationSystem", "The location changed to " + lat + " " + lon);
 
                 // Get the name of the place the user is at.
                 String place = getPlace(lat, lon);
@@ -54,8 +56,7 @@ public class LocationSystem {
         setPermissions(locationListener);
     }
 
-    private String getPlace(double lat, double lon) {
-        Geocoder geocoder = new Geocoder(activity);
+    public static String getPlace(double lat, double lon) {
         List<Address> addresses = null;
         try {
             // Get the most likely address of the location.
@@ -67,11 +68,11 @@ public class LocationSystem {
         // Check if the address was successfully obtained.
         if (addresses != null && addresses.size() == 1) {
             String place = addresses.get(0).getAddressLine(0);
-            Log.d("LocationSystem", "The place is " + place);
+            //Log.d("LocationSystem", "The place is " + place);
             return place;
         }
         else {
-            Log.d("LocationSystem", "No place name could be extracted");
+            //Log.d("LocationSystem", "No place name could be extracted");
             return null;
         }
     }

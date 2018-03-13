@@ -64,7 +64,6 @@ public class TrackDownloader extends AsyncTask<String, Void, Long> {
         File file = new File(Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DOWNLOADS  + File.separator + filename);
         if(file.exists()) {
             boolean result = file.delete();
-            result = true;
         }
 
         Uri uri = Uri.parse(params[0]);

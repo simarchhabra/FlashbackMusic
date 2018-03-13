@@ -1,8 +1,10 @@
 package com.cse110.flashbackmusicplayer;
 
 import android.location.Location;
+import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Song implements SongSubject, FirebaseObserver {
 
@@ -13,6 +15,10 @@ public class Song implements SongSubject, FirebaseObserver {
 
     // Whether or not this track is downloaded to the users phone or not.
     private boolean downloaded = false;
+
+    // A cached priority score for this song. Only valid after calling generateVibeList while
+    // hasStateChanged() return false.
+    private int priority = 0;
 
     // List of all locations and times this song has been played at and the respective users.
     // The lengths of these arrays are the same and at each index the triple shows one play of song.
@@ -38,10 +44,55 @@ public class Song implements SongSubject, FirebaseObserver {
         notifyObservers(state.getUser(), state.getSystemTime(), state.getLocation());
     }
 
-    public String getTime() { return "placeholder_time"; }
-    public String getDate() { return "placeholder_date"; }
-    public String getPlace() { return "placeholder_place"; }
-    public long getSystemTime() { return 0; }
+    public String getUser() {
+        if (users.size() == 0) return null;
+        return users.get(users.size() - 1);
+    }
+
+    public String getTime() {
+        if (times.size() == 0) return null;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(getSystemTime());
+        int hours = calendar.get(Calendar.HOUR);
+        String hours_string = String.valueOf(hours);
+        if (hours / 10 == 0) hours_string = "0" + hours_string;
+
+        int minutes = calendar.get(Calendar.MINUTE);
+        String minutes_string = String.valueOf(minutes);
+        if (minutes / 10 == 0) minutes_string = "0" + minutes_string;
+
+        int am_pm = calendar.get(Calendar.AM_PM);
+        String am_pm_string = am_pm == Calendar.AM ? "am" : "pm";
+
+        String time = hours_string + ":" + minutes_string + " " + am_pm_string;
+        Log.d("UserStateImpl", "The time is " + time);
+        return time;
+    }
+
+    public String getDate() {
+        if (times.size() == 0) return null;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(getSystemTime());
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1; // January is 0
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        String date = "" + month + "/" + day + "/" + year;
+        return date;
+    }
+    public String getPlace() {
+        if (locations.size() == 0) return null;
+
+        Location loc = locations.get(locations.size() - 1);
+        return LocationSystem.getPlace(loc.getLatitude(), loc.getLongitude());
+    }
+    public long getSystemTime() {
+        if (times.size() == 0) return -1;
+
+        // The last time this track was played is the last entry of the times array.
+        return times.get(times.size() - 1);
+    }
 
     public ArrayList<Location> getLocations() { return locations; }
     public ArrayList<Long> getTimes() { return times; }
@@ -54,7 +105,24 @@ public class Song implements SongSubject, FirebaseObserver {
     public String getURL() { return url; }
     public String getTrackNumber() { return trackNumber; }
 
+    public void setAlbumCover(byte[] cover) { albumCover = cover; }
     public byte[] getAlbumCover() { return albumCover; }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public boolean isDownloaded() {
+        return downloaded;
+    }
+
+    public void setDownloaded(boolean downloaded) {
+        this.downloaded = downloaded;
+    }
 
     // Whether the song was favorited or disliked. Should not both be true at the same time.
     public enum LIKED_STATUS { FAVORITED, DISLIKED, NEUTRAL }

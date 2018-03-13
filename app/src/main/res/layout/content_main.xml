@@ -17,7 +17,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Enter Flashback Mode"
+        android:text="Enter Vibe Mode"
         android:fontFamily="@font/abhaya_libre_bold"
         android:textColor="#ffffff"
         android:background="@drawable/custom_button"

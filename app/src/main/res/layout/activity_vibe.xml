@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.cse110.flashbackmusicplayer.MainActivity">
+    tools:context="com.cse110.flashbackmusicplayer.VibeActivity">
 
-    <include layout="@layout/content_flashback" />
+    <include layout="@layout/content_vibe" />
 
 </android.support.design.widget.CoordinatorLayout>

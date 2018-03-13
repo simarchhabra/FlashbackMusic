@@ -24,13 +24,6 @@ public class SongCallbackUI implements SongCallback {
         this.activity = activity;
         this.musicSystem = musicSystem;
 
-        // Display the UI on the activity screen.
-        redraw();
-
-        // Get the name of the song we are playing.
-        name = activity.getIntent().getExtras().getString("TRACK_NAME");
-        song = songDB.get(name);
-
         // Change the like status button when it is clicked.
         Button fav_dislike = (Button) activity.findViewById(R.id.fav_dis_button);
         fav_dislike.setOnClickListener(view -> {
