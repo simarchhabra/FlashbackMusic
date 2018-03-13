@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/background"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.cse110.flashbackmusicplayer.FlashbackActivity"
-    tools:showIn="@layout/activity_flashback">
+    tools:context="com.cse110.flashbackmusicplayer.VibeActivity"
+    tools:showIn="@layout/activity_vibe">
 
     <Button
         android:id="@+id/backButton"

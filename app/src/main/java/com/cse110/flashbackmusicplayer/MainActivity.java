@@ -1,46 +1,35 @@
 package com.cse110.flashbackmusicplayer;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.media.MediaMetadataRetriever;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.net.Uri;
 
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import android.content.SharedPreferences.Editor;
-import android.widget.Toast;
-
-import org.json.JSONObject;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements TrackContainer {
 
     // A database of all the songs that are stored in the res folder.
     static SongDatabase songDB = null;
+
+    // The online database where information about all songs played by
+    // all users is played.
+    static FirebaseManager db = null;
 
     // In charge of handling all requests to play music.
     static MusicSystem musicSystem = null;
@@ -76,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         // Create a location listener and make it update user state on change.
         new LocationSystem(this, userState);
 
+        // Get a reference to the firebase manager.
+        db = new FirebaseManager(songDB);
 
         // Initialize list views that will display the tracks and the albums.
         songTitles = new ArrayList<>();
@@ -90,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         albumAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, albumsList);
         final ListView albumsView = (ListView) findViewById(R.id.albumsView);
         albumsView.setAdapter(albumAdapter);
-
 
         Button albumButton = (Button) findViewById(R.id.albumsDisplayButton);
         albumButton.setSelected(true);
@@ -142,15 +132,15 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         });
 
         // If the flashback button is pressed, open the flashback activity.
-        Button launchFlashbackActivity = (Button) findViewById(R.id.switchMode);
-        launchFlashbackActivity.setOnClickListener(view -> {
+        Button launchVibeActivity = (Button) findViewById(R.id.switchMode);
+        launchVibeActivity.setOnClickListener(view -> {
             // Stop the music from playing.
             musicSystem.destroy();
 
             // Open the flashback mode.
-            Intent intent = new Intent(MainActivity.this, FlashbackActivity.class);
+            Intent intent = new Intent(MainActivity.this, VibeActivity.class);
             startActivityForResult(intent, 1);
-            Log.d("MainActivity", "Starting flashback mode");
+            Log.d("MainActivity", "Starting vibe mode");
         });
 
         // If the download songs button is pressed, open an activity that lets you download.
@@ -215,16 +205,25 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
 
     @Override
     public void addTrack(Song song) {
-        // Add the song to the database.
-        songDB.insert(song);
+        // If this track is in the database, don't add it again.
+        if (songDB.get(song.getTitle()) == null) {
+            // Add the song to the database.
+            songDB.insert(song);
+            // Add the firebase database as an observer of the song.
+            song.registerObserver(db);
+            db.registerObserver(song);
+        }
 
-        // Record this songs title to display it.
-        songTitles.add(song.getTitle());
-        songAdapter.notifyDataSetChanged();
-        // Add this song's album to the albums listview if it doesn't already exist.
-        if (!albumsList.contains(song.getAlbum())) {
-            albumsList.add(song.getAlbum());
-            albumAdapter.notifyDataSetChanged();
+        // If this song is in the list, don't add it again.
+        if (!songTitles.contains(song.getTitle())) {
+            // Record this songs title to display it.
+            songTitles.add(song.getTitle());
+            songAdapter.notifyDataSetChanged();
+            // Add this song's album to the albums listview if it doesn't already exist.
+            if (!albumsList.contains(song.getAlbum())) {
+                albumsList.add(song.getAlbum());
+                albumAdapter.notifyDataSetChanged();
+            }
         }
     }
 }

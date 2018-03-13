@@ -20,6 +20,8 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.List;
 
+import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
+
 public class DownloadSystem extends BroadcastReceiver {
 
     Activity activity;
@@ -68,15 +70,21 @@ public class DownloadSystem extends BroadcastReceiver {
                 // Check if we downloads a mp3 or zip file.
                 String extension = filepath.substring(filepath.lastIndexOf('.') + 1);
                 if (extension.equals("mp3")) {
+                    // Record that this song is downloaded and that we can play it.
+                    Song song = createSongFromFile(filepath, url);
+                    song.setDownloaded(true);
                     // Add it to activities list of songs.
-                    container.addTrack(createSongFromFile(filepath));
+                    container.addTrack(song);
                 }
                 else if (extension.equals("zip")) {
                     // Unzip the file.
                     TrackUnzipper unzipper = new TrackUnzipper(filenames -> {
                         for (String file : filenames) {
+                            // Record that this song is downloaded and that we can play it.
+                            Song song = createSongFromFile(file, url);
+                            song.setDownloaded(true);
                             // Add it to activities list of songs.
-                            container.addTrack(createSongFromFile(file));
+                            container.addTrack(song);
                         }
                     });
                     unzipper.execute(filepath);
@@ -92,7 +100,7 @@ public class DownloadSystem extends BroadcastReceiver {
         cursor.close();
     }
 
-    private Song createSongFromFile(String filename) {
+    private Song createSongFromFile(String filename, String url) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
 
         // Get the metadata from the song.
@@ -106,14 +114,27 @@ public class DownloadSystem extends BroadcastReceiver {
         String track_num = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER);
         byte[] album_art = mmr.getEmbeddedPicture();
 
+        // Handle null case.
         songTitle = songTitle != null ? songTitle : "unnamed_song";
         albumName = albumName != null ? albumName : "no_album";
         artist = artist != null ? artist : "unnamed_artist";
 
+        // Get rid of illegal characters in song name.
+        songTitle = songTitle.replace(".", "dot").replace("#", "hash").replace("$", "S").replace("[", "(").replace("]", ")");
+
         Log.d("DownloadSystem", "Loaded song from " + filename + " <" +
                 songTitle + ", " + albumName + ", " + artist + ", " + track_num + ">");
 
-        // Create the song object from the metadata.
-        return new Song(filename, songTitle, albumName, artist, track_num, album_art);
+        // Check if a song with this information is already in the database.
+        Song song = songDB.get(songTitle);
+        if (song != null) {
+            // Update its album art and return it.
+            song.setAlbumCover(album_art);
+            return song;
+        }
+        else {
+            // Create the song object from the metadata.
+            return new Song(filename, url, songTitle, albumName, artist, track_num, album_art);
+        }
     }
 }

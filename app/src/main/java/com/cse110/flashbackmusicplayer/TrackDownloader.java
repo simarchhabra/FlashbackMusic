@@ -60,6 +60,12 @@ public class TrackDownloader extends AsyncTask<String, Void, Long> {
             e.printStackTrace();
         }
 
+        // Check if this file already exists, and if it does, delete it.
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DOWNLOADS  + File.separator + filename);
+        if(file.exists()) {
+            boolean result = file.delete();
+        }
+
         Uri uri = Uri.parse(params[0]);
         DownloadManager.Request request = new DownloadManager.Request(uri);
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
