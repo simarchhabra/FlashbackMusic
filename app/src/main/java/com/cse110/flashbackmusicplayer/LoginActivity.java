@@ -23,7 +23,7 @@ import com.google.api.services.people.v1.PeopleServiceScopes;
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, View.OnClickListener {
 
 
-    private final String CLIENT_ID = "590236166883-l627gphi152bvrfvied867ap136smec9.apps.googleusercontent.com";
+    private String CLIENT_ID;
     private final int RESULT_ID = 1;
     final int RESULT_ERROR_ID = 0;
 
@@ -37,6 +37,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_login);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        CLIENT_ID = getString(R.string.client_id);
 
         signInButton = findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);

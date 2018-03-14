@@ -28,29 +28,33 @@ public class PersonService extends Service {
     private static final String ACTION_PERSON = "GET PERSON";
     public static final String ACTION_BROADCAST = "BROADCAST";
     Intent sendData;
-    private final String CLIENT_ID = getString(R.string.client_id);
-    final String CLIENT_SECRET = getString(R.string.client_secret_id);
+    private String CLIENT_ID;
+    String CLIENT_SECRET;
     PeopleService peopleService;
     List<List<String>> contacts;
 
     @Override
     public void onCreate() {
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account!=null) {
-            try {
-                peopleService = getPeopleService(account);
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        CLIENT_ID = getString(R.string.client_id);
+        CLIENT_SECRET = getString(R.string.client_secret_id);
+
         sendData = new Intent(ACTION_BROADCAST);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         if (intent.getAction().equals(ACTION_PERSON)) {
+            thread.start();
+        }
+        return START_STICKY;
+    }
+
+    Thread thread = new Thread(new Runnable(){
+        @Override
+        public void run() {
+            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(PersonService.this);
             try {
+                peopleService = getPeopleService(account);
                 Person profile = peopleService.people().get("people/me")
                         .setPersonFields("names,emailAddresses")
                         .execute();
@@ -59,17 +63,15 @@ public class PersonService extends Service {
                 String email = profile.getEmailAddresses().get(0).getValue();
                 String[] profile_info = {res_name, name, email};
                 sendData.putExtra("PROFILE", profile_info);
-                this.contacts = buildConnectionsHandler(peopleService);
+                contacts = buildConnectionsHandler(peopleService);
                 sendData.putExtra("CONTACTS", contacts.toArray());
                 sendBroadcast(sendData);
             }
             catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
-        return START_STICKY;
-    }
+    });
 
     private PeopleService getPeopleService(GoogleSignInAccount account) throws IOException {
         HttpTransport httpTransport = new NetHttpTransport();
@@ -102,18 +104,20 @@ public class PersonService extends Service {
                 .execute();
         List<Person> connections = response.getConnections();
         List<List<String>> contacts = new ArrayList<>();
-        for (Person person:connections) {
-            if (!person.isEmpty()) {
-                List<Name> namesList = person.getNames();
-                String name = namesList.get(0).getDisplayName();
-                List<EmailAddress> emailsList = person.getEmailAddresses();
-                String email = emailsList.get(0).getValue();
-                String resName = person.getResourceName();
-                List<String> contact = new ArrayList<>();
-                contact.add(resName);
-                contact.add(name);
-                contact.add(email);
-                contacts.add(contact);
+        if (response.size() > 0) {
+            for (Person person : connections) {
+                if (!person.isEmpty()) {
+                    List<Name> namesList = person.getNames();
+                    String name = namesList.get(0).getDisplayName();
+                    List<EmailAddress> emailsList = person.getEmailAddresses();
+                    String email = emailsList.get(0).getValue();
+                    String resName = person.getResourceName();
+                    List<String> contact = new ArrayList<>();
+                    contact.add(resName);
+                    contact.add(name);
+                    contact.add(email);
+                    contacts.add(contact);
+                }
             }
         }
         return contacts;

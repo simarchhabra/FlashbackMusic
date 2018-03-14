@@ -58,20 +58,12 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         setContentView(R.layout.activity_main);
 
         //Initialize the user.
-        if (GoogleSignIn.getLastSignedInAccount(MainActivity.this) == null) {
+        //if (GoogleSignIn.getLastSignedInAccount(MainActivity.this) == null) {
             Log.d("NoLogIn", "login");
             Intent login = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(login);
-        }
-        // uncomment all of these after figuring out GoogleSignInResult Error
-        //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
-        //user = new UserSystem(MainActivity.this);
-        //user.initService();
-        //String[] profileInfo = user.getProfileInfo();
-        //String[] contactsInfo = user.getContactsInfo();
-//        Log.d("profile_info", profileInfo.toString());
-  //      Log.d("contacts_info", contactsInfo.toString());
-        //user.destroy();
+            startActivityForResult(login, 2);
+        //}
+
         userState = new UserStateImpl(null/*profileInfo[0]*/);
         // Create a database of songs and populate it.
         songDB = new SongDatabase(userState);
@@ -199,6 +191,10 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
             if(resultCode == Activity.RESULT_OK){
                 musicSystem = new MusicSystem(MainActivity.this);
             }
+        }
+        else if (requestCode == 2) {
+            user = new UserSystem(MainActivity.this);
+            user.initService();
         }
     }
 
