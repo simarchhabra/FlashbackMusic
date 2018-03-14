@@ -6,4 +6,13 @@
     <string name="desc">CoverImage</string>
     <string name="title_activity_album">AlbumActivity</string>
     <string name="title_activity_album_contents">AlbumContentsActivity</string>
+
+    <string-array name="names">
+        <item>Track Name</item>
+        <item>Artist</item>
+        <item>Album</item>
+        <item>Favorite</item>
+    </string-array>
+
 </resources>
+
