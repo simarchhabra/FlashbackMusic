@@ -1,55 +1,126 @@
 package com.cse110.flashbackmusicplayer;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.os.AsyncTask;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.people.v1.PeopleService;
+import com.google.api.services.people.v1.model.EmailAddress;
+import com.google.api.services.people.v1.model.ListConnectionsResponse;
+import com.google.api.services.people.v1.model.Name;
+import com.google.api.services.people.v1.model.Person;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserSystem {
-    private BroadcastReceiver broadcastReceiver;
+    private GoogleSignInAccount account;
+    private String CLIENT_ID;
+    private String CLIENT_SECRET;
+    private PeopleService peopleService;
+    private List<List<String>> contacts_data;
+    private List<String> profile_data;
+    private HttpTransport httpTransport = new NetHttpTransport();
+    private JacksonFactory jsonFactory = new JacksonFactory();
     private Activity root;
-    private String[] profile_data;
-    private String[] contacts_data;
-    private boolean ready = false;
+    private boolean isReady = false;
 
-    public UserSystem(Activity root) {this.root = root;}
+    public UserSystem(Activity root, String CLIENT_ID, String CLIENT_SECRET) {
+        this.root = root;
+        this.CLIENT_ID = CLIENT_ID;
+        this.CLIENT_SECRET = CLIENT_SECRET;
+        account = GoogleSignIn.getLastSignedInAccount(root);
+        new ProfileBuilderTask().execute(account);
+    }
 
-    public void initService() {
-        Intent serviceIntent = new Intent(root, PersonService.class);
-        serviceIntent.setAction("GET PERSON");
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                profile_data = intent.getStringArrayExtra("PROFILE");
-                contacts_data = intent.getStringArrayExtra("CONTACTS");
-                ready = true;
+    public class ProfileBuilderTask extends AsyncTask<GoogleSignInAccount, Integer, String> {
+        @Override
+        protected String doInBackground(GoogleSignInAccount... account) {
+            try {
+                GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(httpTransport, jsonFactory,
+                        CLIENT_ID, CLIENT_SECRET, account[0].getServerAuthCode(), "").execute();
+                GoogleCredential credential = new GoogleCredential.Builder()
+                        .setTransport(httpTransport)
+                        .setJsonFactory(jsonFactory)
+                        .setClientSecrets(CLIENT_ID, CLIENT_SECRET)
+                        .build()
+                        .setFromTokenResponse(tokenResponse);
+                peopleService = new PeopleService.Builder(httpTransport, jsonFactory, credential).build();
+                Person profile = peopleService.people().get("people/me")
+                        .setPersonFields("names,emailAddresses")
+                        .execute();
+                String res_name = profile.getResourceName();
+                String name = profile.getNames().get(0).getDisplayName();
+                String email = profile.getEmailAddresses().get(0).getValue();
+                profile_data = new ArrayList<>();
+                profile_data.add(res_name);
+                profile_data.add(name);
+                profile_data.add(email);
+                contacts_data = buildConnectionsHandler(peopleService);
             }
-        };
-        root.registerReceiver(broadcastReceiver, new IntentFilter(PersonService.ACTION_BROADCAST));
-        root.startService(serviceIntent);
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            UserDataStorage.setProfile(profile_data);
+            UserDataStorage.setContacts(contacts_data);
+        }
+
     }
 
-    public boolean isReady() {
-        return ready;
+    private List<List<String>> buildConnectionsHandler(PeopleService peopleService) {
+        List<List<String>> contacts = null;
+        try {
+            contacts = buildConnections(peopleService);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return contacts;
     }
 
-    public String[] getProfileInfo() {
+    private List<List<String>> buildConnections(PeopleService peopleService) throws IOException {
+        ListConnectionsResponse response = peopleService.people().connections().list("people/me")
+                .setPersonFields("names,emailAddresses")
+                .execute();
+        List<Person> connections = response.getConnections();
+        List<List<String>> contacts = new ArrayList<>();
+        if (response.size() > 0) {
+            for (Person person : connections) {
+                if (!person.isEmpty()) {
+                    List<Name> namesList = person.getNames();
+                    String name = namesList.get(0).getDisplayName();
+                    List<EmailAddress> emailsList = person.getEmailAddresses();
+                    String email = emailsList.get(0).getValue();
+                    String resName = person.getResourceName();
+                    List<String> contact = new ArrayList<>();
+                    contact.add(resName);
+                    contact.add(name);
+                    contact.add(email);
+                    contacts.add(contact);
+                }
+            }
+        }
+        return contacts;
+    }
+
+    public List<String> get_profile() {
         return profile_data;
     }
 
-    public String[] getContactsInfo() {
+    public List<List<String>> get_contacts() {
         return contacts_data;
     }
-
-    public void destroy() {
-        Intent serviceIntent = new Intent(root, PersonService.class);
-        try {
-            root.unregisterReceiver(broadcastReceiver);
-        } catch (IllegalArgumentException e) {
-            //e.printStackTrace();
-        }
-        root.stopService(serviceIntent);
-    }
-
 }

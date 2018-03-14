@@ -19,9 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,13 +55,10 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         setContentView(R.layout.activity_main);
 
         //Initialize the user.
-        //if (GoogleSignIn.getLastSignedInAccount(MainActivity.this) == null) {
-            Log.d("NoLogIn", "login");
-            Intent login = new Intent(MainActivity.this, LoginActivity.class);
-            startActivityForResult(login, 2);
-        //}
+        Intent login = new Intent(MainActivity.this, LoginActivity.class);
+        startActivityForResult(login, 2);
 
-        userState = new UserStateImpl(null/*profileInfo[0]*/);
+        userState = new UserStateImpl();
         // Create a database of songs and populate it.
         songDB = new SongDatabase(userState);
         // Create the system that will play all the music.
@@ -154,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         });
 
         // If the download songs button is pressed, open an activity that lets you download.
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,8 +187,8 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
             }
         }
         else if (requestCode == 2) {
-            user = new UserSystem(MainActivity.this);
-            user.initService();
+            Log.d("Result", "GOES INTO SERVICE");
+            user = new UserSystem(MainActivity.this, getString(R.string.client_id), getString(R.string.client_secret_id));
         }
     }
 

@@ -13,7 +13,7 @@ public class UserStateImpl implements UserState {
     String place = "";
     String user = "";
 
-    public UserStateImpl(String userId) {user = userId;}
+    public UserStateImpl() {}
 
     @Override
     public UserState snapshot() {
@@ -46,6 +46,10 @@ public class UserStateImpl implements UserState {
     public int getDayOfYear() {
         Calendar calendar = Calendar.getInstance();
         return calendar.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public void setUser(String userID) {
+        this.user = userID;
     }
 
 }
