@@ -65,15 +65,17 @@
 
     <ImageView
         android:id="@+id/album_cover"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="100dp"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="64dp"
         android:contentDescription="@string/desc"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:gravity="center"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/nextButton"
@@ -129,17 +131,44 @@
         android:id="@+id/exit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/abhaya_libre_bold"
-        android:textColor="@android:color/background_light"
         android:layout_marginBottom="20dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        android:text="Exit\nFlashback"
+        android:fontFamily="@font/abhaya_libre_bold"
+        android:text="Exit Vibe"
         android:textAlignment="center"
+        android:textColor="@android:color/background_light"
         app:layout_constraintBottom_toTopOf="@+id/album_cover"
         app:layout_constraintEnd_toStartOf="@+id/history"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backButton" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ListView
+            android:id="@+id/vibe_track_list"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:layout_marginTop="500dp"
+            android:background="@drawable/custom_button"
+            android:scrollbars="vertical"
+            android:textColor="@android:color/background_light"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            tools:layout_editor_absoluteX="0dp" />
+
+    </android.support.constraint.ConstraintLayout>
 
 
 </android.support.constraint.ConstraintLayout>

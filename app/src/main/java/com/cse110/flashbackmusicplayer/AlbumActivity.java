@@ -49,7 +49,7 @@ public class AlbumActivity extends AppCompatActivity {
         {
             trackTitles.add(songs.get(i).getTitle());
         }
-        ListAdapter songAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, trackTitles);
+        ListAdapter songAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, trackTitles);
         final ListView tracksView = (ListView) findViewById(R.id.track_list);
         tracksView.setAdapter(songAdapter);
 
