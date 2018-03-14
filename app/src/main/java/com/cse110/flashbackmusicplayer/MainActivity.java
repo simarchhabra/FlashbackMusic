@@ -20,6 +20,8 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import android.content.SharedPreferences.Editor;
+import android.widget.Spinner;
+
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -73,6 +75,14 @@ public class MainActivity extends AppCompatActivity {
             // Add this song's album to the albums listview if it doesn't already exist.
             if (!albumsList.contains(song.getAlbum())) albumsList.add(song.getAlbum());
         }
+
+        Spinner filterspinner = (Spinner) findViewById(R.id.filter);
+
+        ArrayAdapter<String> filterAdapter = new ArrayAdapter<String>(MainActivity.this,
+                                                R.layout.filter_default,
+                                                getResources().getStringArray(R.array.names));
+        filterAdapter.setDropDownViewResource(R.layout.filter_dropdown_item);
+        filterspinner.setAdapter(filterAdapter);
 
         // Display the songs list on the screen.
         ListAdapter songAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, songTitles);
