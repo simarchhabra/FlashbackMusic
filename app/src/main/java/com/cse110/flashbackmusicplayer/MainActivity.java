@@ -19,11 +19,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements TrackContainer {
 
+    static UserSystem user = null;
     // A database of all the songs that are stored in the res folder.
     static SongDatabase songDB = null;
 
@@ -51,10 +55,24 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("MainActivity", "MainActivity has been created");
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-        // Initialize the user.
-        userState = new UserStateImpl();
+
+        //Initialize the user.
+        if (GoogleSignIn.getLastSignedInAccount(MainActivity.this) == null) {
+            Log.d("NoLogIn", "login");
+            Intent login = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(login);
+        }
+        // uncomment all of these after figuring out GoogleSignInResult Error
+        //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
+        //user = new UserSystem(MainActivity.this);
+        //user.initService();
+        //String[] profileInfo = user.getProfileInfo();
+        //String[] contactsInfo = user.getContactsInfo();
+//        Log.d("profile_info", profileInfo.toString());
+  //      Log.d("contacts_info", contactsInfo.toString());
+        //user.destroy();
+        userState = new UserStateImpl(null/*profileInfo[0]*/);
         // Create a database of songs and populate it.
         songDB = new SongDatabase(userState);
         // Create the system that will play all the music.
