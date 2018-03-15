@@ -50,4 +50,7 @@ public class UserStateSnapshot implements UserState {
     public int getDayOfYear() {
         return dayOfYear;
     }
+
+    @Override
+    public void setUser(String userID) {this.user = userID;}
 }

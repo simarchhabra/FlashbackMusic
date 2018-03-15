@@ -31,10 +31,12 @@ public class UserSystem {
     private HttpTransport httpTransport = new NetHttpTransport();
     private JacksonFactory jsonFactory = new JacksonFactory();
     private Activity root;
+    private UserState state;
     private boolean isReady = false;
 
-    public UserSystem(Activity root, String CLIENT_ID, String CLIENT_SECRET) {
+    public UserSystem(Activity root, UserState state, String CLIENT_ID, String CLIENT_SECRET) {
         this.root = root;
+        this.state = state;
         this.CLIENT_ID = CLIENT_ID;
         this.CLIENT_SECRET = CLIENT_SECRET;
         account = GoogleSignIn.getLastSignedInAccount(root);
@@ -76,6 +78,7 @@ public class UserSystem {
         protected void onPostExecute(String result) {
             UserDataStorage.setProfile(profile_data);
             UserDataStorage.setContacts(contacts_data);
+            state.setUser(UserDataStorage.getUID());
         }
 
     }
@@ -116,11 +119,4 @@ public class UserSystem {
         return contacts;
     }
 
-    public List<String> get_profile() {
-        return profile_data;
-    }
-
-    public List<List<String>> get_contacts() {
-        return contacts_data;
-    }
 }

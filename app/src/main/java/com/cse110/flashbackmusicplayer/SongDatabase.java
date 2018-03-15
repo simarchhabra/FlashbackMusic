@@ -105,8 +105,9 @@ public class SongDatabase {
             }
 
             // TODO: Break ties by friend played.
-
-
+            if (s1.isPlayedByFriend() != s2.isPlayedByFriend()) {
+                return s1.isPlayedByFriend() ? -1 : 1;
+            }
 
             if (s1.isFavorited() != s2.isFavorited()) {
                 // Return whichever song is favorited.
@@ -221,7 +222,10 @@ public class SongDatabase {
             }
         }
 
-        // TODO: check if it was played by a friend.
+        // check if it was played by a friend.
+        if (song.isPlayedByFriend()) {
+            priority++;
+        }
 
         // Cache the priority.
         song.setPriority(priority);

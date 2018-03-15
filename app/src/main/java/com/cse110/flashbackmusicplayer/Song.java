@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class Song implements SongSubject, FirebaseObserver {
 
@@ -132,6 +133,18 @@ public class Song implements SongSubject, FirebaseObserver {
     public void setLikedStatus(LIKED_STATUS likedStatus) { this.likedStatus = likedStatus; }
     public boolean isFavorited() { return likedStatus == LIKED_STATUS.FAVORITED; }
     public boolean isDisliked() { return likedStatus == LIKED_STATUS.DISLIKED; }
+
+    public boolean isPlayedByFriend() {
+        List<String> songUsers = this.getUsers();
+        for (String id: songUsers) {
+            for (List<String> contact : UserDataStorage.getContacts()) {
+                if (id.compareTo(contact.get(0)) == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     @Override
     public void update(String user, Location location, long time) {

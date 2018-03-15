@@ -188,7 +188,8 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         }
         else if (requestCode == 2) {
             Log.d("Result", "GOES INTO SERVICE");
-            user = new UserSystem(MainActivity.this, getString(R.string.client_id), getString(R.string.client_secret_id));
+            new UserSystem(MainActivity.this, userState, getString(R.string.client_id), getString(R.string.client_secret_id));
+
         }
     }
 
