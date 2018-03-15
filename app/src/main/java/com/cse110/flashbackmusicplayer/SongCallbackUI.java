@@ -10,7 +10,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
+import static com.cse110.flashbackmusicplayer.MainActivity.user;
 
 public class SongCallbackUI implements SongCallback {
 
@@ -114,6 +117,35 @@ public class SongCallbackUI implements SongCallback {
         }
     }
 
+    /**
+     *
+     * @param lastUser
+     * @return
+     */
+    public boolean lastPlayedByCurrentUser(String lastUser){
+        // get the ID of current user
+        String currUser = UserDataStorage.getProfile().get(0);
+        return currUser.compareTo(lastUser) == 0;
+    }
+
+    /**
+     *
+     * @param lastUser
+     * @return
+     */
+    public String lastPlayedByOther(String lastUser){
+        // get the google friends of the current user
+        List<List<String>> userFriends = UserDataStorage.getContacts();
+
+        for(List<String> currContact : userFriends){
+            if(currContact.get(0).compareTo(lastUser) == 0){
+                return currContact.get(1);
+            }
+        }
+        // TODO this should return the proxy name of the lastUser
+        return lastUser;
+    }
+
     @Override
     public void redraw() {
         Log.d("SongCallbackUI", "Drawing the UI");
@@ -137,7 +169,20 @@ public class SongCallbackUI implements SongCallback {
                 String songTitleStr = "Last Played: " + song.getTime() + ", " + song.getDate();
                 songHistory.setText(songTitleStr);
             } else {
-                String songTitleStr = "Last Played: " + song.getPlace() + "\n" + song.getTime() + ", " + song.getDate();
+
+                // TODO get correct last user to play track format:
+                // TODO cont'd name if google friend, proxy name if stranger, you if current user
+                String lastPlayedBy = "";
+
+                if(lastPlayedByCurrentUser(song.getUser())){
+                    lastPlayedBy = UserDataStorage.getProfile().get(1);
+                    lastPlayedBy = "you";
+                }
+
+                else{
+                    lastPlayedBy = lastPlayedByOther(song.getUser());
+                }
+                String songTitleStr = "Last Played: " + song.getPlace() + "\n" + song.getTime() + ", " + song.getDate() + "\n" + "Last played by: " + lastPlayedBy;
                 songHistory.setText(songTitleStr);
             }
 
