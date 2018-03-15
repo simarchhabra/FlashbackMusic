@@ -24,6 +24,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements TrackContainer {
 
+    static UserSystem user = null;
     // A database of all the songs that are stored in the res folder.
     static SongDatabase songDB = null;
 
@@ -51,9 +52,12 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("MainActivity", "MainActivity has been created");
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-        // Initialize the user.
+
+        //Initialize the user.
+        Intent login = new Intent(MainActivity.this, LoginActivity.class);
+        startActivityForResult(login, 2);
+
         userState = new UserStateImpl();
         // Create a database of songs and populate it.
         songDB = new SongDatabase(userState);
@@ -144,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         });
 
         // If the download songs button is pressed, open an activity that lets you download.
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,6 +185,10 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
             if(resultCode == Activity.RESULT_OK){
                 musicSystem = new MusicSystem(MainActivity.this);
             }
+        }
+        else if (requestCode == 2) {
+            Log.d("Result", "GOES INTO SERVICE");
+            user = new UserSystem(MainActivity.this, getString(R.string.client_id), getString(R.string.client_secret_id));
         }
     }
 

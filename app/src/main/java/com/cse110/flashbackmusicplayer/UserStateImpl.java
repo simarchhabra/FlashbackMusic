@@ -11,6 +11,7 @@ public class UserStateImpl implements UserState {
     // The current up-to-date position of the user and the name of the closest location.
     Location location = new Location(LocationManager.GPS_PROVIDER);
     String place = "";
+    String user = "";
 
     public UserStateImpl() {}
 
@@ -36,16 +37,19 @@ public class UserStateImpl implements UserState {
         return System.currentTimeMillis();
     }
 
-    int id = 0;
     @Override
     public String getUser() {
-        return "" + id++;
+        return user;
     }
 
     @Override
     public int getDayOfYear() {
         Calendar calendar = Calendar.getInstance();
         return calendar.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public void setUser(String userID) {
+        this.user = userID;
     }
 
 }

@@ -6,4 +6,7 @@
     <string name="desc">CoverImage</string>
     <string name="title_activity_album">AlbumActivity</string>
     <string name="title_activity_album_contents">AlbumContentsActivity</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="client_id">590236166883-l627gphi152bvrfvied867ap136smec9.apps.googleusercontent.com</string>
+    <string name="client_secret_id">KNAyYVOhDcynph4XL75sfYh4</string>
 </resources>
