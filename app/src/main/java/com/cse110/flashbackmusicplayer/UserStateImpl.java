@@ -48,6 +48,7 @@ public class UserStateImpl implements UserState {
         return calendar.get(Calendar.DAY_OF_YEAR);
     }
 
+    @Override
     public void setUser(String userID) {
         this.user = userID;
     }

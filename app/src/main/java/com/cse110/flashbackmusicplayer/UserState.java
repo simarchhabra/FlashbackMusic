@@ -12,6 +12,7 @@ public interface UserState {
 
     Location getLocation();
     String getUser();
+    void setUser(String userID);
     int getDayOfYear();
 
     long getSystemTime();
