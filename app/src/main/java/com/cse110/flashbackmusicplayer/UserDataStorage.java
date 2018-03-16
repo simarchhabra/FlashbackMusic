@@ -10,5 +10,5 @@ public class UserDataStorage {
     public static void setContacts(List<List<String>> connections_from_task) { connection_data = connections_from_task;}
     public static List<String> getProfile() {return profile_data;}
     public static List<List<String>> getContacts() {return connection_data;}
-    public static String getUID() {return profile_data.get(0);}
+    public static String getUID() {return profile_data.get(1);}
 }

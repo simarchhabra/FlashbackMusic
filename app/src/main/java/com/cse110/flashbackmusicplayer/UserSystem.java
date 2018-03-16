@@ -2,6 +2,7 @@ package com.cse110.flashbackmusicplayer;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -96,7 +97,7 @@ public class UserSystem {
 
     private List<List<String>> buildConnections(PeopleService peopleService) throws IOException {
         ListConnectionsResponse response = peopleService.people().connections().list("people/me")
-                .setPersonFields("names,emailAddresses")
+                .setPersonFields("names")
                 .execute();
         List<Person> connections = response.getConnections();
         List<List<String>> contacts = new ArrayList<>();
@@ -104,14 +105,14 @@ public class UserSystem {
             for (Person person : connections) {
                 if (!person.isEmpty()) {
                     List<Name> namesList = person.getNames();
+
                     String name = namesList.get(0).getDisplayName();
-                    List<EmailAddress> emailsList = person.getEmailAddresses();
-                    String email = emailsList.get(0).getValue();
+                    // TODO changing stuff here
                     String resName = person.getResourceName();
+
                     List<String> contact = new ArrayList<>();
                     contact.add(resName);
                     contact.add(name);
-                    contact.add(email);
                     contacts.add(contact);
                 }
             }
