@@ -32,11 +32,9 @@ public class DownloadSystem extends BroadcastReceiver {
         downloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.container = container;
         this.activity = activity;
-    }
 
-    public void downloadTrack(String url) {
         // Assert that we have permissions to get location data.
-        while (ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) !=
                         PackageManager.PERMISSION_GRANTED) {
@@ -47,6 +45,10 @@ public class DownloadSystem extends BroadcastReceiver {
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
             Log.d("Download System", "Requested permission to write and read to external storage");
         }
+    }
+
+    public void downloadTrack(String url) {
+
 
         TrackDownloader downloader = new TrackDownloader(downloadManager);
         downloader.execute(url);
@@ -72,7 +74,6 @@ public class DownloadSystem extends BroadcastReceiver {
                 if (extension.equals("mp3")) {
                     // Record that this song is downloaded and that we can play it.
                     Song song = createSongFromFile(filepath, url);
-                    song.setDownloaded(true);
                     // Add it to activities list of songs.
                     container.addTrack(song);
                 }
@@ -82,7 +83,6 @@ public class DownloadSystem extends BroadcastReceiver {
                         for (String file : filenames) {
                             // Record that this song is downloaded and that we can play it.
                             Song song = createSongFromFile(file, url);
-                            song.setDownloaded(true);
                             // Add it to activities list of songs.
                             container.addTrack(song);
                         }
@@ -130,11 +130,13 @@ public class DownloadSystem extends BroadcastReceiver {
         if (song != null) {
             // Update its album art and return it.
             song.setAlbumCover(album_art);
-            return song;
         }
         else {
             // Create the song object from the metadata.
-            return new Song(filename, url, songTitle, albumName, artist, track_num, album_art);
+            song = new Song(filename, url, songTitle, albumName, artist, track_num, album_art);
         }
+        song.setDownloaded(true);
+
+        return song;
     }
 }

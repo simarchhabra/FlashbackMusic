@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -22,6 +25,7 @@ public class VibeActivity extends AppCompatActivity {
     SongCallback ui = null;
     // The list of vibe mode songs.
     List<Song> songs;
+    List<String> nextTrackTitles = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +123,19 @@ public class VibeActivity extends AppCompatActivity {
                 Log.d("VibeActivity", "Song " + song.getTitle() + " is not yet downloaded");
             }
         }
+
+        // Download the first two songs.
+        downloadNextTwoSongs();
+
+        nextTrackTitles.clear();
+
+        for(int i = 0; i<songs.size();i++)
+        {
+            nextTrackTitles.add(songs.get(i).getTitle());
+        }
+        ListAdapter nextSongAdapter = new ArrayAdapter<>(this, R.layout.list_white_text, R.id.list_content, nextTrackTitles);
+        final ListView tracksView = (ListView) findViewById(R.id.vibe_track_list);
+        tracksView.setAdapter(nextSongAdapter);
 
         // If next is still null, none of the songs have been downloaded yet.
         if (next == null) {
