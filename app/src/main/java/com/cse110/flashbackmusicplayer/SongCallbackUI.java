@@ -3,6 +3,9 @@ package com.cse110.flashbackmusicplayer;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -10,7 +13,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
+import static com.cse110.flashbackmusicplayer.MainActivity.user;
 
 public class SongCallbackUI implements SongCallback {
 
@@ -23,13 +29,6 @@ public class SongCallbackUI implements SongCallback {
     public SongCallbackUI(Activity activity, MusicSystem musicSystem) {
         this.activity = activity;
         this.musicSystem = musicSystem;
-
-        // Display the UI on the activity screen.
-        redraw();
-
-        // Get the name of the song we are playing.
-        name = activity.getIntent().getExtras().getString("TRACK_NAME");
-        song = songDB.get(name);
 
         // Change the like status button when it is clicked.
         Button fav_dislike = (Button) activity.findViewById(R.id.fav_dis_button);
@@ -121,6 +120,7 @@ public class SongCallbackUI implements SongCallback {
         }
     }
 
+
     @Override
     public void redraw() {
         Log.d("SongCallbackUI", "Drawing the UI");
@@ -144,7 +144,23 @@ public class SongCallbackUI implements SongCallback {
                 String songTitleStr = "Last Played: " + song.getTime() + ", " + song.getDate();
                 songHistory.setText(songTitleStr);
             } else {
-                String songTitleStr = "Last Played: " + song.getPlace() + "\n" + song.getTime() + ", " + song.getDate();
+                // check if last played by self, friend, or stranger
+                String lastPlayedBy = "";
+
+                if(DisplayName.lastPlayedByCurrentUser(song.getUser())){
+                    lastPlayedBy = UserDataStorage.getProfile().get(1);
+                    lastPlayedBy = "you";
+                }
+
+                else{
+                    lastPlayedBy = DisplayName.lastPlayedByOther(song.getUser());
+                }
+                String songTitleStr = "Last Played: " + song.getPlace() + "\n" + song.getTime() + ", " + song.getDate() + "\n" + "Last played by: " + lastPlayedBy;
+
+                // italics if last played by current user
+                if(DisplayName.lastPlayedByCurrentUser(song.getUser())){
+                    songHistory.setTypeface(null, Typeface.ITALIC);
+                }
                 songHistory.setText(songTitleStr);
             }
 

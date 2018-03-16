@@ -49,7 +49,7 @@ public class AlbumActivity extends AppCompatActivity {
         {
             trackTitles.add(songs.get(i).getTitle());
         }
-        ListAdapter songAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, trackTitles);
+        ListAdapter songAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, trackTitles);
         final ListView tracksView = (ListView) findViewById(R.id.track_list);
         tracksView.setAdapter(songAdapter);
 
@@ -83,12 +83,6 @@ public class AlbumActivity extends AppCompatActivity {
         // Get the very first song that we will play.
         Song next = songs.get(0); songs.remove(0);
         Log.d("AlbumActivity", "Retrieved song " + next.getTitle());
-
-        // If the song is disliked, then we do not play it.
-        if (next.isDisliked()) {
-            Log.d("AlbumActivity", "Song " + next.getTitle() + " is disliked");
-            return nextSong();
-        }
 
         // Record the name of teh track.
         getIntent().putExtra("TRACK_NAME", next.getTitle());

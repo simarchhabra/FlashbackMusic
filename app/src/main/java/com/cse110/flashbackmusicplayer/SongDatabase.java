@@ -4,8 +4,9 @@ import android.location.Location;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.PriorityQueue;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * This is a priority queue of songs that orders song by how likely they are to be played
@@ -14,14 +15,12 @@ import java.util.Comparator;
 public class SongDatabase {
 
     // The state of the user, last time songDatabase was updated.
-    private int dayOfTheWeek;
-    private TimeSegment timeSegment;
     private Location location;
+    private String user;
+    private int dayOfYear;
 
     // The array that stores all the loaded songs.
     private ArrayList<Song> songs;
-    // The max heap is generated when the user enters flashback mode and needs to play a song.
-    private PriorityQueue<Song> flashbackList;
 
     private UserState state;
 
@@ -30,13 +29,12 @@ public class SongDatabase {
         this.state = state;
 
         // Cache the state of the user for future reference.
-        this.dayOfTheWeek = state.getDayOfWeek();
-        this.timeSegment = state.getTimeSegment();
         this.location = state.getLocation();
+        this.user = state.getUser();
+        this.dayOfYear = state.getDayOfYear();
 
         // Creates an array and a max heap that will store all the songs.
         this.songs = new ArrayList<>();
-        this.flashbackList = new PriorityQueue<>(50, new SongComparator());
     }
 
     private class SongComparator implements Comparator<Song>
@@ -45,16 +43,72 @@ public class SongDatabase {
         public int compare(Song s1, Song s2)
         {
 
-            if (calculatePriority(s1) > calculatePriority(s2))
+            if (s1.getPriority() > s2.getPriority())
             {
                 return -1;
             }
-            if (calculatePriority(s1) < calculatePriority(s2))
+            if (s1.getPriority() < s2.getPriority())
             {
                 return 1;
             }
 
-            // Try to break ties by seeing if one (and only one) is favorited.
+            // Try to break ties.
+            // Break ties by looking at location.
+            boolean s1PlayedHere = false, s2PlayedHere = false;
+            for (Location songLocation : s1.getLocations()) {
+                // Turn degrees to minutes, turn minutes to nautical miles, turn nautical miles to feet.
+                float dist = songLocation.distanceTo(location);
+
+                if (dist < 1000) {
+                    s1PlayedHere = true;
+                    break;
+                }
+            }
+            for (Location songLocation : s1.getLocations()) {
+                // Turn degrees to minutes, turn minutes to nautical miles, turn nautical miles to feet.
+                float dist = songLocation.distanceTo(location);
+
+                if (dist < 1000) {
+                    s2PlayedHere = true;
+                    break;
+                }
+            }
+            if (s1PlayedHere != s2PlayedHere) {
+                return s1PlayedHere ? -1 : 1;
+            }
+
+            // Break ties by week played.
+            boolean s1PlayedRecent = false, s2PlayedRecent = false;
+            Calendar calendar = Calendar.getInstance();
+            for (long time : s1.getTimes()) {
+                // Convert system time to day of year.
+                calendar.setTimeInMillis(time);
+                int songDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+
+                if (songDayOfYear > dayOfYear - 7 && songDayOfYear <= dayOfYear) {
+                    s1PlayedRecent = true;
+                    break;
+                }
+            }
+            for (long time : s2.getTimes()) {
+                // Convert system time to day of year.
+                calendar.setTimeInMillis(time);
+                int songDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+
+                if (songDayOfYear > dayOfYear - 7 && songDayOfYear <= dayOfYear) {
+                    s2PlayedRecent = true;
+                    break;
+                }
+            }
+            if (s1PlayedRecent != s2PlayedRecent) {
+                return s1PlayedRecent ? -1 : 1;
+            }
+
+            // TODO: Break ties by friend played.
+            if (s1.isPlayedByFriend() != s2.isPlayedByFriend()) {
+                return s1.isPlayedByFriend() ? -1 : 1;
+            }
+
             if (s1.isFavorited() != s2.isFavorited()) {
                 // Return whichever song is favorited.
                 return s1.isFavorited() ? -1 : 1;
@@ -67,49 +121,39 @@ public class SongDatabase {
 
     public boolean hasStateChanged() {
         // Compared the cached state with the actual one.
-
-        boolean changed = state.getTimeSegment() != timeSegment ||
-                state.getLocation().equals(location) ||
-                state.getDayOfWeek() != dayOfTheWeek;
+        double lat = state.getLocation().getLatitude();
+        double lon = state.getLocation().getLongitude();
+        boolean changed = !(lat == location.getLatitude() && lon == location.getLongitude()) ||
+                state.getDayOfYear() != dayOfYear;
         Log.d("SongDatabase", "The database state has " + (changed ? "changed" : "not changed"));
         return changed;
 
     }
 
     // Creates a list of songs ordered by priority.
-    public void generateFlashbackList() {
+    public List<Song> generateVibeList() {
         // Cache the state of the user for future reference.
-        dayOfTheWeek = state.getDayOfWeek();
-        timeSegment = state.getTimeSegment();
         location = state.getLocation();
+        user = state.getUser();
+        dayOfYear = state.getDayOfYear();
 
-        // Get rid of all the elements in the heap and re-add them with new priorities.
-        flashbackList.clear();
-        flashbackList.addAll(songs);
+        // Copy the list of songs and order it.
+        ArrayList<Song> vibeList = new ArrayList<>();
+        for (Song song : songs) {
+            if (calculatePriority(song) > 0) {
+                vibeList.add(song);
+            }
+        }
+        vibeList.sort(new SongComparator());
 
-        Log.d("SongDatabase", "Generated FlashbackList");
+        Log.d("SongDatabase", "Generated VibeList");
+
+        return vibeList;
     }
 
     // Adds an element to the list of songs.
     public void insert(Song song) {
         songs.add(song);
-    }
-
-    // Return the song with the greatest priority.
-    public Song top() {
-        return flashbackList.peek();
-    }
-
-    // Remove the song with the greatest priority.
-    public void pop() {
-        flashbackList.poll();
-    }
-
-    public boolean isEmpty() {
-        // If there is nothing left in the queue, or if the priority of all elements is 0.
-        boolean empty = flashbackList.isEmpty() || calculatePriority(flashbackList.peek()) == 0;
-        Log.d("SongDatabase", "The list is " + (empty ? "empty" : "not empty"));
-        return empty;
     }
 
     // Gets a song from songs using name as key. Probably just do a linear search.
@@ -148,25 +192,15 @@ public class SongDatabase {
     public int calculatePriority(Song song) {
         int priority = 0;
 
-        // If the song is disliked, its priority is zero.
-        if (song.isDisliked()) return 0;
+        if (song.isDisliked()) {
+            song.setPriority(0);
+            return 0;
+        }
 
         // Check if the current user location is near one where this song was played.
         for (Location songLocation : song.getLocations()) {
-            // Get the location of the two points we are finding the distance between.
-            double lat1 = songLocation.getLatitude();
-            double long1 = songLocation.getLongitude();
-            double lat2 = location.getLatitude();
-            double long2 = location.getLongitude();
-
-            double theta = long1 - long2;
-            double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2))
-                    + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                    * Math.cos(Math.toRadians(theta));
-            dist = Math.acos(dist);
-            dist = Math.toDegrees(dist);
             // Turn degrees to minutes, turn minutes to nautical miles, turn nautical miles to feet.
-            dist = dist * 60 * 1.1515 * 6076.12;
+            float dist = songLocation.distanceTo(location);
 
             if (dist < 1000) {
                 // Increase the priority, and stop calculating any other locations.
@@ -175,11 +209,26 @@ public class SongDatabase {
             }
         }
 
-        // If this song was played on the same day of the week, increase priority.
-        if (song.getDaysOfWeek()[dayOfTheWeek - 1]) priority++;
+        // Calculate if song was played within the last week.
+        Calendar calendar = Calendar.getInstance();
+        for (long time : song.getTimes()) {
+            // Convert system time to day of year.
+            calendar.setTimeInMillis(time);
+            int songDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
 
-        // If this song was played in the same time segment, increase priority.
-        if (song.getTimeSegments()[timeSegment.getIndex()]) priority++;
+            if (songDayOfYear > dayOfYear - 7 && songDayOfYear <= dayOfYear) {
+                priority++;
+                break;
+            }
+        }
+
+        // check if it was played by a friend.
+        if (song.isPlayedByFriend()) {
+            priority++;
+        }
+
+        // Cache the priority.
+        song.setPriority(priority);
 
         return priority;
     }

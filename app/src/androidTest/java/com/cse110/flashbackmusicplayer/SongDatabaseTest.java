@@ -77,15 +77,15 @@ public class SongDatabaseTest {
 
         // Play the songs so that they are added to the database.
         state.setSystemTime(1);
-        s1.startedPlaying(state);
+        s1.donePlaying(state);
         state.setSystemTime(2);
-        s2.startedPlaying(state);
+        s2.donePlaying(state);
         state.setSystemTime(3);
-        s3.startedPlaying(state);
+        s3.donePlaying(state);
         state.setSystemTime(4);
-        s4.startedPlaying(state);
+        s4.donePlaying(state);
         state.setSystemTime(5);
-        s5.startedPlaying(state);
+        s5.donePlaying(state);
 
         songDB.generateFlashbackList();
         // The flashback list should now have songs in it.
@@ -123,15 +123,15 @@ public class SongDatabaseTest {
         assertEquals(s5, songDB.get("s5"));
 
         state.setSystemTime(1);
-        s1.startedPlaying(state);
+        s1.donePlaying(state);
         state.setSystemTime(2);
-        s2.startedPlaying(state);
+        s2.donePlaying(state);
         state.setSystemTime(3);
-        s3.startedPlaying(state);
+        s3.donePlaying(state);
         state.setSystemTime(4);
-        s4.startedPlaying(state);
+        s4.donePlaying(state);
         state.setSystemTime(5);
-        s5.startedPlaying(state);
+        s5.donePlaying(state);
 
         songDB.generateFlashbackList();
 
@@ -160,15 +160,15 @@ public class SongDatabaseTest {
         songDB.insert(s5);
 
         state.setSystemTime(1);
-        s1.startedPlaying(state);
+        s1.donePlaying(state);
         state.setSystemTime(2);
-        s2.startedPlaying(state);
+        s2.donePlaying(state);
         state.setSystemTime(3);
-        s3.startedPlaying(state);
+        s3.donePlaying(state);
         state.setSystemTime(4);
-        s4.startedPlaying(state);
+        s4.donePlaying(state);
         state.setSystemTime(5);
-        s5.startedPlaying(state);
+        s5.donePlaying(state);
 
         songDB.generateFlashbackList();
 
@@ -201,15 +201,15 @@ public class SongDatabaseTest {
         songDB.insert(s5);
 
         state.setSystemTime(1);
-        s1.startedPlaying(state);
+        s1.donePlaying(state);
         state.setSystemTime(2);
-        s2.startedPlaying(state);
+        s2.donePlaying(state);
         state.setSystemTime(3);
-        s3.startedPlaying(state);
+        s3.donePlaying(state);
         state.setSystemTime(4);
-        s4.startedPlaying(state);
+        s4.donePlaying(state);
         state.setSystemTime(5);
-        s5.startedPlaying(state);
+        s5.donePlaying(state);
 
         songDB.generateFlashbackList();
 
@@ -234,7 +234,7 @@ public class SongDatabaseTest {
         assertTrue(songDB.isEmpty());
 
         // Play the added song, so that it now has a priority > 0.
-        song.startedPlaying(state);
+        song.donePlaying(state);
         songDB.generateFlashbackList();
         assertFalse(songDB.isEmpty());
 
@@ -255,7 +255,7 @@ public class SongDatabaseTest {
         songDB.insert(s4);
         songDB.insert(s5);
 
-        s1.startedPlaying(state);
+        s1.donePlaying(state);
 
         songDB.generateFlashbackList();
         assertFalse(songDB.isEmpty());
@@ -267,7 +267,7 @@ public class SongDatabaseTest {
         assertTrue(songDB.isEmpty());
 
         // Play a song and then completely change the state.
-        s2.startedPlaying(state);
+        s2.donePlaying(state);
         songDB.generateFlashbackList();
         assertFalse(songDB.isEmpty());
         // Change the state, so that it has nothing in common with the state when the song was played.
@@ -319,7 +319,7 @@ public class SongDatabaseTest {
         assertEquals(0, songDB.calculatePriority(song));
 
         // Play the song at the current time, date, and location.
-        song.startedPlaying(state);
+        song.donePlaying(state);
         assertEquals(3, songDB.calculatePriority(song));
 
         // Move to a completely new location, and check if the priority is back to zero.
@@ -332,7 +332,7 @@ public class SongDatabaseTest {
         assertEquals(0, songDB.calculatePriority(song));
 
         // Play the song, and move to a new day of week.
-        song.startedPlaying(state);
+        song.donePlaying(state);
         state.setDayOfWeek(Calendar.THURSDAY);
         songDB.generateFlashbackList();
         assertEquals(2, songDB.calculatePriority(song));
@@ -341,12 +341,12 @@ public class SongDatabaseTest {
         Location loc2 = new Location(LocationManager.GPS_PROVIDER);
         loc2.setLongitude(112.0); loc2.setLatitude(-14.51);
         state.setLocation(loc2);
-        song.startedPlaying(state);
+        song.donePlaying(state);
 
         Location loc3 = new Location(LocationManager.GPS_PROVIDER);
         loc3.setLongitude(-62.0); loc3.setLatitude(-145.1);
         state.setLocation(loc3);
-        song.startedPlaying(state);
+        song.donePlaying(state);
 
         Location loc4 = new Location(LocationManager.GPS_PROVIDER);
         loc4.setLongitude(-36.1); loc4.setLatitude(-1.51);
@@ -355,7 +355,7 @@ public class SongDatabaseTest {
         songDB.generateFlashbackList();
         assertEquals(2, songDB.calculatePriority(song));
 
-        song.startedPlaying(state);
+        song.donePlaying(state);
         assertEquals(3, songDB.calculatePriority(song));
 
         state.setLocation(loc);
