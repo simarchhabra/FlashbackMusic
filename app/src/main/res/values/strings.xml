@@ -9,4 +9,13 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="client_id">590236166883-l627gphi152bvrfvied867ap136smec9.apps.googleusercontent.com</string>
     <string name="client_secret_id">KNAyYVOhDcynph4XL75sfYh4</string>
+
+    <string-array name="names">
+        <item>Track Name</item>
+        <item>Artist</item>
+        <item>Album</item>
+        <item>Favorite</item>
+    </string-array>
+
 </resources>
+

@@ -13,15 +13,13 @@
         android:id="@+id/switchMode"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Enter Vibe Mode"
-        android:fontFamily="@font/abhaya_libre_bold"
-        android:textColor="#ffffff"
+        android:layout_marginTop="10dp"
         android:background="@drawable/custom_button"
-        app:layout_constraintBottom_toTopOf="@+id/tracksDisplayButton"
+        android:fontFamily="@font/abhaya_libre_bold"
+        android:text="Enter Vibe Mode"
+        android:textColor="#ffffff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,15 +28,13 @@
         android:id="@+id/tracksDisplayButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:fontFamily="@font/abhaya_libre_bold"
-        android:textColor="#ffffff"
+        android:layout_marginTop="10dp"
         android:background="@drawable/custom_button"
+        android:fontFamily="@font/abhaya_libre_bold"
         android:text="Tracks"
-        app:layout_constraintBottom_toTopOf="@+id/listViews"
+        android:textColor="#ffffff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/albumsDisplayButton"
         app:layout_constraintTop_toBottomOf="@+id/switchMode" />
@@ -47,21 +43,35 @@
         android:id="@+id/albumsDisplayButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
         android:layout_marginEnd="4dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/custom_button"
         android:fontFamily="@font/abhaya_libre_bold"
         android:text="Albums"
         android:textColor="#ffffff"
-        app:layout_constraintBottom_toTopOf="@+id/listViews"
         app:layout_constraintEnd_toStartOf="@+id/tracksDisplayButton"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchMode" />
 
-    <LinearLayout
+    <Spinner
+        android:id="@+id/filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@+id/listViews"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tracksDisplayButton" />
+
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/listViews"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_marginTop="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tracksDisplayButton">
@@ -70,23 +80,25 @@
             android:id="@+id/albumsView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:dividerHeight="1dp"
+            android:layout_marginEnd="14dp"
             android:divider="#244a54"
-            android:visibility="visible"/>
+            android:dividerHeight="1dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/songsView" />
 
         <ListView
             android:id="@+id/songsView"
-            android:divider="#244a54"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="14dp"
+            android:divider="#244a54"
             android:dividerHeight="1dp"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/albumsView"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
 
 </android.support.constraint.ConstraintLayout>
