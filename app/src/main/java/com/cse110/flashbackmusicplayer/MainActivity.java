@@ -97,24 +97,35 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         filterAdapter.setDropDownViewResource(R.layout.filter_dropdown_item);
         filterspinner.setAdapter(filterAdapter);
 
-        filterspinner.setOnItemClickListener((parent, view, position, id) -> {
-            String text = parent.getItemAtPosition(position).toString();
-            switch (text) {
-                case "Track Name":
-                    sorter = new TitleSort();
-                    break;
-                case "Artist":
-                    sorter = new ArtistSort();
-                    break;
-                case "Album":
-                    sorter = new AlbumSort();
-                    break;
-                case "Favorite":
-                    sorter = new FavoriteSort();
-                    break;
-                default:
-                    sorter = new DefaultSort();
-                    break;
+        filterspinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String text = parent.getItemAtPosition(position).toString();
+                switch (text) {
+                    case "Track Name":
+                        sorter = new TitleSort();
+                        break;
+                    case "Artist":
+                        sorter = new ArtistSort();
+                        break;
+                    case "Album":
+                        sorter = new AlbumSort();
+                        break;
+                    case "Favorite":
+                        sorter = new FavoriteSort();
+                        break;
+                    default:
+                        sorter = new DefaultSort();
+                        break;
+                }
+
+                // Resort the songTitles.
+                songTitles = sorter.sort(songTitles);
+                // Display the songs list on the screen.
+                songAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.list_white_text,R.id.list_content, songTitles);
+                final ListView songsView = (ListView) findViewById(R.id.songsView);
+                songsView.setAdapter(songAdapter);
+            }
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
@@ -272,8 +283,11 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
 
             // Resort the songTitles.
             songTitles = sorter.sort(songTitles);
+            // Display the songs list on the screen.
+            songAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.list_white_text,R.id.list_content, songTitles);
+            final ListView songsView = (ListView) findViewById(R.id.songsView);
+            songsView.setAdapter(songAdapter);
 
-            songAdapter.notifyDataSetChanged();
             // Add this song's album to the albums listview if it doesn't already exist.
             if (!albumsList.contains(song.getAlbum())) {
                 albumsList.add(song.getAlbum());
