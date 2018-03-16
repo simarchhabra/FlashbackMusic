@@ -19,6 +19,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import android.content.SharedPreferences.Editor;
+import android.widget.Spinner;
+
+import org.json.JSONObject;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +81,14 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         // Initialize list views that will display the tracks and the albums.
         songTitles = new ArrayList<>();
         albumsList = new ArrayList<>();
+
+        Spinner filterspinner = (Spinner) findViewById(R.id.filter);
+
+        ArrayAdapter<String> filterAdapter = new ArrayAdapter<String>(MainActivity.this,
+                                                R.layout.filter_default,
+                                                getResources().getStringArray(R.array.names));
+        filterAdapter.setDropDownViewResource(R.layout.filter_dropdown_item);
+        filterspinner.setAdapter(filterAdapter);
 
         // Display the songs list on the screen.
         songAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, songTitles);
