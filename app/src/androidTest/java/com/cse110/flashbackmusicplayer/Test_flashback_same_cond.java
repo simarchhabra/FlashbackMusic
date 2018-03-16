@@ -52,24 +52,24 @@ public class Test_flashback_same_cond {
 
         //changind db in mainAcivity
         MainActivity.songDB = new SongDatabase(state);
-        MainActivity.songDB.generateFlashbackList();
-        Song s1 = new Song("after_the_storm", "After The Storm", "Origins - The Best of Terry Oldfield", "Terry Oldfield", "6", null);
-        Song s2 = new Song("flight_of_the_eagle", "Flight of the Eagle", "Origins - The Best of Terry Oldfield", "Terry Oldfield", "2", null);
-
-        //Only these two songs will be playable
-        MainActivity.songDB.insert(s1);
-        MainActivity.songDB.insert(s2);
-
-        Location loc = new Location(LocationManager.GPS_PROVIDER);
-
-        //setting up some random values
-        state.setDayOfWeek(2);
-        state.setDate("2/23/2018");
-        loc.setLongitude(12.0);
-        loc.setLatitude(-114.5);
-        state.setTimeSegment(TimeSegment.EVENING);
+//        MainActivity.songDB.generateFlashbackList();
+//        Song s1 = new Song("after_the_storm", "After The Storm", "Origins - The Best of Terry Oldfield", "Terry Oldfield", "6", null);
+//        Song s2 = new Song("flight_of_the_eagle", "Flight of the Eagle", "Origins - The Best of Terry Oldfield", "Terry Oldfield", "2", null);
+//
+//        //Only these two songs will be playable
+//        MainActivity.songDB.insert(s1);
+//        MainActivity.songDB.insert(s2);
+//
+//        Location loc = new Location(LocationManager.GPS_PROVIDER);
+//
+//        //setting up some random values
+//        state.setDayOfWeek(2);
+//        state.setDate("2/23/2018");
+//        loc.setLongitude(12.0);
+//        loc.setLatitude(-114.5);
+//        state.setTimeSegment(TimeSegment.EVENING);
         state.setSystemTime(1);
-        state.setLocation(loc);
+//        state.setLocation(loc);
         state.setTime("10:20:00");
 
 

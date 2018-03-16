@@ -1,6 +1,7 @@
 package com.cse110.flashbackmusicplayer;
 
 import android.app.Activity;
+import android.content.*;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -21,6 +22,7 @@ import com.google.api.services.people.v1.model.Person;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class UserSystem {
     private GoogleSignInAccount account;
@@ -105,9 +107,14 @@ public class UserSystem {
             for (Person person : connections) {
                 if (!person.isEmpty()) {
                     List<Name> namesList = person.getNames();
-
-                    String name = namesList.get(0).getDisplayName();
-                    // TODO changing stuff here
+                    String name;
+                    try {
+                        name = namesList.get(0).getDisplayName();
+                        // TODO changing stuff here
+                    }
+                    catch(NullPointerException e) {
+                        name = "No name found";
+                    }
                     String resName = person.getResourceName();
 
                     List<String> contact = new ArrayList<>();

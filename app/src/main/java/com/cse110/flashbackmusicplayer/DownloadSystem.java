@@ -50,7 +50,7 @@ public class DownloadSystem extends BroadcastReceiver {
     public void downloadTrack(String url) {
 
 
-        TrackDownloader downloader = new TrackDownloader(downloadManager);
+        TrackDownloader downloader = new TrackDownloader(downloadManager, activity);
         downloader.execute(url);
     }
 
