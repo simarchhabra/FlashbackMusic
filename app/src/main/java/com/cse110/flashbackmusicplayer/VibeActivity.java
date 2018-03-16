@@ -124,6 +124,9 @@ public class VibeActivity extends AppCompatActivity {
             }
         }
 
+        // Download the first two songs.
+        downloadNextTwoSongs();
+
         nextTrackTitles.clear();
 
         for(int i = 0; i<songs.size();i++)
