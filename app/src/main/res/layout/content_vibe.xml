@@ -55,10 +55,12 @@
         android:id="@+id/pauseButton"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="135dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginBottom="170dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="10dp"
         android:alpha="0.7"
         android:background="@drawable/pausewhite"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/slideTrack" />
 
@@ -81,10 +83,12 @@
         android:id="@+id/nextButton"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:layout_marginBottom="170dp"
         android:layout_marginEnd="135dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="10dp"
         android:alpha="0.7"
         android:background="@drawable/nextwhite"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/slideTrack" />
 
