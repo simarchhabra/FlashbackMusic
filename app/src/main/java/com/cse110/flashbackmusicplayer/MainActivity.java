@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -47,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
     // In charge of downloading all of the songs.
     static DownloadSystem downloadSystem = null;
 
+    // The sorter we will use to sort our tracks.
+    private SortStrategy sorter;
+
     // List of the names of all the songs.
     List<String> songTitles;
     ArrayAdapter songAdapter;
@@ -75,6 +79,9 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         // Create a location listener and make it update user state on change.
         new LocationSystem(this, userState);
 
+        // Use the default sorter.
+        sorter = new DefaultSort();
+
         // Get a reference to the firebase manager.
         db = new FirebaseManager(songDB);
 
@@ -89,6 +96,27 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
                                                 getResources().getStringArray(R.array.names));
         filterAdapter.setDropDownViewResource(R.layout.filter_dropdown_item);
         filterspinner.setAdapter(filterAdapter);
+
+        filterspinner.setOnItemClickListener((parent, view, position, id) -> {
+            String text = parent.getItemAtPosition(position).toString();
+            switch (text) {
+                case "Track Name":
+                    sorter = new TitleSort();
+                    break;
+                case "Artist":
+                    sorter = new ArtistSort();
+                    break;
+                case "Album":
+                    sorter = new AlbumSort();
+                    break;
+                case "Favorite":
+                    sorter = new FavoriteSort();
+                    break;
+                default:
+                    sorter = new DefaultSort();
+                    break;
+            }
+        });
 
         // Display the songs list on the screen.
         songAdapter = new ArrayAdapter<>(this, R.layout.list_white_text,R.id.list_content, songTitles);
@@ -241,6 +269,10 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         if (!songTitles.contains(song.getTitle())) {
             // Record this songs title to display it.
             songTitles.add(song.getTitle());
+
+            // Resort the songTitles.
+            songTitles = sorter.sort(songTitles);
+
             songAdapter.notifyDataSetChanged();
             // Add this song's album to the albums listview if it doesn't already exist.
             if (!albumsList.contains(song.getAlbum())) {

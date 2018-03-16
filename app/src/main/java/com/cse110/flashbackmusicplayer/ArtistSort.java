@@ -1,18 +1,19 @@
 package com.cse110.flashbackmusicplayer;
 
 import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Created by Eldon on 3/15/2018.
- */
+import static com.cse110.flashbackmusicplayer.MainActivity.songDB;
+
 
 public class ArtistSort implements SortStrategy{
-    public ArrayList<Song> sort(ArrayList<Song> input) {
-        ArrayList<Song> artSorted = input;
+    public ArrayList<String> sort(List<String> input) {
+        ArrayList<String> artSorted = new ArrayList<>(input);
         for(int i = 1; i < artSorted.size(); i++) {
-            String val = artSorted.get(i).getAlbum();
+            Song song = songDB.get(artSorted.get(i));
+            String val = song.getAlbum();
             int j = i - 1;
-            while( j > -1 && artSorted.get(j).getArtist().compareTo(val) > 0) {
+            while( j > -1 && song.getArtist().compareTo(val) > 0) {
                 artSorted.set(j + 1, artSorted.get(j));
                 j--;
             }
