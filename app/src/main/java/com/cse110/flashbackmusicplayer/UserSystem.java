@@ -2,6 +2,7 @@ package com.cse110.flashbackmusicplayer;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -106,7 +107,9 @@ public class UserSystem {
                     List<Name> namesList = person.getNames();
 
                     String name = namesList.get(0).getDisplayName();
+                    // TODO changing stuff here
                     String resName = person.getResourceName();
+
                     List<String> contact = new ArrayList<>();
                     contact.add(resName);
                     contact.add(name);

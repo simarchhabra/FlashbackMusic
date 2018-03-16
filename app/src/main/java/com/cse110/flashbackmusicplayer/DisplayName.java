@@ -1,56 +1,44 @@
+package com.cse110.flashbackmusicplayer;
 
-import java.util.HashMap;
+
+import android.util.Log;
+
+import java.util.List;
 
 /**
  * Created by vale_g on 3/13/18.
  */
 public class DisplayName {
 
-    // Hashmap<"key", "value"> where key is user id, and value is user's anonName
-    static HashMap<String, String> hmap = new HashMap<String, String>();
-
-    // keeps track of number of anonNames
-    static int anonNameCount = 1;
-
     // default name
     static String defaultName = "viber";
 
     /**
-     * Gets the anon name for the user if given if they already have one.
-     * Else, it returns an error message stating the user does not have one.
-     *
+     * Gets the anon name for the user
      * @param id to get anon name of
      * @return the value (anonName) of the user id
      */
     public static String getAnonName(String id){
-        if(nameExists(id)) {
-            return hmap.get(id);
-        }
-        return id + " does not have an anon name.";
+        return defaultName + id.substring(id.length() - 4);
     }
 
-
-    /**
-     * If the user has not been assigned an anonName,
-     * Their anonName is the default name with the current count appended
-     * After the name is added, the count is incremented by 1
-     *
-     * @param id the string id of the user
-     */
-    public static void addAnonName(String id){
-        if(!nameExists(id)){
-            hmap.put(id, defaultName + anonNameCount);
-            anonNameCount++;
-        }
+    public static boolean lastPlayedByCurrentUser(String lastUser){
+        // get the NAME of current user
+        String currUser = UserDataStorage.getProfile().get(1);
+        return currUser.compareTo(lastUser) == 0;
     }
 
-    /**
-     * Checks if the user id has already been assigned an anonName
-     *
-     * @param id user id to check
-     * @return true if key (user id) is already assigned an anonName
-     */
-    public static boolean nameExists(String id){
-        return hmap.containsKey(id);
+    public static String lastPlayedByOther(String lastUser){
+        // get the google friends of the current user
+        List<List<String>> userFriends = UserDataStorage.getContacts();
+
+        for(List<String> currContact : userFriends){
+            Log.d("Last played by other", currContact.get(1));
+            if(currContact.get(1).compareTo(lastUser) == 0){
+                return currContact.get(1);
+            }
+        }
+        // TODO this should return the proxy name of the lastUser
+        return getAnonName(lastUser);
     }
 }

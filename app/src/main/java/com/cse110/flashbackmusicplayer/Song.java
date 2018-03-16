@@ -138,7 +138,7 @@ public class Song implements SongSubject, FirebaseObserver {
         List<String> songUsers = this.getUsers();
         for (String id: songUsers) {
             for (List<String> contact : UserDataStorage.getContacts()) {
-                if (id.compareTo(contact.get(0)) == 0) {
+                if (id.compareTo(contact.get(1)) == 0) {
                     return true;
                 }
             }
