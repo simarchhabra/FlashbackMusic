@@ -29,9 +29,11 @@ import java.nio.file.Files;
 public class TrackDownloader extends AsyncTask<String, Void, Long> {
 
     private DownloadManager manager;
+    private  Activity activity;
 
-    public TrackDownloader(DownloadManager manager) {
+    public TrackDownloader(DownloadManager manager, Activity activity) {
         this.manager = manager;
+        this.activity = activity;
 
     }
 
@@ -42,22 +44,49 @@ public class TrackDownloader extends AsyncTask<String, Void, Long> {
         HttpURLConnection con = null;
         String filename = "unknown-file";
         String extension = ".unknown";
+        DownloadManager.Request request = null;
         try {
             con = (HttpURLConnection) (new URL(params[0])).openConnection();
             String content = con.getHeaderField("Content-Disposition");
-            String contentSplit[] = content.split(";");
+            String contentSplit[] = null;
+            try {
+                contentSplit = content.split(";");
 
-            // Search for the content field that has the filename.
-            for (String field : contentSplit) {
-                if (field.contains("filename=")) {
-                    filename = field.replace("filename=","").replace("\"", "").replace(";", "").trim();
-                    extension = filename.substring(filename.lastIndexOf('.') + 1);
-                    break;
+                // Search for the content field that has the filename.
+                for (String field : contentSplit) {
+                    if (field.contains("filename=")) {
+                        filename = field.replace("filename=","").replace("\"", "").replace(";", "").trim();
+                        extension = filename.substring(filename.lastIndexOf('.') + 1);
+                        break;
+                    }
                 }
             }
+            catch (NullPointerException e) {
+                activity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(activity.getApplicationContext(), "No song file at this URL",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            Uri uri = Uri.parse(params[0]);
+            request = new DownloadManager.Request(uri);
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
+            request.setMimeType(MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension));
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            return manager.enqueue(request);
+
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            activity.runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(activity.getApplicationContext(), "Can only download HTTP/HTTPS URls",
+                            Toast.LENGTH_LONG).show();
+                }
+            });
         }
 
         // Check if this file already exists, and if it does, delete it.
@@ -66,14 +95,9 @@ public class TrackDownloader extends AsyncTask<String, Void, Long> {
             boolean result = file.delete();
         }
 
-        Uri uri = Uri.parse(params[0]);
-        DownloadManager.Request request = new DownloadManager.Request(uri);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
-        request.setMimeType(MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension));
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
 
+        return null;
 
-        return manager.enqueue(request);
     }
 }
