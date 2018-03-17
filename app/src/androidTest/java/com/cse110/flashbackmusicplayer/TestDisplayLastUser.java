@@ -118,9 +118,8 @@ public class TestDisplayLastUser {
         }
 
         ViewInteraction titleView2 = onView(
-                allOf(withId(R.id.songTitle)));
+                allOf(withId(R.id.history)));
         titleView2.check(matches(isDisplayed()));
-
 
     }
     private static Matcher<View> childAtPosition(
