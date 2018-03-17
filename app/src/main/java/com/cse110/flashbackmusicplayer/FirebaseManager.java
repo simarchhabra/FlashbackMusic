@@ -2,6 +2,7 @@ package com.cse110.flashbackmusicplayer;
 
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.Log;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +29,7 @@ public class FirebaseManager implements SongObserver, FirebaseSubject {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 String title = dataSnapshot.getKey();
+                Log.d("Firebase Manager", "Added a new child: " + title);
                 // If we don't have a song with this title in the database, add it.
                 if (database.get(title) == null) {
                     DataSnapshot metadata = dataSnapshot.child("metadata");
@@ -69,6 +71,7 @@ public class FirebaseManager implements SongObserver, FirebaseSubject {
     }
 
     public void registerObserver(FirebaseObserver song) {
+        Log.d("Firebase Manager", "Registered the song " + song.getTitle());
         // If we already have this song in the database, do nothing. Else add it.
         myFirebaseRef.child("Songs").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -95,6 +98,7 @@ public class FirebaseManager implements SongObserver, FirebaseSubject {
 
     @Override
     public void update(Song song, String user, long time, Location location) {
+        Log.d("Firebase Manager", "Updating " + song.getTitle() + " in Firebase database");
         DatabaseReference history = getPlaybackHistoryRef(song.getTitle());
         Map<String,Object> entry = new HashMap<>();
         entry.put("user", user);
@@ -113,6 +117,7 @@ public class FirebaseManager implements SongObserver, FirebaseSubject {
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Log.d("Firebase Manager", "Firebase song node " + song.getTitle() + " has been updated by another user");
             String user = dataSnapshot.child("user").getValue(String.class);
             double latitude = dataSnapshot.child("location").child("latitude").getValue(Double.class);
             double longitude = dataSnapshot.child("location").child("longitude").getValue(Double.class);

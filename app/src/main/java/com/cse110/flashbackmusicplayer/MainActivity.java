@@ -207,6 +207,8 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         // If the download songs button is pressed, open an activity that lets you download.
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
+            Log.d("MainActivity", "Download song button clicked");
+
             // https://developer.android.com/guide/topics/ui/dialogs.html
             // Create a popup window asking the user to enter a URL.
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -233,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
         // If the download songs button is pressed, open an activity that lets you download.
         FloatingActionButton setTime = findViewById(R.id.setTime);
         setTime.setOnClickListener(view -> {
+            Log.d("MainActivity", "Changing time and date");
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(userState.getSystemTime());
             chooseTime(calendar);
@@ -280,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
             }
         }
         else if (requestCode == 2) {
-            Log.d("Result", "GOES INTO SERVICE");
+            Log.d("MainActivity", "Successfully logged in");
             new UserSystem(MainActivity.this, userState, getString(R.string.client_id), getString(R.string.client_secret_id));
 
         }
@@ -307,6 +310,8 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
 
     @Override
     public void addTrack(Song song) {
+        Log.d("MainActivity", "Adding the song " + song.getTitle() + " to list of tracks");
+
         // If this track is in the database, don't add it again.
         if (songDB.get(song.getTitle()) == null) {
             // Add the song to the database.

@@ -76,6 +76,7 @@ public class VibeActivity extends AppCompatActivity {
             Song s1 = songs.get(0);
             if (!s1.isDownloaded()) {
                 downloadSystem.downloadTrack(s1.getURL());
+                Log.d("VibeActivity", "Starting download of song " + s1.getTitle());
             }
         }
 
@@ -84,6 +85,7 @@ public class VibeActivity extends AppCompatActivity {
             Song s2 = songs.get(1);
             if (!s2.isDownloaded()) {
                 downloadSystem.downloadTrack(s2.getURL());
+                Log.d("VibeActivity", "Starting download of song " + s2.getTitle());
             }
         }
     }

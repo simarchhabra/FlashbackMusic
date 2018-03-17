@@ -39,10 +39,12 @@ public class DisplayName {
         }
 
         if (id.length() >= 4) {
-            return base + id.substring(id.length() - 4);
+            String newName = base + id.substring(id.length() - 4);
+            return newName;
         }
         else {
-            return base + id;
+            String newName = base + id;
+            return newName;
         }
     }
 
@@ -57,12 +59,11 @@ public class DisplayName {
         List<List<String>> userFriends = UserDataStorage.getContacts();
 
         for(List<String> currContact : userFriends){
-            Log.d("Last played by other", currContact.get(1));
             if(currContact.get(1).compareTo(lastUser) == 0){
+                Log.d("DisplayName", "Last played by friend " + currContact.get(1));
                 return currContact.get(1);
             }
         }
-        // TODO this should return the proxy name of the lastUser
         return getAnonName(lastUser);
     }
 }

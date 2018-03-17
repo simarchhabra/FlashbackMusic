@@ -48,7 +48,7 @@ public class DownloadSystem extends BroadcastReceiver {
     }
 
     public void downloadTrack(String url) {
-
+        Log.d("Download System", "Downloading track from " + url);
 
         TrackDownloader downloader = new TrackDownloader(downloadManager, activity);
         downloader.execute(url);
@@ -69,6 +69,7 @@ public class DownloadSystem extends BroadcastReceiver {
 
 
             if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                Log.d("Download System", "Successfully downloaded " + url);
                 // Check if we downloads a mp3 or zip file.
                 String extension = filepath.substring(filepath.lastIndexOf('.') + 1);
                 if (extension.equals("mp3")) {
@@ -91,6 +92,7 @@ public class DownloadSystem extends BroadcastReceiver {
                 }
             }
             else if (status==DownloadManager.STATUS_FAILED) {
+                Log.d("Download System", "Failed to download " + url + ". Trying again.");
                 // Try downloading again.
                 downloadTrack(url);
             }

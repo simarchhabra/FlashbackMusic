@@ -3,6 +3,7 @@ package com.cse110.flashbackmusicplayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -21,7 +22,7 @@ import java.util.zip.ZipInputStream;
 class TrackUnzipper extends AsyncTask<String, Void, Boolean> {
 
     // The object that is notified when this task finishes.
-    public TrackUnzipperObserver observer = null;
+    private TrackUnzipperObserver observer = null;
 
     // The list of files we created.
     private List<String> filenames = null;
@@ -47,6 +48,7 @@ class TrackUnzipper extends AsyncTask<String, Void, Boolean> {
         {
             // Get the path as it appears in the phone
             String filepath = Uri.parse(params[0]).getPath();
+            Log.d("TrackUnzipper", "Unzipping the album at " + filepath);
             String dir = filepath.substring(0, filepath.lastIndexOf(File.separator) + 1);
 
             InputStream inputStream = new FileInputStream(filepath);
@@ -58,6 +60,7 @@ class TrackUnzipper extends AsyncTask<String, Void, Boolean> {
             {
                 // Get the name of the first file.
                 String filename = entry.getName();
+                Log.d("TrackUnzipper", "Extracting " + filename);
                 filenames.add(dir + filename);
 
                 // Read from the zipped file and copy the file to the directory.
@@ -87,6 +90,7 @@ class TrackUnzipper extends AsyncTask<String, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
+        Log.d("TrackUnzipper", "Finished extraction");
         observer.update(filenames);
     }
 }

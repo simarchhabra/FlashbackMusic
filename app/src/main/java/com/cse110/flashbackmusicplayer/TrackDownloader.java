@@ -29,7 +29,7 @@ import java.nio.file.Files;
 public class TrackDownloader extends AsyncTask<String, Void, Long> {
 
     private DownloadManager manager;
-    private  Activity activity;
+    private Activity activity;
 
     public TrackDownloader(DownloadManager manager, Activity activity) {
         this.manager = manager;
@@ -39,6 +39,7 @@ public class TrackDownloader extends AsyncTask<String, Void, Long> {
 
     @Override
     protected Long doInBackground(String... params) {
+
         // Get the name of the file we are downloading using HTTP as described here:
         // https://stackoverflow.com/questions/33886576/using-android-downloadmanager-how-do-i-get-file-name
         HttpURLConnection con = null;
@@ -75,6 +76,9 @@ public class TrackDownloader extends AsyncTask<String, Void, Long> {
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
             request.setMimeType(MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension));
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+            Log.d("TrackDownloader", "Downloading " + params[0] + " to " + filename);
+
             return manager.enqueue(request);
 
 
@@ -92,12 +96,10 @@ public class TrackDownloader extends AsyncTask<String, Void, Long> {
         // Check if this file already exists, and if it does, delete it.
         File file = new File(Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DOWNLOADS  + File.separator + filename);
         if(file.exists()) {
-            boolean result = file.delete();
+            Log.d("TrackDownloader", "Deleting existing file with the same name");
+            file.delete();
         }
 
-
-
         return null;
-
     }
 }

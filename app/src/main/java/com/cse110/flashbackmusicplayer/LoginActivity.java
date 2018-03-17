@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("RUN", "WHAT");
+        Log.d("Login System", "Initialized login activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -67,6 +67,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.sign_in_button) {
+            Log.d("Login System", "User clicked sign in button");
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
             // goes to onActivityResult when done
             startActivityForResult(signInIntent, RESULT_ID);
@@ -75,14 +76,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("SignInResult", "Activity sent back.");
         super.onActivityResult(requestCode,resultCode, data);
         if (requestCode == RESULT_ID) {
-            Log.d("SignInResult", "Activity sent back with a result ID.");
             GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            Log.d("GoogleResult", googleSignInResult.getStatus().toString());
+            Log.d("Login System", "Login status is " + googleSignInResult.getStatus().toString());
             if (googleSignInResult.isSuccess()) {
-                Log.d("SignInResult", "Activity sent back successfully.");
                 finish();
             }
         }
@@ -90,6 +88,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d("Login System", "Could not connect to internet");
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         Dialog dialog = googleApiAvailability.getErrorDialog(this, connectionResult.getErrorCode(), RESULT_ERROR_ID);
         dialog.show();
