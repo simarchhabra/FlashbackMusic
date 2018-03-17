@@ -47,7 +47,7 @@ public class Song implements SongSubject, FirebaseObserver {
 
     public String getUser() {
         if (users.size() == 0) return null;
-        return users.get(users.size() - 1);
+        return users.get(getLastIndex());
     }
 
     public String getTime() {
@@ -85,14 +85,29 @@ public class Song implements SongSubject, FirebaseObserver {
     public String getPlace() {
         if (locations.size() == 0) return null;
 
-        Location loc = locations.get(locations.size() - 1);
+        Location loc = locations.get(getLastIndex());
         return LocationSystem.getPlace(loc.getLatitude(), loc.getLongitude());
     }
     public long getSystemTime() {
         if (times.size() == 0) return -1;
 
         // The last time this track was played is the last entry of the times array.
-        return times.get(times.size() - 1);
+        return times.get(getLastIndex());
+    }
+
+    private int getLastIndex() {
+        long largestTime = -1;
+        int index = -1;
+
+        for (int i = 0; i < times.size(); i++) {
+            long time = times.get(i);
+            if (time > largestTime) {
+                largestTime = time;
+                index = i;
+            }
+        }
+
+        return index;
     }
 
     public ArrayList<Location> getLocations() { return locations; }

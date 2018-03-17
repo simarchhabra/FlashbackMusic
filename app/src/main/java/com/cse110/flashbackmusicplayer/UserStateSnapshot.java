@@ -4,6 +4,8 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
+import java.util.Calendar;
+
 public class UserStateSnapshot implements UserState {
 
     private Location location;
@@ -49,6 +51,11 @@ public class UserStateSnapshot implements UserState {
     @Override
     public int getDayOfYear() {
         return dayOfYear;
+    }
+
+    @Override
+    public void setCalendar(Calendar c) {
+        systemTime = c.getTimeInMillis();
     }
 
     @Override

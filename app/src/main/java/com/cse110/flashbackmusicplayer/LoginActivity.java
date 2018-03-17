@@ -35,8 +35,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         Log.d("RUN", "WHAT");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         CLIENT_ID = getString(R.string.client_id);
 

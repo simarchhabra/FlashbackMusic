@@ -13,6 +13,8 @@ public class UserStateImpl implements UserState {
     String place = "";
     String user = "";
 
+    Calendar calendar = null;
+
     public UserStateImpl() {}
 
     @Override
@@ -34,7 +36,12 @@ public class UserStateImpl implements UserState {
     }
 
     public long getSystemTime() {
-        return System.currentTimeMillis();
+        if (calendar == null) {
+            return System.currentTimeMillis();
+        }
+        else {
+            return calendar.getTimeInMillis();
+        }
     }
 
     @Override
@@ -46,6 +53,11 @@ public class UserStateImpl implements UserState {
     public int getDayOfYear() {
         Calendar calendar = Calendar.getInstance();
         return calendar.get(Calendar.DAY_OF_YEAR);
+    }
+
+    @Override
+    public void setCalendar(Calendar c) {
+        this.calendar = c;
     }
 
     @Override
