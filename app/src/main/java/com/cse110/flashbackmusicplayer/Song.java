@@ -16,6 +16,7 @@ public class Song implements SongSubject, FirebaseObserver {
 
     // Whether or not this track is downloaded to the users phone or not.
     private boolean downloaded = false;
+    private boolean queued = false;
 
     // A cached priority score for this song. Only valid after calling generateVibeList while
     // hasStateChanged() return false.
@@ -138,6 +139,14 @@ public class Song implements SongSubject, FirebaseObserver {
 
     public void setDownloaded(boolean downloaded) {
         this.downloaded = downloaded;
+    }
+
+    public boolean isQueued() {
+        return queued;
+    }
+
+    public void setQueued(boolean queued) {
+        this.queued = queued;
     }
 
     // Whether the song was favorited or disliked. Should not both be true at the same time.

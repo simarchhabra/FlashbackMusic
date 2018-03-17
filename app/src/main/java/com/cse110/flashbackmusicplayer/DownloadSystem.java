@@ -129,6 +129,7 @@ public class DownloadSystem extends BroadcastReceiver {
 
         // Check if a song with this information is already in the database.
         Song song = songDB.get(songTitle);
+        Toast.makeText(activity, "Finished downloading " + songTitle, Toast.LENGTH_SHORT).show();
         if (song != null) {
             // Update its album art and return it.
             song.setAlbumCover(album_art);

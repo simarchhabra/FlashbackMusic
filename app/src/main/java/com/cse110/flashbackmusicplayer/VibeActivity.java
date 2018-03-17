@@ -74,7 +74,8 @@ public class VibeActivity extends AppCompatActivity {
         // If the first song in the playlist is not downloaded, download it.
         if (songs.size() > 0) {
             Song s1 = songs.get(0);
-            if (!s1.isDownloaded()) {
+            if (!s1.isQueued()) {
+                s1.setQueued(true);
                 downloadSystem.downloadTrack(s1.getURL());
                 Log.d("VibeActivity", "Starting download of song " + s1.getTitle());
             }
@@ -83,7 +84,8 @@ public class VibeActivity extends AppCompatActivity {
         if (songs.size() > 1) {
             // If the second song in the playlist is not downloaded, download it.
             Song s2 = songs.get(1);
-            if (!s2.isDownloaded()) {
+            if (!s2.isQueued()) {
+                s2.setQueued(true);
                 downloadSystem.downloadTrack(s2.getURL());
                 Log.d("VibeActivity", "Starting download of song " + s2.getTitle());
             }
