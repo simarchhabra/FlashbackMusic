@@ -5,13 +5,14 @@ import android.util.Log;
 
 import java.util.List;
 
-/**
- * Created by vale_g on 3/13/18.
- */
+
 public class DisplayName {
 
     // default name
-    static String defaultName = "viber";
+    static String defaultName1 = "viber_";
+    static String defaultName2 = "fox_";
+    static String defaultName3 = "fresh_";
+    static String defaultName4 = "walrus_";
 
     /**
      * Gets the anon name for the user
@@ -19,7 +20,30 @@ public class DisplayName {
      * @return the value (anonName) of the user id
      */
     public static String getAnonName(String id){
-        return defaultName + id.substring(id.length() - 4);
+        String base;
+        switch (id.length() % 4) {
+            case 0:
+                base = defaultName1;
+                break;
+            case 1:
+                base = defaultName2;
+                break;
+            case 2:
+                base = defaultName3;
+                break;
+            case 3:
+                base = defaultName4;
+                break;
+            default:
+                base = "unknown_";
+        }
+
+        if (id.length() >= 4) {
+            return base + id.substring(id.length() - 4);
+        }
+        else {
+            return base + id;
+        }
     }
 
     public static boolean lastPlayedByCurrentUser(String lastUser){
