@@ -10,7 +10,7 @@ public class TitleSort implements SortStrategy {
     public ArrayList<String> sort(List<String> input) {
         ArrayList<String> sorted = new ArrayList<>(input);
 
-        sorted.sort(Comparator.comparing(s -> songDB.get(s).getTitle()));
+        sorted.sort(Comparator.comparing(s -> songDB.get(s).getTitle().toLowerCase()));
 
         return sorted;
     }

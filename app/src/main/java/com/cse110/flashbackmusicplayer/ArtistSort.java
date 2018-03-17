@@ -11,7 +11,7 @@ public class ArtistSort implements SortStrategy{
     public ArrayList<String> sort(List<String> input) {
         ArrayList<String> sorted = new ArrayList<>(input);
 
-        sorted.sort(Comparator.comparing(s -> songDB.get(s).getArtist()));
+        sorted.sort(Comparator.comparing(s -> songDB.get(s).getArtist().toLowerCase()));
 
         return sorted;
     }
