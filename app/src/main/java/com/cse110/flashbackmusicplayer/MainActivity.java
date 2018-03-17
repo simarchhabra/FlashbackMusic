@@ -2,7 +2,9 @@ package com.cse110.flashbackmusicplayer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.DownloadManager;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -27,6 +30,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements TrackContainer {
@@ -202,33 +206,69 @@ public class MainActivity extends AppCompatActivity implements TrackContainer {
 
         // If the download songs button is pressed, open an activity that lets you download.
         FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> {
+            // https://developer.android.com/guide/topics/ui/dialogs.html
+            // Create a popup window asking the user to enter a URL.
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Download song(s)");
+            builder.setMessage("Enter URL:");
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // https://developer.android.com/guide/topics/ui/dialogs.html
-                // Create a popup window asking the user to enter a URL.
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Download song(s)");
-                builder.setMessage("Enter URL:");
+            // Create a place to enter the URL.
+            final EditText urlInput = new EditText(MainActivity.this);
+            builder.setView(urlInput);
 
-                // Create a place to enter the URL.
-                final EditText urlInput = new EditText(MainActivity.this);
-                builder.setView(urlInput);
+            // Create the accept and cancel buttons.
+            builder.setPositiveButton("Download", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    String url = urlInput.getText().toString();
+                    downloadSystem.downloadTrack(url);
+                }
+            });
+            builder.setNegativeButton("Cancel", null);
 
-                // Create the accept and cancel buttons.
-                builder.setPositiveButton("Download", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        String url = urlInput.getText().toString();
-                        downloadSystem.downloadTrack(url);
-                    }
-                });
-                builder.setNegativeButton("Cancel", null);
-
-                //builder.create();
-                builder.show();
-            }
+            //builder.create();
+            builder.show();
         });
+
+        // If the download songs button is pressed, open an activity that lets you download.
+        FloatingActionButton setTime = findViewById(R.id.setTime);
+        setTime.setOnClickListener(view -> {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(userState.getSystemTime());
+            chooseTime(calendar);
+            chooseDate(calendar);
+            userState.setCalendar(calendar);
+        });
+    }
+
+    private void chooseDate(Calendar calendar) {
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                (view, newYear, newMonth, newDay) -> {
+
+                    calendar.set(newYear, newMonth, newDay);
+
+                }, year, month, day);
+        datePickerDialog.show();
+    }
+
+    private void chooseTime(Calendar calendar) {
+        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+        int minutes = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                (view, newHour, newMinute) -> {
+
+                    int year = calendar.get(Calendar.YEAR);
+                    int month = calendar.get(Calendar.MONTH);
+                    int day = calendar.get(Calendar.DAY_OF_MONTH);
+                    calendar.set(year, month, day, newHour, newMinute);
+
+                }, hours, minutes, false);
+        timePickerDialog.show();
     }
 
     @Override

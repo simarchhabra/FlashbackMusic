@@ -15,5 +15,6 @@ public interface UserState {
     void setUser(String userID);
     int getDayOfYear();
 
+    void setCalendar(Calendar c);
     long getSystemTime();
 }

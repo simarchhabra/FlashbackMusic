@@ -39,8 +39,6 @@ public class MockUserState implements UserState {
     }
     public void setLocation(Location location) { this.location = location; }
     public void setPlace(String place) { this.place = place; }
-    //public void setTimeSegment(TimeSegment timeSegment) { this.timeSegment = timeSegment; }
-    //public void setDayOfWeek(int dayOfWeek) { this.dayOfWeek = dayOfWeek; }
     public void setDate(String date) { this.date = date; }
     public void setTime(String time) { this.time = time; }
     public void setSystemTime(long systemTime) { this.systemTime = systemTime; }
